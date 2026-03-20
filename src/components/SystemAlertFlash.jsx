@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useAudio } from '../hooks/useAudio'
 
 export function SystemAlertFlash({ trigger }) {
   const [visible, setVisible] = useState(false)
+  const { playSFX } = useAudio()
 
   useEffect(() => {
     if (!trigger) return
     setVisible(true)
+    playSFX('error')
     const timer = setTimeout(() => setVisible(false), 3400)
     return () => clearTimeout(timer)
-  }, [trigger])
+  }, [trigger, playSFX])
 
   if (!visible) return null
 

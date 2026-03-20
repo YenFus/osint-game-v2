@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
+import { useAudio } from '../../hooks/useAudio'
 
 export function TypewriterNode({ content, onComplete }) {
   const [displayed, setDisplayed] = useState('')
@@ -8,6 +9,8 @@ export function TypewriterNode({ content, onComplete }) {
   const [phase, setPhase] = useState('typing') // 'typing' | 'pausing' | 'monologue' | 'done'
   const [monologueIndex, setMonologueIndex] = useState(0)
   const [shownMonologue, setShownMonologue] = useState([])
+  const { playSFX } = useAudio()
+  const keyCountRef = useRef(0)
 
   // Typing phase
   useEffect(() => {
@@ -38,6 +41,11 @@ export function TypewriterNode({ content, onComplete }) {
     const timer = setTimeout(() => {
       setDisplayed(prev => prev + seg.text[charIndex])
       setCharIndex(prev => prev + 1)
+      // Play key click every 2 characters — realistic typing rhythm without being too busy
+      keyCountRef.current++
+      if (keyCountRef.current % 2 === 0 && seg.text[charIndex] !== ' ') {
+        playSFX('typewriterKey')
+      }
     }, seg.delay ?? 65)
 
     return () => clearTimeout(timer)
@@ -65,7 +73,7 @@ export function TypewriterNode({ content, onComplete }) {
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
       background: isFullscreen ? '#030306' : 'transparent',
-      padding: isFullscreen ? '48px 64px' : '20px 24px',
+      padding: isFullscreen ? 'clamp(20px, 5vw, 48px) clamp(16px, 8vw, 64px)' : '20px 24px',
       gap: 24,
     }}>
       {/* Email header */}
@@ -90,7 +98,7 @@ export function TypewriterNode({ content, onComplete }) {
       <div style={{ flex: 1 }}>
         <pre style={{
           fontFamily: 'Crimson Pro, serif',
-          fontSize: isFullscreen ? 17 : 14,
+          fontSize: isFullscreen ? 'clamp(14px, 2vw, 17px)' : 14,
           lineHeight: 1.9,
           color: '#c8bea8',
           whiteSpace: 'pre-wrap',

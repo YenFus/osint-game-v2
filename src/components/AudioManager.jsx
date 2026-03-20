@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { useAudio } from '../hooks/useAudio'
 
-// Map game phases to ambient tracks
+// Map game phases to ambient tracks — convergence and ending now have distinct sounds
 const PHASE_AUDIO = {
   menu: 'drone',
   story: 'rain',
   apartment: 'apartment',
   investigation: 'investigation',
-  convergence: 'investigation',
-  ending: 'drone',
+  convergence: 'convergence',
+  ending: 'ending',
 }
 
 export function AudioManager() {

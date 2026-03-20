@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { useGameStore } from '../store/gameStore'
+import { useAudio } from '../hooks/useAudio'
 
 // Icon indicators for color independence (WCAG 2.1)
 const NOTIFICATION_CONFIG = {
@@ -26,6 +28,21 @@ const NOTIFICATION_CONFIG = {
 
 export default function Notifications() {
   const notifications = useGameStore(s => s.notifications)
+  const { playSFX } = useAudio()
+  const prevLengthRef = useRef(0)
+
+  // Play a sound whenever a new notification appears
+  useEffect(() => {
+    if (notifications.length > prevLengthRef.current) {
+      const newest = notifications[notifications.length - 1]
+      if (newest?.type === 'error' || newest?.type === 'warning') {
+        playSFX('error')
+      } else {
+        playSFX('notification')
+      }
+    }
+    prevLengthRef.current = notifications.length
+  }, [notifications, playSFX])
 
   if (!notifications.length) return null
 

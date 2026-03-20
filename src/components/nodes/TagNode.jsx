@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useDiscoveryFeedback } from '../DiscoveryFeedback'
 import { useGameStore } from '../../store/gameStore'
-import { BUTTON_PRIMARY, HEADER_BAR } from '../../styles/nodeStyles'
+import { BUTTON_PRIMARY, BUTTON_FLAG, BUTTON_FLAG_CORRECT, BUTTON_FLAG_WRONG, HEADER_BAR } from '../../styles/nodeStyles'
 
 export function TagNode({ content, onComplete }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
@@ -112,7 +112,7 @@ export function TagNode({ content, onComplete }) {
             <div
               key={item.id}
               style={{
-                padding: 'clamp(12px, 2vw, 14px) clamp(14px, 4vw, 24px)',
+                padding: 'clamp(10px, 2vw, 12px) clamp(14px, 4vw, 24px)',
                 borderBottom: '1px solid #0e0e18',
                 borderLeft: isTaggedCorrect ? '2px solid #b8860b' : '2px solid transparent',
                 background: isTaggedCorrect ? 'rgba(184,134,11,0.05)' : 'transparent',
@@ -125,41 +125,41 @@ export function TagNode({ content, onComplete }) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 {item.subreddit && (
                   <div style={{
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-                    color: '#6a90b8', letterSpacing: '0.15em', marginBottom: 6,
+                    fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
+                    color: '#6a90b8', letterSpacing: '0.15em', marginBottom: 4,
                   }}>
                     {item.subreddit}
                   </div>
                 )}
                 {item.threadTitle && (
                   <div style={{
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
-                    color: '#a0b0c0', marginBottom: 6,
+                    fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
+                    color: '#a0b0c0', marginBottom: 4,
                   }}>
                     {item.threadTitle}
                   </div>
                 )}
                 {item.username && (
                   <div style={{
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-                    color: '#7090a8', marginBottom: 6,
+                    fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
+                    color: '#7090a8', marginBottom: 4,
                   }}>
                     {item.username}
                   </div>
                 )}
                 <p style={{
-                  fontFamily: item.handwritten ? 'Crimson Pro, serif' : 'Crimson Pro, serif',
+                  fontFamily: 'Crimson Pro, serif',
                   fontStyle: item.handwritten ? 'italic' : 'normal',
-                  fontSize: item.handwritten ? 14 : 13,
+                  fontSize: item.handwritten ? 13 : 12,
                   color: isTaggedWrong ? '#8a8088' : '#d8d0c0',
-                  lineHeight: 1.75, margin: 0,
+                  lineHeight: 1.6, margin: 0,
                 }}>
                   {item.text}
                 </p>
                 {item.date && (
                   <div style={{
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-                    color: '#6a6860', marginTop: 8,
+                    fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
+                    color: '#6a6860', marginTop: 6,
                   }}>
                     {item.date}
                   </div>
@@ -179,23 +179,9 @@ export function TagNode({ content, onComplete }) {
                   }
                   aria-pressed={tagged.includes(item.id)}
                   style={{
-                    flexShrink: 0,
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
-                    letterSpacing: '0.1em', textTransform: 'uppercase',
-                    border: isTaggedCorrect
-                      ? '2px solid #d4a84b'
-                      : isTaggedWrong
-                      ? '1px solid #4a3038'
-                      : '2px solid #4a4a58',
-                    color: isTaggedCorrect ? '#f0c860' : isTaggedWrong ? '#7a5060' : '#a0a098',
-                    background: isTaggedCorrect ? 'rgba(212, 168, 75, 0.1)' : 'none',
-                    padding: '6px 12px',
-                    cursor: (tagged.includes(item.id) || penaltyActive) ? 'default' : 'pointer',
-                    transition: 'all 0.2s',
-                    minWidth: 64,
-                    minHeight: 44,
+                    ...(isTaggedCorrect ? BUTTON_FLAG_CORRECT : isTaggedWrong ? BUTTON_FLAG_WRONG : BUTTON_FLAG),
                     opacity: penaltyActive ? 0.5 : 1,
-                    fontWeight: 500,
+                    cursor: (tagged.includes(item.id) || penaltyActive) ? 'default' : 'pointer',
                   }}
                   onMouseEnter={e => {
                     if (!tagged.includes(item.id) && !penaltyActive) {
@@ -204,9 +190,10 @@ export function TagNode({ content, onComplete }) {
                     }
                   }}
                   onMouseLeave={e => {
-                    if (!tagged.includes(item.id)) {
-                      e.currentTarget.style.color = '#a0a098'
-                      e.currentTarget.style.borderColor = '#4a4a58'
+                    if (!tagged.includes(item.id) && !penaltyActive) {
+                      const base = isTaggedCorrect ? BUTTON_FLAG_CORRECT : isTaggedWrong ? BUTTON_FLAG_WRONG : BUTTON_FLAG
+                      e.currentTarget.style.color = base.color
+                      e.currentTarget.style.borderColor = base.border?.split(' ').pop() ?? '#3a3a48'
                     }
                   }}
                 >

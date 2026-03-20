@@ -110,7 +110,7 @@ export function NavigateNode({ content, onComplete }) {
       </div>
 
       {/* File content panel */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
         {activeFile ? (
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
             <div style={{

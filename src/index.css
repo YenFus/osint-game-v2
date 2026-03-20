@@ -543,17 +543,13 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
     padding-bottom: 45vh !important;
   }
 
-  /* Mobile apartment sidebar */
+  /* Mobile apartment sidebar — 3D scene hidden on mobile, sidebar fills all space */
   .apartment-sidebar {
     width: 100% !important;
     border-right: none !important;
-    border-bottom: 1px solid #0e0e18;
-    max-height: 35vh;
+    border-bottom: none;
+    max-height: none;
     overflow-y: auto;
-  }
-
-  .apartment-3d-container {
-    min-height: 50vh;
   }
 
   /* Mobile menu */

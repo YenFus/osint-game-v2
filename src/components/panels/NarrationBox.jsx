@@ -102,20 +102,21 @@ export default function NarrationBox({
         <div className="text-center max-w-2xl">
           <p
             style={{
-              fontFamily: "'Crimson Pro', serif",
-              fontSize: 'clamp(24px, 5vw, 36px)',
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: '#c8b898',
-              lineHeight: 1.6,
-              letterSpacing: '0.02em',
-              textShadow: '0 2px 20px rgba(0,0,0,0.5)',
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 'clamp(28px, 6vw, 48px)',
+              fontWeight: 700,
+              fontStyle: 'normal',
+              color: '#e8dcc8',
+              lineHeight: 1.2,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              textShadow: '0 2px 30px rgba(0,0,0,0.8)',
             }}
           >
             {visibleText}
             {!isComplete && (
               <span
-                className="inline-block w-[3px] h-[0.8em] bg-[#c8b898] opacity-60 ml-1 align-middle"
+                className="inline-block w-[3px] h-[0.8em] bg-[#e8dcc8] opacity-60 ml-1 align-middle"
                 style={{ animation: 'blink 1s infinite' }}
               />
             )}

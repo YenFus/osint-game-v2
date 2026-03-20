@@ -32,7 +32,6 @@ export function ReadNode({ content, onComplete, isReviewing = false }) {
         style={{
           flex: 1, overflowY: 'auto', padding: '20px 24px',
           background: '#0a0a12', border: '1px solid #1a1a28',
-          maxHeight: 420,
         }}
         tabIndex={0}
         aria-label={`Document content. ${canContinue ? 'Fully read.' : `Scroll to read more. ${scrollProgress}% complete.`}`}

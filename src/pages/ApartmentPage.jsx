@@ -105,13 +105,14 @@ export default function ApartmentPage() {
       </div>
 
       {/* ── MAIN LAYOUT ── */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+      {/* flex-col-reverse puts the investigation cards ABOVE the sidebar on mobile */}
+      <div className="flex-1 flex flex-col-reverse md:flex-row min-h-0">
 
         {/* ── LEFT SIDEBAR ── */}
-        <div className="apartment-sidebar w-full md:w-80 shrink-0 border-b md:border-b-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto max-h-[40vh] md:max-h-none">
+        <div className="apartment-sidebar w-full md:w-80 shrink-0 border-t md:border-t-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto max-h-[45vh] md:max-h-none">
 
           {/* Location */}
-          <div className="px-8 py-6 border-b border-[#1a1a28]">
+          <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
             <div className="font-mono text-xs text-red-600 tracking-[0.25em] uppercase mb-3">
               Location
             </div>
@@ -126,14 +127,14 @@ export default function ApartmentPage() {
           </div>
 
           {/* Scene note */}
-          <div className="px-8 py-6 border-b border-[#1a1a28]">
+          <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28] hidden sm:block">
             <p className="text-[#a09888] text-base italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif" }}>
               "You haven't been inside since she painted it. There's a monstera on the windowsill you don't recognise. Fairy lights she strung up before Christmas. One shoe by the door — the left one. The right one is nowhere."
             </p>
           </div>
 
           {/* Objects to investigate */}
-          <div className="px-8 py-6 flex-1">
+          <div className="px-4 sm:px-8 py-3 sm:py-6 flex-1">
             <div className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-5">
               Points of Interest
             </div>
@@ -271,7 +272,7 @@ export default function ApartmentPage() {
           </div>
 
           {/* Path tracker + convergence */}
-          <div className="px-8 py-6 border-t border-[#1a1a28]">
+          <div className="px-4 sm:px-8 py-3 sm:py-6 border-t border-[#1a1a28]">
             <div className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-4">
               Investigation Threads
             </div>

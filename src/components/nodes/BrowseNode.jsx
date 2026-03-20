@@ -302,7 +302,7 @@ function FlickrAlbums({ content, onComplete }) {
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Photo preview area — displays filename as simulated image */}
           <div style={{
-            height: 180, background: '#0c0c16', border: '1px solid #1a1a28',
+            minHeight: 120, background: '#0c0c16', border: '1px solid #1a1a28',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#2a2a38',
           }}>
@@ -385,7 +385,7 @@ function FlickrAlbums({ content, onComplete }) {
                   key={photo.id}
                   onClick={() => setActivePhoto(photo)}
                   style={{
-                    height: 100, background: '#0c0c16', border: `1px solid ${isTaggedCorrect ? '#2a5040' : '#1a1a28'}`,
+                    minHeight: 80, background: '#0c0c16', border: `1px solid ${isTaggedCorrect ? '#2a5040' : '#1a1a28'}`,
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexDirection: 'column', gap: 4,
                     position: 'relative',

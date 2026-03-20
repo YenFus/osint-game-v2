@@ -22,22 +22,28 @@ const TRANSITION_CLASSES = {
   color_bleed: 'panel-drift-in',  // drift variant; tinted wash handles color
 }
 
+// Detect touch device once at module level
+const isTouchDevice = typeof window !== 'undefined' &&
+  window.matchMedia('(hover: none) and (pointer: coarse)').matches
+
 // ── Hint text (bottom-right corner) ──────────────────────────────
 function AdvanceHint({ visible, narrationDone }) {
+  const continueLabel = isTouchDevice ? 'TAP TO CONTINUE' : 'SPACE TO CONTINUE'
+  const skipLabel = isTouchDevice ? 'TAP TO SKIP' : 'CLICK TO SKIP'
   return (
     <div
       className="absolute bottom-5 right-5 z-30 pointer-events-none select-none"
       style={{
-        opacity: visible ? 0.45 : 0,
+        opacity: visible ? 0.65 : 0,
         transition: 'opacity 0.6s ease',
         fontFamily: "'Share Tech Mono', monospace",
-        fontSize: '11px',
+        fontSize: '12px',
         letterSpacing: '0.12em',
-        color: '#5a5248',
+        color: '#8a8278',
         textTransform: 'uppercase',
       }}
     >
-      {narrationDone ? 'SPACE to continue' : 'click to skip'}
+      {narrationDone ? continueLabel : skipLabel}
     </div>
   )
 }
@@ -52,9 +58,9 @@ function ProgressDots({ total, current }) {
           key={i}
           style={{
             width: i === current ? 16 : 5,
-            height: 2,
-            borderRadius: 1,
-            background: i === current ? '#5a5248' : '#2a2432',
+            height: 3,
+            borderRadius: 2,
+            background: i === current ? '#9a8a78' : '#3a3248',
             transition: 'all 0.3s ease',
           }}
         />

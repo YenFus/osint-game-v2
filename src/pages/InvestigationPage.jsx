@@ -390,27 +390,27 @@ export default function InvestigationPage() {
       {/* Task instruction bar - always visible, prominent */}
       {instruction && !isReviewing && (
         <div
-          className="shrink-0 px-4 py-4 flex items-center justify-center gap-4 border-b-2"
+          className="shrink-0 px-4 py-2 sm:py-4 flex items-center justify-center gap-3 sm:gap-4 border-b-2"
           style={{
             background: `linear-gradient(90deg, ${meta.color}20, ${meta.color}08)`,
             borderColor: meta.color,
           }}
         >
           <div
-            className="flex items-center justify-center w-12 h-12 rounded-lg"
+            className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-lg shrink-0"
             style={{ background: `${meta.color}25`, border: `2px solid ${meta.color}50` }}
           >
-            <span className="text-2xl">{instruction.icon}</span>
+            <span className="text-lg sm:text-2xl">{instruction.icon}</span>
           </div>
           <div>
             <div
-              className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1"
+              className="font-mono text-[10px] tracking-[0.2em] uppercase mb-0.5"
               style={{ color: meta.color }}
             >
               Your Task
             </div>
             <div
-              className="text-base font-semibold"
+              className="text-sm sm:text-base font-semibold"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#e8e0d0', letterSpacing: '0.02em' }}
             >
               {instruction.action}
@@ -437,7 +437,7 @@ export default function InvestigationPage() {
 
       {/* Node header */}
       {currentNode && (
-        <div className="shrink-0 px-4 sm:px-6 py-4 border-b border-[#1a1a28] bg-[#0a0a12]/50">
+        <div className="shrink-0 px-3 sm:px-6 py-2 sm:py-4 border-b border-[#1a1a28] bg-[#0a0a12]/50">
           {currentNode.timestamp && (
             <div
               className="font-mono text-xs tracking-[0.15em] uppercase mb-2"

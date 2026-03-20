@@ -71,12 +71,28 @@ export function NavigateNode({ content, onComplete }) {
   const allRequired = content.requiredFiles.every(f => openedFiles.includes(f))
   const requiredLeft = content.requiredFiles.filter(f => !openedFiles.includes(f))
 
+  // Stack vertically on mobile, side-by-side on desktop
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+
   return (
-    <div style={{ display: 'flex', gap: 0, height: '100%', minHeight: 400 }}>
+    <div style={{
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: 0,
+      height: '100%',
+      minHeight: isMobile ? 'unset' : 400,
+    }}>
       {/* File tree panel */}
       <div style={{
-        width: 240, flexShrink: 0, borderRight: '1px solid #1a1a28',
-        background: '#08080e', overflowY: 'auto', paddingTop: 8, paddingBottom: 8,
+        width: isMobile ? '100%' : 240,
+        flexShrink: 0,
+        borderRight: isMobile ? 'none' : '1px solid #1a1a28',
+        borderBottom: isMobile ? '1px solid #1a1a28' : 'none',
+        background: '#08080e',
+        overflowY: 'auto',
+        paddingTop: 8,
+        paddingBottom: 8,
+        maxHeight: isMobile ? 200 : 'unset',
       }}>
         <div style={{
           fontFamily: 'Share Tech Mono, monospace', fontSize: 9,

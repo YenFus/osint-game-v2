@@ -176,7 +176,7 @@ export default function EndingPage() {
   if (phase === 'reveal') {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center p-8"
+        className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8"
         style={{ background: `radial-gradient(circle at center, ${ending.ratingBg} 0%, #08080e 70%)` }}
       >
         <div className="text-center animate-fadeIn">
@@ -190,10 +190,10 @@ export default function EndingPage() {
 
           {/* Main status */}
           <h1
-            className="font-black uppercase tracking-tight mb-4"
+            className="font-black uppercase tracking-tight mb-4 whitespace-nowrap"
             style={{
               fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: 'clamp(3rem, 10vw, 6rem)',
+              fontSize: 'clamp(1.6rem, 8vw, 6rem)',
               color: ending.mayaStatusColor,
               textShadow: `0 0 60px ${ending.mayaStatusColor}40`,
             }}
@@ -251,11 +251,11 @@ export default function EndingPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto w-full px-6 py-10 flex flex-col gap-10">
+        <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-6 sm:gap-10">
 
           {/* ═══ RATING BANNER ═══ */}
           <div
-            className="border-2 p-8 text-center"
+            className="border-2 p-4 sm:p-8 text-center"
             style={{ borderColor: ending.ratingColor, background: ending.ratingBg }}
           >
             <div

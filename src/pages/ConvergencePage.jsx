@@ -55,10 +55,10 @@ export default function ConvergencePage() {
     <div className="min-h-screen bg-[#08080e] flex flex-col">
 
       {/* ── HEADER ── */}
-      <div className="shrink-0 border-b border-[#0e0e18] px-8 py-3 flex items-center justify-between">
+      <div className="shrink-0 border-b border-[#0e0e18] px-4 sm:px-8 py-3 flex items-center justify-between">
         <button
           onClick={() => setPhase('apartment')}
-          className="font-mono text-[10px] text-[#7a7068] hover:text-[#b0a898] tracking-[0.25em] uppercase transition-colors cursor-pointer"
+          className="font-mono text-xs text-[#7a7068] hover:text-[#b0a898] tracking-[0.15em] uppercase transition-colors cursor-pointer min-h-[44px] px-3 flex items-center"
         >
           ← Apartment
         </button>
@@ -68,7 +68,7 @@ export default function ConvergencePage() {
       </div>
 
       {/* ── BODY ── */}
-      <div className="flex-1 max-w-4xl mx-auto w-full px-8 py-14 flex flex-col gap-16">
+      <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-14 flex flex-col gap-8 sm:gap-16">
 
         {/* ── HERO ── */}
         <div className="border-b border-[#0e0e18] pb-12 fade-in">

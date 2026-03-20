@@ -85,7 +85,7 @@ export default function MainMenuPage() {
       <div className="menu-content relative z-10 flex flex-col items-center justify-center h-full gap-0 px-4 md:px-8">
 
         {/* Case file stamp */}
-        <div className="fade-in mb-4 md:mb-6" style={{ animationDelay: '0.2s', opacity: 0 }}>
+        <div className="fade-in mb-2 md:mb-6" style={{ animationDelay: '0.2s', opacity: 0 }}>
           <div className="font-mono text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] text-[#8a8078] uppercase text-center">
             Unofficial Investigation · Case No. 2026-0310
           </div>
@@ -106,7 +106,7 @@ export default function MainMenuPage() {
         </div>
 
         {/* Subtitle */}
-        <div className="fade-in mb-12" style={{ animationDelay: '0.8s', opacity: 0 }}>
+        <div className="fade-in mb-6 sm:mb-12" style={{ animationDelay: '0.8s', opacity: 0 }}>
           <p className="font-mono text-sm text-[#a09888] tracking-[0.25em] uppercase text-center">
             An OSINT investigation game
           </p>
@@ -120,7 +120,7 @@ export default function MainMenuPage() {
         </div>
 
         {/* Menu */}
-        <div className="fade-in flex flex-col gap-2 w-80" style={{ animationDelay: '1.1s', opacity: 0 }}>
+        <div className="fade-in flex flex-col gap-2 w-full max-w-sm px-4 sm:px-0" style={{ animationDelay: '1.1s', opacity: 0 }}>
           {MENU_ITEMS.map((item, i) => (
             <button
               key={item.id}
@@ -154,7 +154,7 @@ export default function MainMenuPage() {
         </div>
 
         {/* Footer */}
-        <div className="fade-in mt-16 text-center" style={{ animationDelay: '1.4s', opacity: 0 }}>
+        <div className="fade-in mt-8 sm:mt-16 text-center" style={{ animationDelay: '1.4s', opacity: 0 }}>
           <p className="font-mono text-xs text-[#706868] tracking-wide uppercase">
             Contains themes of disappearance, manipulation & online harm
           </p>
@@ -172,7 +172,7 @@ export default function MainMenuPage() {
       {/* About overlay */}
       {showAbout && (
         <div className="absolute inset-0 bg-[#08080e] bg-opacity-95 z-50 flex items-center justify-center p-8 fade-in">
-          <div className="max-w-lg w-full border border-[#1e1e2a] bg-[#0c0c14] p-8">
+          <div className="max-w-lg w-full border border-[#1e1e2a] bg-[#0c0c14] p-4 sm:p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="font-mono text-xs text-red-800 tracking-widest uppercase">About</div>
               <button onClick={() => setShowAbout(false)} className="font-mono text-xs text-[#7a7068] hover:text-[#d5cdb8] cursor-pointer">✕</button>
@@ -208,7 +208,7 @@ export default function MainMenuPage() {
       {/* New game confirmation */}
       {showNewGameConfirm && (
         <div className="absolute inset-0 bg-[#08080e] bg-opacity-95 z-50 flex items-center justify-center p-8 fade-in">
-          <div className="max-w-sm w-full border border-[#c0392b] border-opacity-40 bg-[#0c0c14] p-8">
+          <div className="max-w-sm w-full border border-[#c0392b] border-opacity-40 bg-[#0c0c14] p-4 sm:p-8">
             <div className="font-mono text-xs text-red-800 tracking-widest uppercase mb-4">
               New Investigation
             </div>

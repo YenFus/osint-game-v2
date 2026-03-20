@@ -105,11 +105,10 @@ export default function ApartmentPage() {
       </div>
 
       {/* ── MAIN LAYOUT ── */}
-      {/* flex-col-reverse puts the investigation cards ABOVE the sidebar on mobile */}
-      <div className="flex-1 flex flex-col-reverse md:flex-row min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0">
 
         {/* ── LEFT SIDEBAR ── */}
-        <div className="apartment-sidebar w-full md:w-80 shrink-0 border-t md:border-t-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto max-h-[45vh] md:max-h-none">
+        <div className="apartment-sidebar w-full md:w-80 shrink-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto flex-1 md:flex-none">
 
           {/* Location */}
           <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
@@ -300,20 +299,14 @@ export default function ApartmentPage() {
           </div>
         </div>
 
-        {/* ── THE ROOM (3D) ── */}
-        <div className="apartment-3d-container flex-1 relative overflow-hidden min-h-[50vh] md:min-h-0">
-          {/* Vignette — pointer-events-none so clicks pass through to canvas */}
+        {/* ── THE ROOM (3D) — desktop only ── */}
+        <div className="hidden md:flex apartment-3d-container flex-1 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none z-10"
             style={{ background: 'radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(8,8,14,0.75) 100%)' }}
           />
           <ApartmentScene3D onNavigate={(path) => {
             beginInvestigation(path)
           }} />
-
-          {/* Mobile hint */}
-          <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 font-mono text-sm text-[#8a8a98] bg-[#08080e] bg-opacity-90 px-4 py-2 border border-[#3a3a48]">
-            Tap objects to investigate
-          </div>
         </div>
       </div>
 

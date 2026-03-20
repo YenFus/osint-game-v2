@@ -79,8 +79,9 @@ export function NavigateNode({ content, onComplete }) {
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
       gap: 0,
-      height: '100%',
-      minHeight: isMobile ? 'unset' : 400,
+      flex: 1,
+      minHeight: 0,
+      overflow: 'hidden',
     }}>
       {/* File tree panel */}
       <div style={{
@@ -141,18 +142,18 @@ export function NavigateNode({ content, onComplete }) {
 
         {/* Footer */}
         <div style={{
-          borderTop: '1px solid #1a1a28', padding: '12px 24px',
+          borderTop: '1px solid #1a1a28', padding: '10px 16px',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          flexShrink: 0,
         }}>
-          {!allRequired && (
+          {!allRequired ? (
             <div style={{
-              fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-              color: '#4a4840',
+              fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
+              color: '#7a7060', letterSpacing: '0.05em',
             }}>
-              Still need to open: {requiredLeft.join(', ')}
+              Open: {requiredLeft.map(f => f.split('.')[0]).join(', ')}
             </div>
-          )}
-          {allRequired && (
+          ) : (
             <button onClick={onComplete} style={BUTTON_PRIMARY}>
               Continue →
             </button>

@@ -387,35 +387,22 @@ export default function InvestigationPage() {
         </div>
       )}
 
-      {/* Task instruction bar - always visible, prominent */}
+      {/* Task instruction bar */}
       {instruction && !isReviewing && (
         <div
-          className="shrink-0 px-4 py-2 sm:py-4 flex items-center justify-center gap-3 sm:gap-4 border-b-2"
+          className="shrink-0 px-3 py-2 flex items-center gap-2 border-b"
           style={{
-            background: `linear-gradient(90deg, ${meta.color}20, ${meta.color}08)`,
-            borderColor: meta.color,
+            background: `${meta.color}12`,
+            borderColor: `${meta.color}40`,
           }}
         >
-          <div
-            className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-lg shrink-0"
-            style={{ background: `${meta.color}25`, border: `2px solid ${meta.color}50` }}
+          <span className="text-base shrink-0">{instruction.icon}</span>
+          <span
+            className="font-mono text-xs tracking-[0.12em] uppercase"
+            style={{ color: meta.color }}
           >
-            <span className="text-lg sm:text-2xl">{instruction.icon}</span>
-          </div>
-          <div>
-            <div
-              className="font-mono text-[10px] tracking-[0.2em] uppercase mb-0.5"
-              style={{ color: meta.color }}
-            >
-              Your Task
-            </div>
-            <div
-              className="text-sm sm:text-base font-semibold"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#e8e0d0', letterSpacing: '0.02em' }}
-            >
-              {instruction.action}
-            </div>
-          </div>
+            {instruction.action}
+          </span>
         </div>
       )}
 
@@ -437,10 +424,10 @@ export default function InvestigationPage() {
 
       {/* Node header */}
       {currentNode && (
-        <div className="shrink-0 px-3 sm:px-6 py-2 sm:py-4 border-b border-[#1a1a28] bg-[#0a0a12]/50">
+        <div className="shrink-0 px-3 sm:px-6 py-2 sm:py-3 border-b border-[#1a1a28] bg-[#0a0a12]/50">
           {currentNode.timestamp && (
             <div
-              className="font-mono text-xs tracking-[0.15em] uppercase mb-2"
+              className="font-mono text-[10px] tracking-[0.15em] uppercase mb-1"
               style={{
                 color: currentNode.timestamp.urgent ? '#e04040' : '#6a8aaa',
                 fontWeight: currentNode.timestamp.urgent ? 600 : 400,
@@ -449,22 +436,22 @@ export default function InvestigationPage() {
               {currentNode.timestamp.urgent ? '⚠ ' : ''}{currentNode.timestamp.text}
             </div>
           )}
-          <div className="flex items-baseline justify-between gap-4 flex-wrap">
+          <div className="flex items-baseline justify-between gap-2 flex-wrap">
             <h2
-              className="text-lg sm:text-xl font-semibold"
+              className="text-base sm:text-xl font-semibold"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#d8d0c0' }}
             >
               {currentNode.title}
             </h2>
             {currentNode.tool && (
-              <span className="font-mono text-[10px] px-2 py-1 bg-[#2a2a38] text-[#6a6a78] rounded uppercase tracking-wider">
+              <span className="font-mono text-[10px] px-2 py-0.5 bg-[#2a2a38] text-[#6a6a78] rounded uppercase tracking-wider">
                 {currentNode.tool}
               </span>
             )}
           </div>
           {currentNode.monologue && (
             <p
-              className="text-base mt-3 leading-relaxed"
+              className="hidden sm:block text-sm mt-2 leading-relaxed"
               style={{ fontFamily: "'Crimson Pro', serif", color: '#a89888', fontStyle: 'italic' }}
             >
               {currentNode.monologue}
@@ -474,7 +461,7 @@ export default function InvestigationPage() {
       )}
 
       {/* Node content */}
-      <div className="flex-1 overflow-hidden relative flex flex-col">
+      <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
         {NodeRenderer && currentNode && (
           <NodeRenderer
             key={`${currentNode.id}-${isReviewing ? 'review' : 'active'}`}

@@ -26,7 +26,7 @@ export function ReadNode({ content, onComplete, isReviewing = false }) {
   }, [content.requiredScrollRatio])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }} role="article" aria-label="Document to read">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflow: 'hidden', padding: '0 0 16px' }} role="article" aria-label="Document to read">
       <div
         ref={scrollRef}
         style={{

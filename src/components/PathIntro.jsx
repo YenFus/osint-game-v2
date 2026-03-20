@@ -78,10 +78,12 @@ export function PathIntro({ path, onContinue }) {
         inset: 0,
         background: 'rgba(4, 4, 10, 0.98)',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
         zIndex: 100,
-        padding: 16,
+        padding: '16px 16px 32px',
         opacity: visible ? 1 : 0,
         transition: 'opacity 0.3s ease',
       }}
@@ -94,6 +96,7 @@ export function PathIntro({ path, onContinue }) {
           border: `2px solid ${info.color}`,
           borderRadius: 8,
           overflow: 'hidden',
+          margin: 'auto 0',
         }}
       >
         {/* Header */}

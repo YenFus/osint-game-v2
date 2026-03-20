@@ -59,7 +59,7 @@ export function CaseNotes({ onClose }) {
       {/* Panel */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg h-full bg-[#0a0a10] border-r-2 overflow-hidden"
+        className="relative w-full max-w-lg h-full bg-[#0a0a10] border-r-2 flex flex-col"
         style={{
           borderColor: activePath ? PATH_INFO[activePath]?.border : '#3a3a48',
           animation: 'slideInFromLeft 0.25s ease forwards',
@@ -67,7 +67,7 @@ export function CaseNotes({ onClose }) {
         }}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-[#0a0a10] border-b border-[#2a2a38] px-6 py-5 flex items-center justify-between z-10">
+        <div className="flex-shrink-0 bg-[#0a0a10] border-b border-[#2a2a38] px-6 py-5 flex items-center justify-between z-10">
           <div>
             <div className="font-mono text-xs text-[#6a6a78] tracking-[0.2em] uppercase mb-1">
               Investigation
@@ -91,8 +91,8 @@ export function CaseNotes({ onClose }) {
           </button>
         </div>
 
-        {/* Content */}
-        <div className="overflow-y-auto h-[calc(100%-140px)] px-6 py-5">
+        {/* Content — flex-1 so it fills remaining space, overflow-y-scroll for iOS touch scroll */}
+        <div className="flex-1 overflow-y-scroll px-6 py-5" style={{ WebkitOverflowScrolling: 'touch' }}>
           {Object.keys(PATH_INFO).map(pathKey => {
             const info = PATH_INFO[pathKey]
             const path = paths[pathKey]
@@ -201,7 +201,7 @@ export function CaseNotes({ onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 px-6 py-4 bg-[#0a0a10] border-t border-[#1a1a28]">
+        <div className="flex-shrink-0 px-6 py-4 bg-[#0a0a10] border-t border-[#1a1a28]">
           <div className="font-mono text-xs text-[#4a4a48] text-center">
             Press <span className="text-[#6a6a68]">ESC</span> or click outside to close
           </div>

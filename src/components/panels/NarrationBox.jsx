@@ -89,8 +89,8 @@ export default function NarrationBox({
 
   if (!text || !visible) return null
 
-  // Chapter style OR centered mode - centered, large, dramatic
-  if (voice === 'chapter' || centered) {
+  // Chapter title cards — bold, dramatic, uppercase
+  if (voice === 'chapter') {
     return (
       <div
         className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center p-8"
@@ -122,6 +122,46 @@ export default function NarrationBox({
             )}
           </p>
         </div>
+      </div>
+    )
+  }
+
+  // Centered narration (thomas/dialogue/maya voice in a full-panel card) — intimate serif
+  if (centered) {
+    const isDialogue = voice === 'dialogue'
+    const isMaya = voice === 'maya'
+    return (
+      <div
+        className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center px-10"
+        style={{
+          opacity: boxDrawn ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "'Crimson Pro', serif",
+            fontSize: 'clamp(19px, 2.5vw, 26px)',
+            fontWeight: 400,
+            fontStyle: isMaya || isDialogue ? 'italic' : 'normal',
+            color: '#cec6b4',
+            lineHeight: 1.7,
+            textAlign: 'center',
+            maxWidth: '54ch',
+            textShadow: '0 1px 12px rgba(0,0,0,0.9)',
+          }}
+        >
+          {visibleText}
+          {!isComplete && hiddenText && (
+            <span className="opacity-0" aria-hidden="true">{' ' + hiddenText}</span>
+          )}
+          {!isComplete && (
+            <span
+              className="inline-block w-[2px] h-[0.85em] bg-[#cec6b4] opacity-40 ml-1 align-middle"
+              style={{ animation: 'blink 1s infinite' }}
+            />
+          )}
+        </p>
       </div>
     )
   }

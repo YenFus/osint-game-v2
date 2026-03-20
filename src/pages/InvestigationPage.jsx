@@ -286,7 +286,7 @@ export default function InvestigationPage() {
 
         {/* Path indicator */}
         <div className="flex items-center gap-2">
-          <span className="text-lg">{meta.icon}</span>
+          <span style={{ fontSize: '18px', lineHeight: '1', display: 'inline-block' }}>{meta.icon}</span>
           <span
             className="font-mono text-xs sm:text-sm tracking-[0.1em] uppercase font-semibold hidden sm:inline"
             style={{ color: meta.color }}
@@ -331,13 +331,13 @@ export default function InvestigationPage() {
       {/* Navigation bar - go back to previous discoveries */}
       {(canGoBack || isReviewing) && (
         <div
-          className="shrink-0 px-4 py-2 flex items-center justify-between gap-2 border-b"
+          className="shrink-0 px-2 sm:px-4 py-1.5 flex items-center justify-between gap-2 border-b"
           style={{ background: '#0c0c14', borderColor: '#2a2a38' }}
         >
           <button
             onClick={handleNavBack}
             disabled={!canGoBack}
-            className="font-mono text-xs px-3 py-2 border transition-all min-h-[40px]"
+            className="font-mono text-xs px-2 sm:px-3 py-1.5 border transition-all min-h-[36px]"
             style={{
               borderColor: canGoBack ? '#3a3a48' : '#1a1a28',
               color: canGoBack ? '#8a8a98' : '#3a3a48',
@@ -345,22 +345,22 @@ export default function InvestigationPage() {
               cursor: canGoBack ? 'pointer' : 'default',
             }}
           >
-            ← Previous
+            ← Prev
           </button>
 
-          <div className="font-mono text-xs text-center" style={{ color: '#6a6a78' }}>
+          <div className="font-mono text-[11px] text-center" style={{ color: '#6a6a78' }}>
             {isReviewing ? (
-              <span style={{ color: '#d4a017' }}>Reviewing: {currentNodeIndex + 1} / {nodes.length}</span>
+              <span style={{ color: '#d4a017' }}>Review: {currentNodeIndex + 1}/{nodes.length}</span>
             ) : (
-              <span>Evidence {currentNodeIndex + 1} of {nodes.length}</span>
+              <span>{currentNodeIndex + 1}/{nodes.length}</span>
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             {canGoForward && (
               <button
                 onClick={handleNavForward}
-                className="font-mono text-xs px-3 py-2 border transition-all min-h-[40px]"
+                className="font-mono text-xs px-2 sm:px-3 py-1.5 border transition-all min-h-[36px]"
                 style={{
                   borderColor: '#3a3a48',
                   color: '#8a8a98',
@@ -373,32 +373,32 @@ export default function InvestigationPage() {
             {isReviewing && (
               <button
                 onClick={handleReturnToCurrent}
-                className="font-mono text-xs px-3 py-2 border-2 transition-all min-h-[40px]"
+                className="font-mono text-xs px-2 sm:px-3 py-1.5 border-2 transition-all min-h-[36px]"
                 style={{
                   borderColor: meta.color,
                   color: meta.color,
                   background: `${meta.color}15`,
                 }}
               >
-                Return to Current
+                <span className="hidden sm:inline">Return to </span>Current
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* Task instruction bar */}
+      {/* Task instruction bar — hidden on mobile when nav bar is already showing to save space */}
       {instruction && !isReviewing && (
         <div
-          className="shrink-0 px-3 py-2 flex items-center gap-2 border-b"
+          className="shrink-0 px-3 py-1.5 flex items-center gap-2 border-b"
           style={{
             background: `${meta.color}12`,
             borderColor: `${meta.color}40`,
           }}
         >
-          <span className="text-base shrink-0">{instruction.icon}</span>
+          <span className="text-sm shrink-0">{instruction.icon}</span>
           <span
-            className="font-mono text-xs tracking-[0.12em] uppercase"
+            className="font-mono text-[11px] tracking-[0.12em] uppercase"
             style={{ color: meta.color }}
           >
             {instruction.action}
@@ -406,17 +406,17 @@ export default function InvestigationPage() {
         </div>
       )}
 
-      {/* Review mode indicator */}
+      {/* Review mode indicator — desktop only; on mobile the nav bar already shows "Reviewing: X / Y" */}
       {isReviewing && (
         <div
-          className="shrink-0 px-4 py-3 flex items-center justify-center gap-3 border-b"
+          className="hidden sm:flex shrink-0 px-4 py-2 items-center justify-center gap-3 border-b"
           style={{
             background: 'rgba(212, 160, 23, 0.1)',
             borderColor: '#d4a01750',
           }}
         >
-          <span className="text-lg">📖</span>
-          <div className="font-mono text-sm" style={{ color: '#d4a017' }}>
+          <span className="text-base">📖</span>
+          <div className="font-mono text-xs" style={{ color: '#d4a017' }}>
             Reviewing previous evidence — read-only mode
           </div>
         </div>

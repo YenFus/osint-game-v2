@@ -76,7 +76,7 @@ export function TagNode({ content, onComplete }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, height: '100%' }} role="region" aria-label="Evidence tagging task">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, height: '100%', position: 'relative' }} role="region" aria-label="Evidence tagging task">
 
       {/* Screen reader live region for feedback */}
       <div ref={feedbackRef} className="sr-only" aria-live="polite" aria-atomic="true" />
@@ -112,7 +112,7 @@ export function TagNode({ content, onComplete }) {
             <div
               key={item.id}
               style={{
-                padding: '14px 24px',
+                padding: 'clamp(12px, 2vw, 14px) clamp(14px, 4vw, 24px)',
                 borderBottom: '1px solid #0e0e18',
                 borderLeft: isTaggedCorrect ? '2px solid #b8860b' : '2px solid transparent',
                 background: isTaggedCorrect ? 'rgba(184,134,11,0.05)' : 'transparent',
@@ -150,7 +150,7 @@ export function TagNode({ content, onComplete }) {
                 <p style={{
                   fontFamily: item.handwritten ? 'Crimson Pro, serif' : 'Crimson Pro, serif',
                   fontStyle: item.handwritten ? 'italic' : 'normal',
-                  fontSize: item.handwritten ? 16 : 15,
+                  fontSize: item.handwritten ? 14 : 13,
                   color: isTaggedWrong ? '#8a8088' : '#d8d0c0',
                   lineHeight: 1.75, margin: 0,
                 }}>
@@ -180,7 +180,7 @@ export function TagNode({ content, onComplete }) {
                   aria-pressed={tagged.includes(item.id)}
                   style={{
                     flexShrink: 0,
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
+                    fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
                     letterSpacing: '0.1em', textTransform: 'uppercase',
                     border: isTaggedCorrect
                       ? '2px solid #d4a84b'
@@ -189,10 +189,10 @@ export function TagNode({ content, onComplete }) {
                       : '2px solid #4a4a58',
                     color: isTaggedCorrect ? '#f0c860' : isTaggedWrong ? '#7a5060' : '#a0a098',
                     background: isTaggedCorrect ? 'rgba(212, 168, 75, 0.1)' : 'none',
-                    padding: '8px 16px',
+                    padding: '6px 12px',
                     cursor: (tagged.includes(item.id) || penaltyActive) ? 'default' : 'pointer',
                     transition: 'all 0.2s',
-                    minWidth: 80,
+                    minWidth: 64,
                     minHeight: 44,
                     opacity: penaltyActive ? 0.5 : 1,
                     fontWeight: 500,
@@ -238,14 +238,14 @@ export function TagNode({ content, onComplete }) {
             position: 'absolute', bottom: 80, left: '50%', transform: 'translateX(-50%)',
             background: feedback.type === 'correct' ? '#0c140a' : feedback.type === 'penalty' ? '#0a0a18' : '#140a0c',
             border: `2px solid ${feedback.type === 'correct' ? '#d4a84b' : feedback.type === 'penalty' ? '#6a6ac0' : '#8a4050'}`,
-            padding: '14px 24px',
-            fontFamily: 'Crimson Pro, serif', fontSize: 15,
+            padding: '12px 18px',
+            fontFamily: 'Crimson Pro, serif', fontSize: 14,
             color: feedback.type === 'correct' ? '#f0d060' : feedback.type === 'penalty' ? '#a0a0d0' : '#c07080',
             zIndex: 10,
             display: 'flex',
             alignItems: 'flex-start',
-            gap: 12,
-            maxWidth: 380,
+            gap: 10,
+            width: 'min(380px, calc(100vw - 32px))',
           }}
           aria-hidden="true"
         >

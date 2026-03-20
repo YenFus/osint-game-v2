@@ -1,16 +1,62 @@
-# React + Vite
+# What Maya Knew
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A noir mystery game where you play as a father using real OSINT (Open Source Intelligence) techniques to investigate your missing daughter's secret case.
 
-Currently, two official plugins are available:
+**Play it now:** [https://yenfus.github.io/osint-game/](https://yenfus.github.io/osint-game/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## What Is This Game?
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+You are Thomas. Your daughter Maya has gone missing. While searching her apartment, you discover she was secretly investigating a stranger's disappearance — and the trail leads somewhere dangerous.
 
-## Expanding the ESLint configuration
+Explore three non-linear investigation paths. Use simulated OSINT tools — social media searches, public records, digital breadcrumbs — to uncover the truth. No real investigation skills required; everything is guided within the game.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Theme:** Online safety, digital footprints, and what we leave behind.
+
+---
+
+## How to Play
+
+- Click **New Game** to start
+- Work through the story and apartment scene
+- Choose any of the three investigation paths (A, B, C) in any order
+- Collect evidence and reach the convergence — then make your final decision
+
+---
+
+## Saving Your Progress
+
+Your progress **saves automatically in your browser** as you play. You do not need to do anything.
+
+A few things to know:
+
+- **3 save slots** are available — use the Save/Load button in-game to manage them
+- Saves are stored in your browser, not on any server
+- **If you clear your browser history or cache, your saves will be deleted**
+- Saves do not transfer between devices — a save on your laptop won't appear on your phone
+- If you share a computer with others, you all share the same 3 save slots
+
+---
+
+## Running Locally (For Developers)
+
+```bash
+git clone https://github.com/YenFus/osint-game.git
+cd osint-game
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+To build for production:
+```bash
+npm run build
+```
+
+---
+
+## Tech Stack
+
+React 19 + Vite + Zustand + Tailwind CSS v4, deployed to GitHub Pages.

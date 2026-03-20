@@ -22,3 +22,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test files (dev only)
+playwright-*.cjs
+nav-test.mjs
+playwright-screenshots/
+review-screenshots/
+test-results/
+
+# Internal dev docs (not for public repo)
+CLAUDE.md
+COMIC_PLAN.md
+
+# IDE config
+.claude/

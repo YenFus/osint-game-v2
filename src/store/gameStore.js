@@ -9,9 +9,9 @@ export const useGameStore = create(
   prevPhase: null,
 
   paths: {
-    A: { started: false, completed: false, nodesFound: [], taggedClues: [] },
-    B: { started: false, completed: false, nodesFound: [], taggedClues: [] },
-    C: { started: false, completed: false, nodesFound: [], taggedClues: [] },
+    A: { started: false, completed: false, unlockedNodes: ['A1'], completedNodes: [], taggedClues: [] },
+    B: { started: false, completed: false, unlockedNodes: ['B1'], completedNodes: [], taggedClues: [] },
+    C: { started: false, completed: false, unlockedNodes: ['C1'], completedNodes: [], taggedClues: [] },
   },
 
   // Perfect investigation tracking (no wrong guesses)
@@ -28,10 +28,8 @@ export const useGameStore = create(
   evidenceScore: 0,
   journalistUnlocked: false,
   systemAlertShown: false,
-  seenOsintTips: [],
-  nodeProgress: {},
-  currentNodeId: null,
-  currentNodeIndex: 0,  // Track position in current path
+  currentNodeId: null, // Null means viewing the Desktop / Folder
+  nodeProgress: {}, // Store specific inner-node progress like answers/tags
 
   // Case notes summaries - auto-updated after each node
   caseSummaries: {
@@ -47,7 +45,6 @@ export const useGameStore = create(
   startPath: (pathKey) => set((state) => ({
     activePath: pathKey,
     currentNodeId: null,
-    currentNodeIndex: 0,
     paths: {
       ...state.paths,
       [pathKey]: { ...state.paths[pathKey], started: true }
@@ -59,32 +56,32 @@ export const useGameStore = create(
     prevPhase: state.phase,
     activePath: pathKey,
     currentNodeId: null,
-    currentNodeIndex: state.paths[pathKey].started ? (state.nodeProgress[`${pathKey}_index`] ?? 0) : 0,
     paths: {
       ...state.paths,
       [pathKey]: { ...state.paths[pathKey], started: true }
     }
   })),
 
-  // Save current node index when progressing
-  setCurrentNodeIndex: (index) => {
-    const { activePath } = get()
-    set({
-      currentNodeIndex: index,
-      nodeProgress: {
-        ...get().nodeProgress,
-        [`${activePath}_index`]: index,
-      }
-    })
-  },
+  openNode: (nodeId) => set({ currentNodeId: nodeId }),
+  closeNode: () => set({ currentNodeId: null }),
 
-  findNode: (pathKey, nodeId) => set((state) => {
+  completeNode: (pathKey, nodeId, unlocks = []) => set((state) => {
     const path = state.paths[pathKey]
-    if (path.nodesFound.includes(nodeId)) return state
+    if (path.completedNodes.includes(nodeId)) return state
+    
+    // Auto-unlock newly discovered nodes
+    const newUnlocked = unlocks.filter(id => 
+      !path.unlockedNodes.includes(id) && !path.completedNodes.includes(id)
+    )
+    
     return {
       paths: {
         ...state.paths,
-        [pathKey]: { ...path, nodesFound: [...path.nodesFound, nodeId] }
+        [pathKey]: {
+          ...path,
+          completedNodes: [...path.completedNodes, nodeId],
+          unlockedNodes: [...path.unlockedNodes, ...newUnlocked]
+        }
       }
     }
   }),
@@ -116,11 +113,30 @@ export const useGameStore = create(
   }),
 
   // Add case summary for a path (called after completing each node)
-  addCaseSummary: (pathKey, summary) => set((state) => ({
-    caseSummaries: {
-      ...state.caseSummaries,
-      [pathKey]: [...state.caseSummaries[pathKey], summary]
+  addCaseSummary: (pathKey, summary) => set((state) => {
+    const newItem = {
+      ...summary,
+      path: pathKey,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      x: Math.random() * 600 + 50,
+      y: Math.random() * 400 + 50
     }
+    
+    // De-duplicate evidence by id
+    const existing = state.evidence.find(e => e.id === summary.id)
+    const newEvidence = existing ? state.evidence : [...state.evidence, newItem]
+
+    return {
+      caseSummaries: {
+        ...state.caseSummaries,
+        [pathKey]: [...state.caseSummaries[pathKey], summary]
+      },
+      evidence: newEvidence
+    }
+  }),
+
+  updateEvidencePosition: (id, x, y) => set((state) => ({
+    evidence: state.evidence.map(e => e.id === id ? { ...e, x, y } : e)
   })),
 
   addNotification: (msg, type = 'info') => {
@@ -158,12 +174,6 @@ export const useGameStore = create(
 
   markSystemAlert: () => set({ systemAlertShown: true }),
 
-  markOsintTipSeen: (tipId) => set((state) => ({
-    seenOsintTips: state.seenOsintTips.includes(tipId)
-      ? state.seenOsintTips
-      : [...state.seenOsintTips, tipId]
-  })),
-
   // Perfect investigation tracking
   markWrongGuess: (pathKey) => set((state) => ({
     perfectPaths: { ...state.perfectPaths, [pathKey]: false }
@@ -200,10 +210,8 @@ export const useGameStore = create(
       evidenceScore: state.evidenceScore,
       journalistUnlocked: state.journalistUnlocked,
       systemAlertShown: state.systemAlertShown,
-      seenOsintTips: state.seenOsintTips,
       nodeProgress: state.nodeProgress,
       currentNodeId: state.currentNodeId,
-      currentNodeIndex: state.currentNodeIndex,
       evidence: state.evidence,
       caseSummaries: state.caseSummaries,
       perfectPaths: state.perfectPaths,
@@ -226,10 +234,8 @@ export const useGameStore = create(
       evidenceScore: saveData.evidenceScore,
       journalistUnlocked: saveData.journalistUnlocked,
       systemAlertShown: saveData.systemAlertShown,
-      seenOsintTips: saveData.seenOsintTips,
       nodeProgress: saveData.nodeProgress,
       currentNodeId: saveData.currentNodeId,
-      currentNodeIndex: saveData.currentNodeIndex ?? 0,
       evidence: saveData.evidence ?? [],
       caseSummaries: saveData.caseSummaries ?? { A: [], B: [], C: [] },
       perfectPaths: saveData.perfectPaths ?? { A: true, B: true, C: true },
@@ -285,9 +291,9 @@ export const useGameStore = create(
     phase: 'story',
     prevPhase: 'menu',
     paths: {
-      A: { started: false, completed: false, nodesFound: [], taggedClues: [] },
-      B: { started: false, completed: false, nodesFound: [], taggedClues: [] },
-      C: { started: false, completed: false, nodesFound: [], taggedClues: [] },
+      A: { started: false, completed: false, unlockedNodes: ['A1'], completedNodes: [], taggedClues: [] },
+      B: { started: false, completed: false, unlockedNodes: ['B1'], completedNodes: [], taggedClues: [] },
+      C: { started: false, completed: false, unlockedNodes: ['C1'], completedNodes: [], taggedClues: [] },
     },
     evidence: [],
     activePath: null,
@@ -295,7 +301,6 @@ export const useGameStore = create(
     evidenceScore: 0,
     journalistUnlocked: false,
     systemAlertShown: false,
-    seenOsintTips: [],
     nodeProgress: {},
     currentNodeId: null,
     currentNodeIndex: 0,
@@ -306,7 +311,7 @@ export const useGameStore = create(
   }),
     }),
     {
-      name: 'maya-game-storage',
+      name: 'maya-game-v2-storage',
       // Persist everything important for save/load
       partialize: (state) => ({
         saveSlots: state.saveSlots,
@@ -318,9 +323,8 @@ export const useGameStore = create(
         evidenceScore: state.evidenceScore,
         journalistUnlocked: state.journalistUnlocked,
         systemAlertShown: state.systemAlertShown,
-        seenOsintTips: state.seenOsintTips,
         nodeProgress: state.nodeProgress,
-        currentNodeIndex: state.currentNodeIndex,
+        currentNodeId: state.currentNodeId,
         evidence: state.evidence,
         caseSummaries: state.caseSummaries,
         perfectPaths: state.perfectPaths,

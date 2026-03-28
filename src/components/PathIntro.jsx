@@ -96,7 +96,8 @@ export function PathIntro({ path, onContinue }) {
           border: `2px solid ${info.color}`,
           borderRadius: 8,
           overflow: 'hidden',
-          margin: 'auto 0',
+          margin: '32px auto',
+          flexShrink: 0,
         }}
       >
         {/* Header */}

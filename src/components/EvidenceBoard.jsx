@@ -1,239 +1,163 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useGameStore } from '../store/gameStore'
 
 const PATH_META = {
-  A: { label: 'Digital Trail', color: '#b8860b', className: 'path-a' },
-  B: { label: 'Private Notes', color: '#8b1a1a', className: 'path-b' },
-  C: { label: 'Public Record', color: '#1a3a6a', className: 'path-c' },
+  A: { label: 'Digital Trail', color: '#4a90d9' },
+  B: { label: 'Private Notes', color: '#c0392b' },
+  C: { label: 'Public Record', color: '#d4a017' },
 }
 
 export function EvidenceBoard() {
   const [isOpen, setIsOpen] = useState(false)
   const evidence = useGameStore(s => s.evidence)
-  const paths = useGameStore(s => s.paths)
+  const updateEvidencePosition = useGameStore(s => s.updateEvidencePosition)
+  
+  const [draggingId, setDraggingId] = useState(null)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const boardRef = useRef(null)
 
-  // Group evidence by path
-  const groupedEvidence = evidence.reduce((acc, item) => {
-    const path = item.path || 'unknown'
-    if (!acc[path]) acc[path] = []
-    acc[path].push(item)
-    return acc
-  }, {})
+  const handlePointerDown = (e, item) => {
+    setDraggingId(item.id)
+    const rect = e.currentTarget.getBoundingClientRect()
+    // Calculate click offset relative to the card's top-left
+    setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+    e.target.setPointerCapture(e.pointerId)
+  }
 
-  const totalEvidence = evidence.length
-  const hasEvidence = totalEvidence > 0
+  const handlePointerMove = (e) => {
+    if (!draggingId || !boardRef.current) return
+    const boardRect = boardRef.current.getBoundingClientRect()
+    
+    // Calculate new position
+    let newX = e.clientX - boardRect.left - offset.x
+    let newY = e.clientY - boardRect.top - offset.y
+    
+    // Clamp to board bounds
+    newX = Math.max(0, Math.min(newX, boardRect.width - 250))
+    newY = Math.max(0, Math.min(newY, boardRect.height - 150))
+    
+    updateEvidencePosition(draggingId, newX, newY)
+  }
 
-  if (!hasEvidence && !isOpen) {
-    return null
+  const handlePointerUp = (e) => {
+    if (!draggingId) return
+    e.target.releasePointerCapture(e.pointerId)
+    setDraggingId(null)
   }
 
   if (!isOpen) {
+    const hasEvidence = evidence.length > 0
     return (
       <button
-        className="evidence-board-trigger"
+        className={`fixed bottom-6 left-6 z-40 font-mono text-sm px-4 py-3 border-2 transition-all flex items-center gap-3 ${hasEvidence ? 'cursor-pointer hover:bg-[#1a1505] backdrop-blur-sm' : 'opacity-50 hover:opacity-100 bg-[#0a0a0e] hover:bg-[#1a1a28]'}`}
+        style={{
+          borderColor: hasEvidence ? '#b8860b' : '#3a3a48', color: hasEvidence ? '#d4a84b' : '#6a6a78', 
+          background: hasEvidence ? 'rgba(20, 15, 5, 0.85)' : undefined,
+          boxShadow: hasEvidence ? '0 4px 12px rgba(0,0,0,0.5)' : 'none'
+        }}
         onClick={() => setIsOpen(true)}
-        aria-label={`Open evidence board. ${totalEvidence} pieces of evidence collected.`}
-        title="Maya's Evidence Board"
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{
-            background: '#c0392b',
-            color: '#fff',
-            borderRadius: '50%',
-            width: 16,
-            height: 16,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 9,
-            fontWeight: 'bold',
-          }}>
-            {totalEvidence}
-          </span>
-          Evidence
+        <span className={`flex items-center justify-center rounded-full w-5 h-5 text-[10px] font-bold ${hasEvidence ? 'bg-[#c0392b] text-white' : 'bg-[#2a2a38] text-[#5a5a68]'}`}>
+          {evidence.length}
         </span>
+        Evidence Board
       </button>
     )
   }
 
   return (
-    <div
-      className="evidence-board-panel"
-      role="dialog"
-      aria-label="Evidence Board"
-    >
-      <div className="evidence-board-header">
+    <div className="fixed inset-0 z-50 bg-[#08080e] overflow-hidden flex flex-col crt">
+      {/* Header */}
+      <div className="shrink-0 p-4 border-b border-[#1a1a28] flex justify-between items-center bg-[#050508] relative z-10">
         <div>
-          <div style={{
-            fontFamily: 'Share Tech Mono, monospace',
-            fontSize: 8,
-            color: '#8a6040',
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            marginBottom: 4,
-          }}>
-            Maya's Investigation
-          </div>
-          <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: '1.2rem',
-            fontWeight: 700,
-            color: '#e8dcc8',
-            textTransform: 'uppercase',
-          }}>
-            Evidence Board
-          </div>
+           <div className="font-mono text-[10px] text-[#8a6040] tracking-[0.3em] uppercase mb-1">
+             Maya's Investigation
+           </div>
+           <h2 className="font-serif text-2xl text-[#e8dcc8] tracking-widest uppercase" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+             Evidence Board
+           </h2>
         </div>
-        <button
-          onClick={() => setIsOpen(false)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#5a5048',
-            cursor: 'pointer',
-            fontFamily: 'Share Tech Mono, monospace',
-            fontSize: 14,
-            padding: 8,
-          }}
-          aria-label="Close evidence board"
+        <button 
+          onClick={() => setIsOpen(false)} 
+          className="px-4 py-2 border border-[#3a3a48] text-[#a0a098] font-mono text-sm hover:bg-[#1a1a28] hover:text-white transition-all uppercase tracking-wider"
         >
-          ✕
+          Close Board
         </button>
       </div>
-
-      {/* Path progress indicators */}
-      <div style={{
-        padding: '12px 20px',
-        borderBottom: '1px solid #2a1a14',
-        display: 'flex',
-        gap: 8,
-      }}>
-        {['A', 'B', 'C'].map(p => {
-          const meta = PATH_META[p]
-          const pathData = paths[p]
-          const count = groupedEvidence[p]?.length || 0
-
-          return (
-            <div
-              key={p}
-              style={{
-                flex: 1,
-                padding: '8px 10px',
-                border: `1px solid ${pathData.completed ? meta.color : '#2a2028'}`,
-                background: pathData.completed ? `${meta.color}10` : 'transparent',
-                textAlign: 'center',
-              }}
-            >
-              <div style={{
-                fontFamily: 'Share Tech Mono, monospace',
-                fontSize: 9,
-                color: pathData.completed ? meta.color : '#4a4040',
-                letterSpacing: '0.15em',
-              }}>
-                {meta.label}
-              </div>
-              <div style={{
-                fontFamily: 'Share Tech Mono, monospace',
-                fontSize: 14,
-                color: pathData.completed ? '#c8b888' : '#3a3030',
-                marginTop: 2,
-              }}>
-                {count}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Evidence list */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        {totalEvidence === 0 ? (
-          <div style={{
-            padding: '40px 20px',
-            textAlign: 'center',
-          }}>
-            <div style={{
-              fontFamily: 'Share Tech Mono, monospace',
-              fontSize: 11,
-              color: '#4a4040',
-              lineHeight: 1.7,
-            }}>
+      
+      {/* Canvas */}
+      <div 
+        ref={boardRef}
+        className="flex-1 relative bg-opacity-20 select-none overflow-hidden touch-none"
+        style={{
+          backgroundImage: 'radial-gradient(#2a2a38 1px, transparent 1px)',
+          backgroundSize: '24px 24px'
+        }}
+        onPointerMove={handlePointerMove}
+      >
+         {evidence.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center font-mono text-sm text-[#4a4040]">
               No evidence collected yet.
-              <br />
-              Investigate the apartment to find clues.
             </div>
-          </div>
-        ) : (
-          ['A', 'B', 'C'].map(path => {
-            const items = groupedEvidence[path] || []
-            if (items.length === 0) return null
+         )}
 
-            const meta = PATH_META[path]
-
-            return (
-              <div key={path}>
-                <div style={{
-                  padding: '10px 20px',
-                  borderBottom: '1px solid #1a1408',
-                  background: '#08060a',
-                  position: 'sticky',
-                  top: 0,
-                }}>
-                  <span style={{
-                    fontFamily: 'Share Tech Mono, monospace',
-                    fontSize: 9,
-                    color: meta.color,
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                  }}>
-                    Thread {path}: {meta.label}
-                  </span>
-                </div>
-                {items.map((item, i) => (
-                  <div key={i} className="evidence-item">
-                    {item.timestamp && (
-                      <div style={{
-                        fontFamily: 'Share Tech Mono, monospace',
-                        fontSize: 9,
-                        color: '#3a3830',
-                        marginBottom: 4,
-                      }}>
-                        {item.timestamp}
-                      </div>
-                    )}
-                    <div className="evidence-item-text">
-                      {item.text || item.description}
-                    </div>
-                    {item.source && (
-                      <div style={{
-                        fontFamily: 'Share Tech Mono, monospace',
-                        fontSize: 9,
-                        color: '#4a4840',
-                        marginTop: 6,
-                        fontStyle: 'italic',
-                      }}>
-                        Source: {item.source}
-                      </div>
-                    )}
+         {/* Draggable Evidence Cards */}
+         {evidence.map(item => {
+           const meta = PATH_META[item.path] || { color: '#888' }
+           return (
+             <div
+               key={item.id}
+               className="absolute w-64 p-4 border active:cursor-grabbing backdrop-blur-md transition-shadow"
+               style={{
+                 left: item.x ?? 100, 
+                 top: item.y ?? 100,
+                 borderColor: meta.color,
+                 background: 'rgba(12, 12, 16, 0.95)',
+                 boxShadow: draggingId === item.id 
+                    ? `0 0 20px ${meta.color}40, 0 10px 30px rgba(0,0,0,0.8)` 
+                    : '0 4px 12px rgba(0,0,0,0.5)',
+                 zIndex: draggingId === item.id ? 50 : 10,
+                 cursor: draggingId === item.id ? 'grabbing' : 'grab'
+               }}
+               onPointerDown={(e) => handlePointerDown(e, item)}
+               onPointerUp={handlePointerUp}
+               onPointerCancel={handlePointerUp}
+             >
+                <div className="flex justify-between items-start mb-2 border-b pb-2" style={{ borderColor: `${meta.color}30` }}>
+                  <div className="text-[10px] font-mono tracking-widest uppercase leading-tight pr-2" style={{ color: meta.color }}>
+                    {item.title}
                   </div>
-                ))}
-              </div>
-            )
-          })
-        )}
+                  {item.timestamp && (
+                    <div className="text-[9px] font-mono text-[#5a5a68] shrink-0">
+                      {item.timestamp}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="text-xs font-serif leading-relaxed text-[#d8d0c0] pointer-events-none mb-3 line-clamp-6">
+                  {item.text}
+                </div>
+                
+                {item.source && (
+                  <div className="text-[9px] font-mono text-[#6a6a78] uppercase pointer-events-none">
+                    SRC // {item.source}
+                  </div>
+                )}
+                
+                {/* Visual Pin */}
+                <div 
+                  className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full shadow-md"
+                  style={{ background: meta.color, boxShadow: `0 2px 4px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.3)` }}
+                />
+             </div>
+           )
+         })}
       </div>
-
-      {/* Footer hint */}
-      <div style={{
-        padding: '12px 20px',
-        borderTop: '1px solid #2a1a14',
-        fontFamily: 'Crimson Pro, serif',
-        fontStyle: 'italic',
-        fontSize: 12,
-        color: '#5a5048',
-        lineHeight: 1.6,
-      }}>
-        Evidence collected across all investigation threads. Complete more paths to unlock the convergence.
+      
+      {/* Footer Info */}
+      <div className="shrink-0 p-3 bg-[#0a0a12] border-t border-[#1a1a28] flex justify-between items-center text-[#5a5048] font-mono text-xs">
+         <span>DRAG CARDS TO ORGANIZE LEADS</span>
+         <span>{evidence.length} CLUES COMPILED</span>
       </div>
     </div>
   )

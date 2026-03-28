@@ -121,7 +121,7 @@ function RedditProfile({ content, onComplete }) {
       )}
 
       {done && (
-        <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a28', background: '#08080c' }}>
+        <div style={{ padding: '14px 20px 80px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
           {content.completionNote && (
             <p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>
               {content.completionNote}
@@ -239,7 +239,7 @@ function ForumArchive({ content, onComplete }) {
       )}
 
       {done && (
-        <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a28', background: '#08080c' }}>
+        <div style={{ padding: '14px 20px 80px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
           {content.completionNote && (
             <p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>
               {content.completionNote}
@@ -352,7 +352,7 @@ function FlickrAlbums({ content, onComplete }) {
           )}
         </div>
         {done && (
-          <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a28', background: '#08080c' }}>
+          <div style={{ padding: '14px 20px 80px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
             {content.completionNote && (
               <p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>
                 {content.completionNote}
@@ -401,7 +401,7 @@ function FlickrAlbums({ content, onComplete }) {
           </div>
         </div>
         {done && (
-          <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a28', background: '#08080c' }}>
+          <div style={{ padding: '14px 20px 80px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
             {content.completionNote && (<p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>{content.completionNote}</p>)}
             <button onClick={onComplete} style={BUTTON_PRIMARY}>Continue →</button>
           </div>
@@ -485,7 +485,7 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
           </pre>
         </div>
         {done && (
-          <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a28', background: '#08080c' }}>
+          <div style={{ padding: '14px 20px 80px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
             {content.completionNote && (<p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>{content.completionNote}</p>)}
             <button onClick={onComplete} style={BUTTON_PRIMARY}>Continue →</button>
           </div>
@@ -658,7 +658,7 @@ function RecordsViewer({ content, onComplete }) {
           )}
         </div>
         {done && (
-          <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a28', background: '#08080c' }}>
+          <div style={{ padding: '14px 20px 80px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
             {content.completionNote && (<p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>{content.completionNote}</p>)}
             <button onClick={onComplete} style={BUTTON_PRIMARY}>Continue →</button>
           </div>

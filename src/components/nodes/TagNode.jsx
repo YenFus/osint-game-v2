@@ -253,8 +253,9 @@ export function TagNode({ content, onComplete }) {
       {/* Completion */}
       {done && (
         <div style={{
-          borderTop: '1px solid #1a1a28', padding: '18px 24px',
+          borderTop: '1px solid #1a1a28', padding: '18px 24px 80px',
           background: '#08080c',
+          flexShrink: 0,
         }}>
           {content.completionNote && (
             <p style={{
@@ -278,9 +279,10 @@ export function TagNode({ content, onComplete }) {
       {/* Footer — not done yet */}
       {!done && (
         <div style={{
-          borderTop: '1px solid #1a1a28', padding: '14px 24px',
+          borderTop: '1px solid #1a1a28', padding: '14px 24px 80px',
           fontFamily: 'Crimson Pro, serif', fontSize: 15,
           color: '#908878', fontStyle: 'italic',
+          flexShrink: 0,
         }}>
           Read each entry carefully. Click "Flag" on anything that seems suspicious or out of place.
         </div>

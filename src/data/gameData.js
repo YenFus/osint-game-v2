@@ -24,7 +24,7 @@ export const GAME_DATA = {
         title: "Maya's Laptop — File System",
         tool: 'File Browser',
         timestamp: { text: '3 days before Maya disappeared', urgent: false },
-        monologue: "The screen was still on when I found it. She was in the middle of something. I don't know what I'm looking for. I just know she was.",
+        monologue: "The screen was still on when I found it. She was in the middle of a search.",
         osintTip: {
           id: 'file-metadata',
           title: 'File Metadata Analysis',
@@ -51,13 +51,24 @@ export const GAME_DATA = {
               ]},
               { name: 'INVESTIGATION', type: 'folder', children: [
                 { name: 'lena_timeline.txt', type: 'file', content: 'LENA VASQUEZ — TIMELINE\n\nApr 14 — Last confirmed location: Millhaven Arts Night (Instagram post, @velvet.echo)\nApr 15 — No posts, no replies, phone off\nApr 16 — Reported missing by flatmate\nApr 17 — Police file: "no evidence of foul play"\n\nFlatmate said she\'d been anxious for weeks. Said she was "waiting for something to end."' },
+                { name: 'university_docs', type: 'folder', children: [
+                  { name: 'SOC340_syllabus_spring.pdf', type: 'file', content: '[PDF Viewer] Sociology 340: Media & Society. Professor H. Vance. Mondays and Wednesdays, 10:00 AM. Final paper constitutes 40% of grade.' },
+                  { name: 'tuition_receipt_winter.pdf', type: 'file', content: '[PDF Viewer] Portland State University. Receipt of Payment. Amount: $4,200.\nStatus: PAID.' },
+                  { name: 'thesis_draft_v3.docx', type: 'file', content: 'Title: The Erosion of Privacy in the Digital Panopticon.\n\nAbstract: This paper explores how participatory surveillance platforms reconstruct social norms around expected visibility...' },
+                ]},
+                { name: 'desktop_archive', type: 'folder', children: [
+                  { name: 'IMG_4412.jpg', type: 'file', content: '[Image] Maya and a tabby cat sitting on a couch.' },
+                  { name: 'IMG_4413.jpg', type: 'file', content: '[Image] Blurry photo of a coffee cup.' },
+                  { name: 'amazon_return_label.pdf', type: 'file', content: '[PDF Viewer] UPS Return Label for "Wireless Ergonomic Mouse".' },
+                  { name: 'recipe_lentil_soup.txt', type: 'file', content: '2 cups lentils\n4 cups vegetable broth\n1 onion, chopped\n2 carrots, diced\nSimmer for 45 mins.' },
+                ]},
                 { name: 'forum_screenshots', type: 'folder', children: [
                   { name: 'velvet_echo_profile.png', type: 'file', content: '[Screenshot — @velvet.echo forum profile, joined 14 months prior, 847 posts, last active April 14]' },
                   { name: 'thread_nov_missing.png', type: 'file', content: '[Screenshot — forum thread: "Still looking for Lena" — 23 replies, mostly concerned community members]' },
                 ]},
                 { name: 'suspect_research', type: 'folder', children: [
-                  { name: 'c_marsh_crossref.txt', type: 'file', handwritten: false, content: 'COREY MARSH — CROSS-REFERENCE\nCreated: Feb 4\nLast modified: Feb 17\n\nCorey Marsh. Lena\'s ex-boyfriend from before she moved to Portland.\n\nInitially flagged by forum member as "obsessive." I spent three weeks on this.\n\nWent through his Reddit, Twitter archive, Flickr, forum history.\n\nFeb 17 — ELIMINATED.\n\nThe Flickr location data that looked suspicious? He was photographing cars for a restoration project. I verified the address — a body shop in Tigard, not Lena\'s street.\n\nHe\'s not the one. The forum member who flagged him was mistaken. Or deliberate.\n\nThe account that kept pushing Corey\'s name: stillwater_m.\n\nStillwater_m has been active in this forum for months. Has insider knowledge about Lena\'s habits that were never posted publicly. Knows her schedule. Her university.\n\nI need to look at that username.' },
-                  { name: 'username_scan_results_OLD.txt', type: 'file', content: 'USERNAME SCAN — c_marsh_pdx\nRun: Feb 4\n\nReddit: Active (u/c_marsh_pdx) — r/classiccars, r/Portland, r/mechanicadvice\nTwitter: Active\nFlickr: Active\nForum (PDXmissing): Not registered\n\n[Note added Feb 17: He\'s not there. Wasted 3 weeks. See crossref file.]' },
+                  { name: 'c_marsh_crossref.txt', type: 'file', handwritten: false, content: 'COREY MARSH — PERSON OF INTEREST\nCreated: Feb 4\nLast modified: Feb 15\n\nCorey Marsh. Lena\'s ex-boyfriend from before she moved to Portland.\n\nInitially flagged by forum member "stillwater_m" as obsessive.\nWent through his Reddit, Twitter archive, Flickr.\n\nHis Flickr has photos that look like they were taken near Lena\'s street. I need to pull the EXIF data from those photos. If he\'s taking pictures outside her apartment, I\'m calling the police.' },
+                  { name: 'username_scan_results_OLD.txt', type: 'file', content: 'USERNAME SCAN — c_marsh_pdx\nRun: Feb 4\n\nReddit: Active (u/c_marsh_pdx) — r/classiccars, r/Portland, r/mechanicadvice\nTwitter: Active\nFlickr: Active (c_marsh_pdx)\nForum (PDXmissing): Not registered' },
                 ]},
                 { name: 'NOTES_DO_NOT_DELETE.txt', type: 'file', handwritten: true, content: 'The account pushing Corey as a suspect is stillwater_m.\n\nThis account knew Lena went to specific coffee shops she never mentioned online.\nKnew her university schedule.\nKnew her flatmate\'s name before I posted it anywhere.\n\nWho is stillwater_m?\n\nStarted forum account 14 months ago — one month after Lena disappeared.\nPost history is too clean. The concern sounds real but the knowledge is wrong.\n\nI need to find the person behind this handle.' },
               ]},
@@ -69,7 +80,7 @@ export const GAME_DATA = {
           },
           requiredFiles: ['c_marsh_crossref.txt', 'NOTES_DO_NOT_DELETE.txt'],
         },
-        nextNode: 'A2',
+        unlocks: ['A2', 'A4', 'A13'],
       },
 
       // A2 — Reddit: tag 4 relevant posts
@@ -80,7 +91,7 @@ export const GAME_DATA = {
         title: "Reddit — u/stillwater_m Profile",
         tool: 'Reddit Profile Search',
         timestamp: { text: '3 days before Maya disappeared', urgent: false },
-        monologue: "Maya wrote a username. That's where I start.",
+        monologue: null,
         osintTip: {
           id: 'post-history',
           title: 'Post History Analysis',
@@ -113,9 +124,9 @@ export const GAME_DATA = {
             { id: 'sm-012', subreddit: 'r/PDXmissing', date: 'Nov 18', text: 'Just found this forum. Hard to believe it\'s been months with no answers. Following from Millhaven, OR. Hope someone finds something.', suspicious: false, wrongFeedback: 'First post, introduction. Locating as Millhaven is notable but not alone sufficient.' },
           ],
           requiredTagIds: ['sm-003', 'sm-006', 'sm-008', 'sm-010'],
-          completionNote: "Maya found the same four posts. She spent two days reading everything before she flagged them. The account knew things that were never public. She wrote in her notes: 'The knowledge is wrong for a bystander. It's right for someone close.'",
+          completionNote: "Maya spent two days reading everything. The account knew things that were never public.",
         },
-        nextNode: 'A3',
+        unlocks: ['A3'],
       },
 
       // A3 — Input: platform scanner questions
@@ -126,7 +137,7 @@ export const GAME_DATA = {
         title: "Platform Presence Scanner — stillwater_m",
         tool: 'Username Scanner',
         timestamp: { text: '3 days before Maya disappeared', urgent: false },
-        monologue: "She ran a scanner. She was thorough — she didn't stop at one platform.",
+        monologue: null,
         osintTip: {
           id: 'username-search',
           title: 'Cross-Platform Username Correlation',
@@ -157,9 +168,9 @@ export const GAME_DATA = {
               hintFeedback: 'The Wayback Machine — web.archive.org — archives public pages automatically. Private settings only apply to future crawls.',
             },
           ],
-          completionNote: "Twitter deleted. Flickr cached. Maya wrote: 'He deleted the Twitter when people started looking. That tells me he's watching the forum.'",
+          completionNote: "Twitter deleted. Flickr cached.",
         },
-        nextNode: 'A4',
+        unlocks: ['A6'],
       },
 
       // A4 — Browse: Flickr — find 3 geotagged photos
@@ -170,7 +181,7 @@ export const GAME_DATA = {
         title: "Flickr — stillwater_m (Cached Archive)",
         tool: 'Flickr Archive',
         timestamp: { text: '2 days before Maya disappeared', urgent: false },
-        monologue: "He made the Flickr private after she started looking. The cache got it before he could.",
+        monologue: null,
         osintTip: {
           id: 'photo-geotag',
           title: 'Photo Geolocation & EXIF Data',
@@ -214,9 +225,9 @@ export const GAME_DATA = {
             },
           ],
           requiredPhotoIds: ['f-002', 'f-004', 'f-006'],
-          completionNote: "Three photos. The night before Lena disappeared: he was near her apartment. The night she disappeared: he was at the same venue, at the same time. Maya wrote: 'He was there. He was watching her.'",
+          completionNote: "Three photos. The night before she disappeared, and the night of. Same location.",
         },
-        nextNode: 'A5',
+        unlocks: ['A5'],
       },
 
       // A5 — Read: EXIF summary + Corey car verification
@@ -227,31 +238,27 @@ export const GAME_DATA = {
         title: "Maya's Analysis Notes — EXIF + Corey Elimination",
         tool: 'Document Viewer',
         timestamp: { text: '2 days before Maya disappeared', urgent: false },
-        monologue: "She typed this up the night before she disappeared. She was done with Corey. She had moved on.",
+        monologue: null,
         content: {
           requiredScrollRatio: 0.82,
           sections: [
             {
-              heading: 'ANALYSIS — Feb 17',
-              body: 'I have confirmed that Corey Marsh is not involved in Lena\'s disappearance.\n\nHis Flickr activity that I originally flagged as suspicious — six photos near Lena\'s neighborhood — turned out to be a restoration project. The address on the EXIF coordinates is 4414 Burnside, Tigard. I called the building. It\'s a body shop called Pacific Restorations. They confirmed a client named Marsh brought in a \'67 Chevelle for paint and bodywork. The photos match the car, the timestamps match the service window.\n\nI wasted three weeks. The account that pointed me toward Corey — stillwater_m — knew exactly what it was doing.',
-            },
-            {
-              heading: 'WHAT STILLWATER_M KNEW',
-              body: 'Three facts this account posted that were never public:\n\n1. Lena\'s Tuesday route (the coffee shop she used before class — never mentioned online)\n2. Her flatmate Priya\'s name (disclosed only to police)\n3. That she was "waiting for something to end" (a phrase Priya used only in the police report)\n\nThis is not a helpful community member. This is someone with access to information that was either obtained through surveillance or proximity.',
+              heading: 'ANALYSIS — stillwater_m',
+              body: 'I have pulled the EXIF metadata from the cached stillwater_m photos.\n\nThree facts this account posted that were never public:\n\n1. Lena\'s Tuesday route (the coffee shop she used before class)\n2. Her flatmate Priya\'s name (disclosed only to police)\n3. That she was "waiting for something to end" (a phrase Priya used only in the police report)\n\nThis is not a helpful community member. This is someone with access to information that was either obtained through surveillance or proximity.',
             },
             {
               heading: 'THE MILLHAVEN PHOTOS',
-              body: 'Three photos from the Flickr archive place stillwater_m at:\n\n— The Willamette Waterfront, April 13 at 7:52pm (one block from Lena\'s apartment, the night before she disappeared)\n— The Callahan Building, Millhaven, April 14 at 6:38pm (arts night, same venue as Lena\'s last post)\n— The Callahan Building, April 14 at 8:11pm (Lena was photographed there at 7:47pm)\n\nThis person was physically present at the venue on the night Lena disappeared. I need to find out who owns the Callahan Building. That might tell me who stillwater_m is.',
+              body: 'Three photos from the Flickr archive place stillwater_m at:\n\n— The Willamette Waterfront, April 13 at 7:52pm (one block from Lena\'s apartment, the night before she disappeared)\n— The Callahan Building, Millhaven, April 14 at 6:38pm (arts night, same venue as Lena\'s last post)\n— The Callahan Building, April 14 at 8:11pm (Lena was photographed there at 7:47pm)\n\nThis person was physically present at the venue on the night Lena disappeared. I need to find out who owns the Callahan Building.',
               handwritten: false,
             },
             {
               heading: null,
-              body: 'The Corey angle was deliberate misdirection. Three weeks of my investigation spent on a car restoration project.\n\nStillwater_m pointed me there. And then watched.',
+              body: 'The forum member pushing me toward Corey was misdirecting me. I wasted weeks. Stillwater_m watched me look the wrong way.',
               handwritten: true,
             },
           ],
         },
-        nextNode: 'A6',
+        unlocks: [],
       },
 
       // A6 — Tag: archived tweets (no highlighting)
@@ -262,8 +269,8 @@ export const GAME_DATA = {
         title: "Twitter Archive — stillwater_m (Cached)",
         tool: 'Twitter Archive',
         timestamp: { text: '1 day before Maya disappeared', urgent: false },
-        monologue: "He deleted the account in October. But the archive service had already captured it.",
-        intercutAfter: "March 9, 11:47pm.\n\nRay opens his laptop.\n\nHe checks the forum. He checks her file tree.\n\nHe doesn't know she's found the photos yet.",
+        monologue: null,
+        intercutAfter: "March 9, 11:47pm.\n\nRay opens his laptop.",
         osintTip: {
           id: 'twitter-archive',
           title: 'Archived Social Media',
@@ -293,9 +300,9 @@ export const GAME_DATA = {
           ],
           requiredTags: ['t-003', 't-005', 't-008', 't-011'],
           wrongTagLimit: 3,
-          completionNote: "Maya wrote: 'He owns a domain. A domain has a WHOIS record. A WHOIS record has a registrant address.'",
+          completionNote: "A domain has a WHOIS record. A WHOIS record has a registrant address.",
         },
-        nextNode: 'A7',
+        unlocks: ['A7', 'A9'],
       },
 
       // A7 — Read: Maya explains how she verified Twitter identity
@@ -306,7 +313,7 @@ export const GAME_DATA = {
         title: "Maya's Notes — Domain Research",
         tool: 'Document Viewer',
         timestamp: { text: '1 day before Maya disappeared', urgent: false },
-        monologue: "She found the domain. She knew what a WHOIS record was. She'd learned that somewhere.",
+        monologue: null,
         content: {
           requiredScrollRatio: 0.8,
           sections: [
@@ -326,7 +333,7 @@ export const GAME_DATA = {
             },
           ],
         },
-        nextNode: 'A8',
+        unlocks: ['A8'],
       },
 
       // A8 — Input: WHOIS / domain verification
@@ -337,7 +344,7 @@ export const GAME_DATA = {
         title: "WHOIS Cross-Reference",
         tool: 'WHOIS Lookup',
         timestamp: { text: '1 day before Maya disappeared', urgent: false },
-        monologue: "She needed to confirm. She wasn't going to say anything without being certain.",
+        monologue: null,
         content: {
           questions: [
             {
@@ -353,9 +360,9 @@ export const GAME_DATA = {
               wrongFeedback: "Re-read Maya's note about the newspaper archive. She records his listed role.",
             },
           ],
-          completionNote: "Callahan Media. Ray Callahan, photographer. He was there professionally. He would have had access to the whole building — before, during, and after the event.",
+          completionNote: "Callahan Media. The photographer.",
         },
-        nextNode: 'A9',
+        unlocks: ['A10'],
       },
 
       // A9 — Browse: Twitter follow list — find stillwater_m follow of nightwatch_rc
@@ -366,7 +373,7 @@ export const GAME_DATA = {
         title: "stillwater_m — Following List (Cached)",
         tool: 'Twitter Archive',
         timestamp: { text: '1 day before Maya disappeared', urgent: false },
-        monologue: "She cached the full account before it was deleted. Including who he was following.",
+        monologue: null,
         content: {
           variant: 'reddit-profile',
           username: 'stillwater_m — Following (47)',
@@ -384,9 +391,9 @@ export const GAME_DATA = {
             { id: 'f-009', subreddit: '@OregonStateRecords', text: 'Oregon Secretary of State — business registry, court records, elections.', date: null, wrongFeedback: 'Public records agency account. Could indicate familiarity with records research.' },
           ],
           requiredTagIds: ['f-005', 'f-006'],
-          completionNote: "He follows his own second account. The initials RC. Callahan. Maya circled this in her notes and wrote: 'Two accounts. Same person. One for watching. One for hiding.'",
+          completionNote: "Two accounts. Same person.",
         },
-        nextNode: 'A10',
+        unlocks: [],
       },
 
       // A10 — Read: Evidence summary — Maya's final analysis
@@ -403,43 +410,42 @@ export const GAME_DATA = {
           sections: [
             {
               heading: 'WHAT I KNOW — MARCH 9',
-              body: 'Account: stillwater_m\nDomain: stillwater-media.net\nRegistrant: R. Callahan / Callahan Media / PO Box 441, Millhaven, OR\n\nSecond account: @nightwatch_rc (RC = Ray Callahan)\n\nLocation data from Flickr:\n— Night before Lena disappeared: near her apartment\n— Night of disappearance: at the arts night, same venue\n\nPrior knowledge of Lena\'s private details:\n— Her flatmate\'s name\n— Her Tuesday route\n— The phrase "waiting for something to end"\n\nDeleted Twitter account: same week the forum started questioning him.\nMisdirected me toward Corey for three weeks.',
-            },
-            {
-              heading: null,
-              body: 'I know Ray Callahan.\n\nHe came to my graduation. He watched me get my diploma.\n\nMom trusted him. Dad trusts him.\n\nHe has a key to the apartment.',
-              handwritten: true,
+              body: 'Account: stillwater_m\nDomain: stillwater-media.net\nRegistrant: R. Callahan / Callahan Media / PO Box 441, Millhaven, OR\n\nSecond account: @nightwatch_rc (RC?)\n\nLocation data from Flickr:\n— Night before Lena disappeared: near her apartment\n— Night of disappearance: at the arts night, same venue\n\nPrior knowledge of Lena\'s private details:\n— Her flatmate\'s name\n— Her Tuesday route\n— The phrase "waiting for something to end"\n\nDeleted Twitter account: same week the forum started questioning him.\nMisdirected me toward Corey for three weeks.',
             },
             {
               heading: 'WHAT I NEED',
-              body: 'One more source. I need the court records — there was something in the Millhaven records I found earlier. A name that matched. I need to confirm.\n\nI\'m going to check the county records database tomorrow morning.\n\nIf it matches, I\'ll tell Dad.\n\nIf it matches, I\'ll call the police.\n\nI need to be certain.',
+              body: 'One more source. I need the court records — there was something in the Millhaven records I found earlier. A name that matched. I need to confirm.\n\nI\'m going to check the county records database tomorrow morning.\n\nIf it matches, I need to be certain before I do anything.',
             },
           ],
         },
-        nextNode: 'A11',
+        unlocks: ['A11'],
       },
 
-      // A11 — Input: Final confirmation question
+      // A11 — Connect: Final confirmation
       {
         id: 'A11',
-        type: 'input',
+        type: 'connect',
         path: 'A',
-        title: "Cross-Reference — Final Confirmation",
-        tool: 'WHOIS + County Records',
+        title: "Cross-Reference — Evidence Assembly",
+        tool: 'Link Analysis',
         timestamp: { text: 'night before Maya disappeared', urgent: true },
-        monologue: "She was waiting for one more piece. She never got to look for it in the morning.",
+        monologue: "She was waiting for one more piece. She never got to look for it in the morning. I have to put it together myself.",
         content: {
-          questions: [
-            {
-              prompt: 'Based on everything in Maya\'s notes, what single piece of information directly connects stillwater_m, stillwater-media.net, and Callahan Media to the same person?',
-              contextNote: 'Consider: the WHOIS registrant, the forum account, the photography listing in the newspaper, and the second Twitter account initials.',
-              acceptedAnswers: ['callahan', 'ray callahan', 'rc', 'r callahan', 'pо box 441', 'po box'],
-              wrongFeedback: 'Look at what all three sources have in common. One name, or one address, appears in all of them.',
-            },
+          cards: [
+            { id: 'whois', label: 'Domain WHOIS', details: 'Registrant: R. Callahan, PO Box 441, Millhaven' },
+            { id: 'twitter_rc', label: '@nightwatch_rc', details: 'Second Twitter account following stillwater_m' },
+            { id: 'business', label: 'Callahan Media', details: 'Business listed on the domain registration' },
+            { id: 'forum', label: 'stillwater_m', details: 'Forum account with unreleased private knowledge' }
           ],
-          completionNote: "The PO box appears in the WHOIS record, the county business registry, and — as Maya found in Thread C — a restraining order. Three independent sources. One address. One name.",
+          requiredConnections: [
+            { from: 'whois', to: 'twitter_rc', label: 'R. Callahan matches RC' },
+            { from: 'whois', to: 'business', label: 'Name matches listed business' },
+            { from: 'forum', to: 'whois', label: 'stillwater_m registered the domain' }
+          ],
+          wrongFeedback: 'Look for shared names, initials, or ownership records.',
+          completionNote: "A single name connects the forum account, the Twitter, and the domain. R. Callahan.",
         },
-        nextNode: 'A12',
+        unlocks: ['A12'],
       },
 
       // A12 — Read: Bridge — path locked
@@ -466,7 +472,66 @@ export const GAME_DATA = {
             },
           ],
         },
-        nextNode: null,
+        unlocks: [],
+      },
+
+      // A13 — Browse: Corey Marsh Flickr (Red Herring)
+      {
+        id: 'A13',
+        type: 'browse',
+        path: 'A',
+        title: "Flickr — c_marsh_pdx",
+        tool: 'Flickr Archive',
+        timestamp: { text: '3 days before Maya disappeared', urgent: false },
+        monologue: null,
+        osintTip: null,
+        content: {
+          variant: 'flickr',
+          username: 'c_marsh_pdx',
+          description: 'Portland, OR. Cars, mostly.',
+          photos: [
+            {
+              id: 'cm-001',
+              url: '/api/placeholder/400/300',
+              caption: '1967 Chevelle Quarter Panel - Primer',
+              date: 'Oct 14, 2023',
+              metadata: {
+                Camera: 'iPhone 11',
+                Location: '4414 Burnside, Tigard, OR (Pacific Restorations Auto Body)',
+                Time: '8:42 PM',
+              },
+              suspicious: false,
+            },
+            {
+              id: 'cm-002',
+              url: '/api/placeholder/400/300',
+              caption: 'Late night shift at the shop',
+              date: 'Oct 14, 2023',
+              metadata: {
+                Camera: 'iPhone 11',
+                Location: '4414 Burnside, Tigard, OR (Pacific Restorations Auto Body)',
+                Time: '11:15 PM',
+              },
+              suspicious: false,
+            },
+            {
+              id: 'cm-003',
+              url: '/api/placeholder/400/300',
+              caption: 'Almost ready for paint',
+              date: 'Nov 02, 2023',
+              metadata: {
+                Camera: 'iPhone 11',
+                Location: '4414 Burnside, Tigard, OR (Pacific Restorations Auto Body)',
+                Time: '6:30 PM',
+              },
+              suspicious: false,
+            },
+          ],
+          requiredPhotoIds: ['cm-001', 'cm-002'],
+          wrongPhotoLimit: 3,
+          completionNote: "Wait... the address isn't near Lena's apartment. It's an auto body shop in Tigard. He was working on cars all night.",
+        },
+        unlocks: [],
       },
     ],
   },

@@ -11,7 +11,6 @@ import { SliderNode } from '../components/nodes/SliderNode'
 import { BrowseNode } from '../components/nodes/BrowseNode'
 import { ConnectNode } from '../components/nodes/ConnectNode'
 import { TypewriterNode } from '../components/nodes/TypewriterNode'
-import { OsintTipPanel } from '../components/OsintTipPanel'
 import { IntercutOverlay } from '../components/IntercutOverlay'
 import { SystemAlertFlash } from '../components/SystemAlertFlash'
 import { SaveLoadModal } from '../components/SaveLoadModal'
@@ -21,14 +20,8 @@ import { InvestigationOnboarding } from '../components/InvestigationOnboarding'
 import { PathIntro } from '../components/PathIntro'
 
 const NODE_RENDERERS = {
-  read: ReadNode,
-  navigate: NavigateNode,
-  tag: TagNode,
-  input: InputNode,
-  slider: SliderNode,
-  browse: BrowseNode,
-  connect: ConnectNode,
-  typewriter: TypewriterNode,
+  read: ReadNode, navigate: NavigateNode, tag: TagNode, input: InputNode,
+  slider: SliderNode, browse: BrowseNode, connect: ConnectNode, typewriter: TypewriterNode,
 }
 
 const PATH_META = {
@@ -37,83 +30,61 @@ const PATH_META = {
   C: { label: 'Public Record', color: '#d4a017', dimColor: '#4a3a08', icon: '📌' },
 }
 
-// Instructions for each node type
 const NODE_INSTRUCTIONS = {
-  read: { action: 'Scroll down to read', icon: '📄' },
-  navigate: { action: 'Click to explore files', icon: '📁' },
-  tag: { action: 'Flag suspicious items', icon: '🏷️' },
-  input: { action: 'Type your answer', icon: '✏️' },
-  slider: { action: 'Adjust sliders to reveal', icon: '🔍' },
-  browse: { action: 'Click items to examine', icon: '🌐' },
-  connect: { action: 'Link related evidence', icon: '🔗' },
-  typewriter: { action: 'Watch carefully', icon: '⌨️' },
+  read: { action: 'Scroll down to read', icon: '📄' }, navigate: { action: 'Click to explore files', icon: '📁' },
+  tag: { action: 'Flag suspicious items', icon: '🏷️' }, input: { action: 'Type your answer', icon: '✏️' },
+  slider: { action: 'Adjust sliders to reveal', icon: '🔍' }, browse: { action: 'Click items to examine', icon: '🌐' },
+  connect: { action: 'Link related evidence', icon: '🔗' }, typewriter: { action: 'Watch carefully', icon: '⌨️' },
 }
 
 export default function InvestigationPage() {
   const {
-    activePath, systemAlertShown, seenOsintTips, perfectPaths, nodeProgress,
-    completePath, setPhase, unlockJournalist, markSystemAlert, markOsintTipSeen,
-    saveGame, addNotification, addCaseSummary, setCurrentNodeIndex: storeSetNodeIndex,
+    activePath, systemAlertShown, perfectPaths, paths,
+    completePath, setPhase, unlockJournalist, markSystemAlert,
+    saveGame, addNotification, addCaseSummary,
+    currentNodeId, openNode, closeNode, completeNode
   } = useGameStore(useShallow(s => ({
     activePath:       s.activePath,
     systemAlertShown: s.systemAlertShown,
-    seenOsintTips:    s.seenOsintTips,
     perfectPaths:     s.perfectPaths,
-    nodeProgress:     s.nodeProgress,
+    paths:            s.paths,
     completePath:     s.completePath,
     setPhase:         s.setPhase,
     unlockJournalist: s.unlockJournalist,
     markSystemAlert:  s.markSystemAlert,
-    markOsintTipSeen: s.markOsintTipSeen,
     saveGame:         s.saveGame,
     addNotification:  s.addNotification,
     addCaseSummary:   s.addCaseSummary,
-    setCurrentNodeIndex: s.setCurrentNodeIndex,
+    currentNodeId:    s.currentNodeId,
+    openNode:         s.openNode,
+    closeNode:        s.closeNode,
+    completeNode:     s.completeNode,
   })))
 
   const path = activePath || 'A'
   const pathData = GAME_DATA[path]
   const nodes = pathData?.nodes ?? []
   const meta = PATH_META[path]
-
-  // Get saved node index or start at 0
-  const savedIndex = nodeProgress[`${path}_index`] ?? 0
-  const [currentNodeIndex, setCurrentNodeIndex] = useState(savedIndex)
+  
+  const activePathState = paths[path]
+  const unlockedNodeIds = activePathState?.unlockedNodes || []
+  const completedNodeIds = activePathState?.completedNodes || []
+  
+  // When all nodes inside the path are completed -> thread is done
+  const pathComplete = nodes.length > 0 && completedNodeIds.length === nodes.length
 
   const [intercutText, setIntercutText] = useState(null)
   const [intercutVisible, setIntercutVisible] = useState(false)
   const [systemAlertTrigger, setSystemAlertTrigger] = useState(0)
-  const [osintTip, setOsintTip] = useState(null)
-  const [osintCollapsed, setOsintCollapsed] = useState(false)
-  const [pathComplete, setPathComplete] = useState(false)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showCaseNotes, setShowCaseNotes] = useState(false)
-  const [isReviewing, setIsReviewing] = useState(false) // When true, user is reviewing previous nodes
-  const [highestReachedIndex, setHighestReachedIndex] = useState(savedIndex) // Track highest separately
 
-  // Track which paths have shown their intro using localStorage
-  const getPathIntroKey = (p) => `maya-path-intro-${p}`
-  const hasSeenPathIntro = (p) => {
-    try { return localStorage.getItem(getPathIntroKey(p)) === 'true' } catch { return false }
-  }
-  const markPathIntroSeen = (p) => {
-    try { localStorage.setItem(getPathIntroKey(p), 'true') } catch {}
-  }
-
-  // Show path intro if this is first time on this path
+  // Track intro
+  const getPathIntroKey = (p) => `maya-path-intro-${p}-v2`
+  const hasSeenPathIntro = (p) => { try { return localStorage.getItem(getPathIntroKey(p)) === 'true' } catch { return false } }
+  const markPathIntroSeen = (p) => { try { localStorage.setItem(getPathIntroKey(p), 'true') } catch {} }
   const [showPathIntro, setShowPathIntro] = useState(() => !hasSeenPathIntro(path))
 
-  // Sync node index to store for save/load - only when advancing forward, not reviewing
-  useEffect(() => {
-    if (!isReviewing && currentNodeIndex > highestReachedIndex) {
-      setHighestReachedIndex(currentNodeIndex)
-      storeSetNodeIndex(currentNodeIndex)
-    } else if (!isReviewing) {
-      storeSetNodeIndex(currentNodeIndex)
-    }
-  }, [currentNodeIndex, isReviewing, highestReachedIndex, storeSetNodeIndex])
-
-  // Quick save keyboard shortcut
   const handleQuickSave = useCallback(() => {
     saveGame(0)
     addNotification('Quick saved', 'success')
@@ -121,115 +92,54 @@ export default function InvestigationPage() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault()
-        handleQuickSave()
-      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); handleQuickSave() }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [handleQuickSave])
 
-  const currentNode = nodes[currentNodeIndex] ?? null
+  const currentNode = currentNodeId ? nodes.find(n => n.id === currentNodeId) : null
 
   const handleNodeComplete = () => {
     if (!currentNode) return
 
-    // Add summary to case notes
-    if (currentNode.title) {
+    if (currentNode.title && !completedNodeIds.includes(currentNode.id)) {
       addCaseSummary(path, {
-        id: currentNode.id,
-        title: currentNode.title,
+        id: currentNode.id, title: currentNode.title,
         text: currentNode.monologue || `Examined: ${currentNode.title}`,
         source: currentNode.tool || currentNode.type,
       })
     }
 
-    // Journalist unlock
-    if (currentNode.journalistUnlock) {
-      unlockJournalist()
-    }
+    if (currentNode.journalistUnlock) unlockJournalist()
+    if (currentNode.systemAlertAfter && !systemAlertShown) { setSystemAlertTrigger(prev => prev + 1); markSystemAlert() }
+    if (currentNode.intercutAfter) { setIntercutText(currentNode.intercutAfter); setIntercutVisible(true) }
 
-    // System alert
-    if (currentNode.systemAlertAfter && !systemAlertShown) {
-      setSystemAlertTrigger(prev => prev + 1)
-      markSystemAlert()
-    }
+    // Commit completion and unlock next wave
+    completeNode(path, currentNode.id, currentNode.unlocks || [])
 
-    // Intercut overlay
-    if (currentNode.intercutAfter) {
-      setIntercutText(currentNode.intercutAfter)
-      setIntercutVisible(true)
-    }
-
-    // OSINT tip for next node
-    const nextIndex = currentNodeIndex + 1
-    if (nextIndex < nodes.length) {
-      const nextNode = nodes[nextIndex]
-      if (nextNode?.osintTip && !seenOsintTips.includes(nextNode.osintTip.id)) {
-        markOsintTipSeen(nextNode.osintTip.id)
-        setOsintTip(nextNode.osintTip)
-        setOsintCollapsed(false)
-      }
-    }
-
-    // Advance or complete
-    if (currentNodeIndex + 1 >= nodes.length) {
-      completePath(path)
-      setPathComplete(true)
+    // Give a brief delay before closing so the final flash/animation resolves
+    if (currentNode.type !== 'typewriter') {
+      setTimeout(() => closeNode(), 600)
     } else {
-      setCurrentNodeIndex(prev => prev + 1)
+      closeNode()
     }
   }
 
-  // Show first node's OSINT tip on mount
+  // Path complete modal triggering
   useEffect(() => {
-    const firstNodeTip = nodes[currentNodeIndex]?.osintTip
-    if (!firstNodeTip) return
-    const timer = setTimeout(() => {
-      const seen = useGameStore.getState().seenOsintTips
-      if (!seen.includes(firstNodeTip.id)) {
-        markOsintTipSeen(firstNodeTip.id)
-        setOsintTip(firstNodeTip)
-        setOsintCollapsed(false)
-      }
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [path, currentNodeIndex])
+    if (pathComplete && !activePathState.completed && !currentNode) {
+      completePath(path)
+    }
+  }, [pathComplete, activePathState.completed, currentNode, completePath, path])
 
   const NodeRenderer = currentNode ? NODE_RENDERERS[currentNode.type] : null
-  const isPerfect = perfectPaths[path]
   const instruction = currentNode ? NODE_INSTRUCTIONS[currentNode.type] : null
-
-  // Navigation: use local highestReachedIndex so it doesn't get overwritten
-  const canGoBack = currentNodeIndex > 0
-  const canGoForward = currentNodeIndex < highestReachedIndex
-
-  const handleNavBack = () => {
-    if (canGoBack) {
-      setCurrentNodeIndex(prev => prev - 1)
-      setIsReviewing(true)
-    }
-  }
-
-  const handleNavForward = () => {
-    if (canGoForward) {
-      setCurrentNodeIndex(prev => prev + 1)
-      if (currentNodeIndex + 1 >= highestReachedIndex) {
-        setIsReviewing(false)
-      }
-    }
-  }
-
-  const handleReturnToCurrent = () => {
-    setCurrentNodeIndex(highestReachedIndex)
-    setIsReviewing(false)
-  }
-
-  // Path complete screen
-  if (pathComplete) {
+  
+  // RENDER COMPLETE PAGE
+  if (activePathState?.completed && !currentNodeId) {
     return (
-      <div className="min-h-screen bg-[#08080e] flex flex-col items-center justify-center gap-6 p-8">
+      <div className="min-h-screen bg-[#08080e] flex flex-col items-center justify-center gap-6 p-8 crt">
         <div className="text-5xl mb-2">{meta.icon}</div>
         <div
           className="font-mono text-xs tracking-[0.3em] uppercase"
@@ -243,7 +153,7 @@ export default function InvestigationPage() {
         >
           Thread Complete
         </h1>
-        {isPerfect && (
+        {perfectPaths[path] && (
           <div
             className="flex items-center gap-2 px-4 py-2 border text-sm"
             style={{
@@ -276,16 +186,16 @@ export default function InvestigationPage() {
   return (
     <div className="crt h-screen bg-[#08080e] flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
+      <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 py-3 relative flex items-center justify-between z-10">
         <button
-          onClick={() => setPhase('apartment')}
+          onClick={() => currentNode ? closeNode() : setPhase('apartment')}
           className="font-mono text-xs sm:text-sm px-3 py-2 border-2 border-[#3a3a48] text-[#a0a098] hover:border-[#5a5a68] hover:text-[#d0d0c8] transition-all min-h-[44px]"
         >
-          ← Back
+          ← {currentNode ? 'Desktop' : 'Back'}
         </button>
 
-        {/* Path indicator */}
-        <div className="flex items-center gap-2">
+        {/* Path indicator - Absolute centering */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 pointer-events-none">
           <span style={{ fontSize: '18px', lineHeight: '1', display: 'inline-block' }}>{meta.icon}</span>
           <span
             className="font-mono text-xs sm:text-sm tracking-[0.1em] uppercase font-semibold hidden sm:inline"
@@ -297,18 +207,15 @@ export default function InvestigationPage() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Progress */}
           <div className="font-mono text-xs px-2 py-1 bg-[#1a1a28] rounded" style={{ color: '#6a8aaa' }}>
-            {currentNodeIndex + 1}/{nodes.length}
+            {completedNodeIds.length}/{nodes.length}
           </div>
 
           <button
             onClick={() => setShowCaseNotes(true)}
             className="font-mono text-xs px-3 py-2 border-2 min-h-[44px] transition-all"
             style={{
-              borderColor: '#5a4030',
-              color: '#c09070',
-              background: 'rgba(58, 40, 32, 0.3)',
+              borderColor: '#5a4030', color: '#c09070', background: 'rgba(58, 40, 32, 0.3)',
             }}
           >
             Notes
@@ -318,9 +225,7 @@ export default function InvestigationPage() {
             onClick={() => setShowSaveModal(true)}
             className="font-mono text-xs px-3 py-2 border-2 min-h-[44px] transition-all"
             style={{
-              borderColor: '#4a6080',
-              color: '#8aa0b8',
-              background: 'rgba(42, 48, 64, 0.3)',
+              borderColor: '#4a6080', color: '#8aa0b8', background: 'rgba(42, 48, 64, 0.3)',
             }}
           >
             Save
@@ -328,200 +233,118 @@ export default function InvestigationPage() {
         </div>
       </div>
 
-      {/* Navigation bar - go back to previous discoveries */}
-      {(canGoBack || isReviewing) && (
-        <div
-          className="shrink-0 px-2 sm:px-4 py-1.5 flex items-center justify-between gap-2 border-b"
-          style={{ background: '#0c0c14', borderColor: '#2a2a38' }}
-        >
-          <button
-            onClick={handleNavBack}
-            disabled={!canGoBack}
-            className="font-mono text-xs px-2 sm:px-3 py-1.5 border transition-all min-h-[36px]"
-            style={{
-              borderColor: canGoBack ? '#3a3a48' : '#1a1a28',
-              color: canGoBack ? '#8a8a98' : '#3a3a48',
-              background: 'transparent',
-              cursor: canGoBack ? 'pointer' : 'default',
-            }}
-          >
-            ← Prev
-          </button>
-
-          <div className="font-mono text-[11px] text-center" style={{ color: '#6a6a78' }}>
-            {isReviewing ? (
-              <span style={{ color: '#d4a017' }}>Review: {currentNodeIndex + 1}/{nodes.length}</span>
-            ) : (
-              <span>{currentNodeIndex + 1}/{nodes.length}</span>
-            )}
-          </div>
-
-          <div className="flex gap-1.5">
-            {canGoForward && (
-              <button
-                onClick={handleNavForward}
-                className="font-mono text-xs px-2 sm:px-3 py-1.5 border transition-all min-h-[36px]"
-                style={{
-                  borderColor: '#3a3a48',
-                  color: '#8a8a98',
-                  background: 'transparent',
-                }}
-              >
-                Next →
-              </button>
-            )}
-            {isReviewing && (
-              <button
-                onClick={handleReturnToCurrent}
-                className="font-mono text-xs px-2 sm:px-3 py-1.5 border-2 transition-all min-h-[36px]"
-                style={{
-                  borderColor: meta.color,
-                  color: meta.color,
-                  background: `${meta.color}15`,
-                }}
-              >
-                <span className="hidden sm:inline">Return to </span>Current
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Task instruction bar — hidden on mobile when nav bar is already showing to save space */}
-      {instruction && !isReviewing && (
+      {/* Task instruction bar */}
+      {instruction && currentNode && (
         <div
           className="shrink-0 px-3 py-1.5 flex items-center gap-2 border-b"
-          style={{
-            background: `${meta.color}12`,
-            borderColor: `${meta.color}40`,
-          }}
+          style={{ background: `${meta.color}12`, borderColor: `${meta.color}40` }}
         >
           <span className="text-sm shrink-0">{instruction.icon}</span>
-          <span
-            className="font-mono text-[11px] tracking-[0.12em] uppercase"
-            style={{ color: meta.color }}
-          >
+          <span className="font-mono text-[11px] tracking-[0.12em] uppercase" style={{ color: meta.color }}>
             {instruction.action}
           </span>
         </div>
       )}
 
-      {/* Review mode indicator — desktop only; on mobile the nav bar already shows "Reviewing: X / Y" */}
-      {isReviewing && (
-        <div
-          className="hidden sm:flex shrink-0 px-4 py-2 items-center justify-center gap-3 border-b"
-          style={{
-            background: 'rgba(212, 160, 23, 0.1)',
-            borderColor: '#d4a01750',
-          }}
-        >
-          <span className="text-base">📖</span>
-          <div className="font-mono text-xs" style={{ color: '#d4a017' }}>
-            Reviewing previous evidence — read-only mode
-          </div>
-        </div>
-      )}
-
-      {/* Node header */}
-      {currentNode && (
-        <div className="shrink-0 px-3 sm:px-6 py-2 sm:py-3 border-b border-[#1a1a28] bg-[#0a0a12]/50">
-          {currentNode.timestamp && (
-            <div
-              className="font-mono text-[10px] tracking-[0.15em] uppercase mb-1"
-              style={{
-                color: currentNode.timestamp.urgent ? '#e04040' : '#6a8aaa',
-                fontWeight: currentNode.timestamp.urgent ? 600 : 400,
-              }}
-            >
-              {currentNode.timestamp.urgent ? '⚠ ' : ''}{currentNode.timestamp.text}
+      {/* Node content OR Desktop View */}
+      {currentNode ? (
+        <div className="flex-1 overflow-hidden relative flex flex-col min-h-0 animate-in fade-in duration-300">
+          <div className="shrink-0 px-3 sm:px-6 py-2 sm:py-3 border-b border-[#1a1a28] bg-[#0a0a12]/50">
+            {currentNode.timestamp && (
+              <div className="font-mono text-[10px] tracking-[0.15em] uppercase mb-1" style={{ color: currentNode.timestamp.urgent ? '#e04040' : '#6a8aaa' }}>
+                {currentNode.timestamp.urgent ? '⚠ ' : ''}{currentNode.timestamp.text}
+              </div>
+            )}
+            <div className="flex items-baseline justify-between gap-2 flex-wrap">
+              <h2 className="text-base sm:text-xl font-semibold" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#d8d0c0' }}>
+                {currentNode.title}
+              </h2>
+              {currentNode.tool && (
+                <span className="font-mono text-[10px] px-2 py-0.5 bg-[#2a2a38] text-[#6a6a78] rounded uppercase tracking-wider">
+                  {currentNode.tool}
+                </span>
+              )}
             </div>
-          )}
-          <div className="flex items-baseline justify-between gap-2 flex-wrap">
-            <h2
-              className="text-base sm:text-xl font-semibold"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#d8d0c0' }}
-            >
-              {currentNode.title}
-            </h2>
-            {currentNode.tool && (
-              <span className="font-mono text-[10px] px-2 py-0.5 bg-[#2a2a38] text-[#6a6a78] rounded uppercase tracking-wider">
-                {currentNode.tool}
-              </span>
+            {currentNode.monologue && (
+              <p className="hidden sm:block text-sm mt-2 leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif", color: '#a89888', fontStyle: 'italic' }}>
+                {currentNode.monologue}
+              </p>
             )}
           </div>
-          {currentNode.monologue && (
-            <p
-              className="hidden sm:block text-sm mt-2 leading-relaxed"
-              style={{ fontFamily: "'Crimson Pro', serif", color: '#a89888', fontStyle: 'italic' }}
-            >
-              {currentNode.monologue}
-            </p>
+          {NodeRenderer && (
+             <NodeRenderer
+               key={`${currentNode.id}-${completedNodeIds.includes(currentNode.id) ? 'review' : 'active'}`}
+               content={currentNode.content}
+               onComplete={handleNodeComplete}
+               onJournalistUnlock={unlockJournalist}
+               onCinematicTrigger={() => {}}
+               isReviewing={completedNodeIds.includes(currentNode.id)}
+             />
           )}
+        </div>
+      ) : (
+        <div className="flex-1 p-6 overflow-y-auto bg-[#050508] animate-in fade-in duration-300">
+           <div className="max-w-4xl mx-auto">
+             <div className="mb-8 p-4 border border-[#1a1a28] bg-[#0a0a12]/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                   <h2 className="font-mono text-sm tracking-widest text-[#d8d0c0] uppercase">{meta.label} // Desktop</h2>
+                   <p className="font-mono text-xs text-[#5a5a68] mt-1">Investigate leads in any order to form connections.</p>
+                </div>
+                <div className="font-mono text-xs text-[#8a8a98] bg-[#0f0f18] px-3 py-1 border border-[#2a2a38] rounded">
+                   {unlockedNodeIds.length - completedNodeIds.length} ACTIVE LEADS
+                </div>
+             </div>
+             
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+               {unlockedNodeIds.map(nodeId => {
+                 const node = nodes.find(n => n.id === nodeId)
+                 if (!node) return null
+                 const isCompleted = completedNodeIds.includes(nodeId)
+                 const nodeInst = NODE_INSTRUCTIONS[node.type]
+
+                 return (
+                   <button
+                     key={nodeId}
+                     onClick={() => openNode(nodeId)}
+                     className="flex flex-col items-center justify-center p-6 border transition-all text-center gap-4 relative group hover:-translate-y-1 hover:shadow-lg"
+                     style={{
+                       borderColor: isCompleted ? '#2a3a3a' : '#2a2a38',
+                       background: isCompleted ? 'rgba(26,58,42,0.1)' : 'rgba(20,20,30,0.6)',
+                       boxShadow: !isCompleted ? 'inset 0 0 20px rgba(0,0,0,0.5)' : 'none'
+                     }}
+                   >
+                     {!isCompleted && (
+                       <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#d4a017] animate-pulse shadow-[0_0_8px_#d4a017]" />
+                     )}
+                     <span 
+                        className="text-4xl transition-all"
+                        style={{ filter: isCompleted ? 'grayscale(100%) opacity(60%)' : 'drop-shadow(0 0 10px rgba(255,255,255,0.1))' }}
+                     >
+                       {isCompleted ? '✓' : (nodeInst?.icon || '📄')}
+                     </span>
+                     <div>
+                        <div className="font-mono text-xs font-semibold mb-1" style={{ color: isCompleted ? '#6a8a7a' : '#d8d8e0' }}>
+                          {node.title}
+                        </div>
+                        <div className="font-mono text-[9px] uppercase tracking-wider" style={{ color: '#5a5a68' }}>
+                          {node.tool}
+                        </div>
+                     </div>
+                   </button>
+                 )
+               })}
+             </div>
+           </div>
         </div>
       )}
 
-      {/* Node content */}
-      <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
-        {NodeRenderer && currentNode && (
-          <NodeRenderer
-            key={`${currentNode.id}-${isReviewing ? 'review' : 'active'}`}
-            content={currentNode.content}
-            onComplete={isReviewing ? handleReturnToCurrent : handleNodeComplete}
-            onJournalistUnlock={unlockJournalist}
-            onCinematicTrigger={() => setCurrentNodeIndex(prev => prev + 1)}
-            isReviewing={isReviewing}
-          />
-        )}
-      </div>
-
-      {/* Evidence Board */}
       <EvidenceBoard />
 
-      {/* OSINT Tip Panel */}
-      {osintTip && (
-        <OsintTipPanel
-          tip={osintTip}
-          collapsed={osintCollapsed}
-          onDismiss={() => setOsintCollapsed(true)}
-          onReopen={() => setOsintCollapsed(false)}
-        />
-      )}
-
-      {/* Intercut overlay */}
-      <IntercutOverlay
-        text={intercutText}
-        visible={intercutVisible}
-        onDismiss={() => {
-          setIntercutVisible(false)
-          setIntercutText(null)
-        }}
-      />
-
-      {/* System alert */}
+      <IntercutOverlay text={intercutText} visible={intercutVisible} onDismiss={() => { setIntercutVisible(false); setIntercutText(null) }} />
       <SystemAlertFlash trigger={systemAlertTrigger} />
-
-      {/* Save modal */}
-      {showSaveModal && (
-        <SaveLoadModal mode="save" onClose={() => setShowSaveModal(false)} />
-      )}
-
-      {/* Case Notes */}
-      {showCaseNotes && (
-        <CaseNotes onClose={() => setShowCaseNotes(false)} />
-      )}
-
-      {/* Path-specific intro */}
-      {showPathIntro && (
-        <PathIntro
-          path={path}
-          onContinue={() => {
-            markPathIntroSeen(path)
-            setShowPathIntro(false)
-          }}
-        />
-      )}
-
-      {/* General onboarding (first time only) */}
+      {showSaveModal && <SaveLoadModal mode="save" onClose={() => setShowSaveModal(false)} />}
+      {showCaseNotes && <CaseNotes onClose={() => setShowCaseNotes(false)} />}
+      {showPathIntro && <PathIntro path={path} onContinue={() => { markPathIntroSeen(path); setShowPathIntro(false) }} />}
       <InvestigationOnboarding />
     </div>
   )

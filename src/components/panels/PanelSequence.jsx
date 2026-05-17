@@ -51,6 +51,24 @@ function AdvanceHint({ visible, narrationDone }) {
 // ── Progress dots ─────────────────────────────────────────────────
 function ProgressDots({ total, current }) {
   if (total <= 1) return null
+
+  // For large sequences (e.g. the 39-panel prologue) dots become too small to read —
+  // show a numeric label instead so players know the tunnel has an end.
+  if (total > 12) {
+    return (
+      <div className="absolute top-4 left-0 right-0 z-30 flex justify-center pointer-events-none">
+        <span style={{
+          fontFamily: "'Share Tech Mono', monospace",
+          fontSize: 10,
+          color: '#5a5268',
+          letterSpacing: '0.2em',
+        }}>
+          {current + 1} / {total}
+        </span>
+      </div>
+    )
+  }
+
   return (
     <div className="absolute top-4 left-0 right-0 z-30 flex justify-center gap-[5px] pointer-events-none">
       {Array.from({ length: total }).map((_, i) => (

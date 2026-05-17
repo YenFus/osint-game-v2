@@ -213,6 +213,19 @@ export function SliderNode({ content, onComplete }) {
           </div>
         </div>
 
+        {/* Per-page recalibration note — only after page 1 */}
+        {pageIndex > 0 && (
+          <p style={{
+            fontFamily: 'Crimson Pro, serif',
+            fontStyle: 'italic',
+            fontSize: 13,
+            color: '#4a4a58',
+            margin: '0 0 4px',
+          }}>
+            Each page burned differently — recalibrate the sliders.
+          </p>
+        )}
+
         {/* CTA */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           {readable ? (

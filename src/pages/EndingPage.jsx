@@ -302,7 +302,10 @@ export default function EndingPage() {
                 <div className="text-4xl font-black mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#d8d0c0' }}>
                   {totalClues}
                 </div>
-                <div className="font-mono text-xs text-[#6a6a78]">Discoveries</div>
+                <div className="font-mono text-xs text-[#6a6a78]">Clues Found</div>
+                <div className="font-mono text-[9px] text-[#4a4a58] mt-1">
+                  across {completedPaths.length} thread{completedPaths.length !== 1 ? 's' : ''}
+                </div>
               </div>
 
               {/* Perfect paths */}
@@ -435,7 +438,7 @@ export default function EndingPage() {
                 {evidenceScore < 3
                   ? `Complete all 3 investigation threads for a better outcome. You found ${evidenceScore}.`
                   : endingType === 'tipoff'
-                    ? 'Never contact the suspect directly. Always go to the authorities first.'
+                    ? 'You called him because you needed him to know you knew. It gave him time he shouldn\'t have had.'
                     : 'Find the journalist contact in Maya\'s research for a hidden ending.'}
               </p>
               <div className="flex justify-center gap-4 mt-4">

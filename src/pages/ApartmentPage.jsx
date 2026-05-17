@@ -16,7 +16,7 @@ const ITEMS = [
     preview: {
       focus: 'Digital Trail',
       techniques: ['Social media analysis', 'Username correlation', 'Post timing'],
-      nodeCount: 14,
+      nodeCount: 13,
       difficulty: 'Moderate',
     },
   },
@@ -30,7 +30,7 @@ const ITEMS = [
     preview: {
       focus: 'Private Notes',
       techniques: ['Document recovery', 'Handwriting analysis', 'Timeline reconstruction'],
-      nodeCount: 11,
+      nodeCount: 13,
       difficulty: 'Challenging',
     },
   },
@@ -44,7 +44,7 @@ const ITEMS = [
     preview: {
       focus: 'Public Record',
       techniques: ['Court records', 'News archives', 'Public database search'],
-      nodeCount: 14,
+      nodeCount: 8,
       difficulty: 'Moderate',
     },
   },
@@ -126,7 +126,7 @@ export default function ApartmentPage() {
           </div>
 
           {/* Scene note */}
-          <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28] hidden sm:block">
+          <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
             <p className="text-[#a09888] text-base italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif" }}>
               "You haven't been inside since she painted it. There's a monstera on the windowsill you don't recognise. Fairy lights she strung up before Christmas. One shoe by the door — the left one. The right one is nowhere."
             </p>

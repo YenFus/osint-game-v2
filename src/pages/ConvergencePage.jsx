@@ -247,7 +247,7 @@ export default function ConvergencePage() {
 
           {blockedChoice === 'call' && (
             <p className="font-mono text-[10px] text-red-900 mt-5 fade-in italic">
-              You don't have enough to confront him directly. He'll deny it, and then he'll run. Complete more threads first.
+              You don't have enough yet. Build a more complete case before taking direct action.
             </p>
           )}
 

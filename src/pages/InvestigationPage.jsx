@@ -111,7 +111,10 @@ export default function InvestigationPage() {
       })
     }
 
-    if (currentNode.journalistUnlock) unlockJournalist()
+    if (currentNode.journalistUnlock) {
+      unlockJournalist()
+      addNotification("Rosa Velasquez. Maya wrote this after everything else. 'She'll understand.'", 'info')
+    }
     if (currentNode.systemAlertAfter && !systemAlertShown) { setSystemAlertTrigger(prev => prev + 1); markSystemAlert() }
     if (currentNode.intercutAfter) { setIntercutText(currentNode.intercutAfter); setIntercutVisible(true) }
 

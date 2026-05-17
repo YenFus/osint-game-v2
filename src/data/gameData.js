@@ -467,7 +467,7 @@ export const GAME_DATA = {
             },
             {
               heading: null,
-              body: 'Thread A complete. The digital trail leads to a name.\n\nThe notebook will show you what she knew before she had the name.',
+              body: 'She was right about everything except Corey.\n\nThe trail runs cold here. But she knew that too — she left the notebook open on the desk for a reason.',
               handwritten: false,
             },
           ],

@@ -80,10 +80,20 @@ export default function ApartmentPage() {
   }, [handleQuickSave])
 
   return (
-    <div className="crt h-screen bg-[#08080e] flex flex-col overflow-hidden">
+    <div
+      className="crt h-screen flex flex-col overflow-hidden"
+      style={{
+        backgroundImage: "url('/images/apartment-bg.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 40%',
+        backgroundColor: '#08080e',
+      }}
+    >
+      {/* Dark overlay preserves readability on mobile (3D panel takes over on desktop) */}
+      <div className="absolute inset-0 md:hidden" style={{ background: 'rgba(4,4,10,0.88)', zIndex: 0 }} />
 
       {/* ── HEADER ── */}
-      <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between gap-2">
+      <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 relative" style={{ zIndex: 1, background: 'rgba(8,8,14,0.92)' }}>
         <button
           onClick={() => setPhase('menu')}
           className="font-mono text-xs sm:text-sm text-[#a0a098] hover:text-[#e0e0d8] hover:bg-[#1a1a28] tracking-[0.1em] sm:tracking-[0.15em] uppercase transition-all cursor-pointer px-2 sm:px-4 py-2 border border-[#3a3a48] hover:border-[#5a5a68] min-h-[44px] whitespace-nowrap"
@@ -105,10 +115,10 @@ export default function ApartmentPage() {
       </div>
 
       {/* ── MAIN LAYOUT ── */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 relative" style={{ zIndex: 1 }}>
 
         {/* ── LEFT SIDEBAR ── */}
-        <div className="apartment-sidebar w-full md:w-80 shrink-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto flex-1 md:flex-none">
+        <div className="apartment-sidebar w-full md:w-80 shrink-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto flex-1 md:flex-none" style={{ background: 'rgba(8,8,14,0.92)' }}>
 
           {/* Location */}
           <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
@@ -235,19 +245,6 @@ export default function ApartmentPage() {
                             <span className="text-[#808090]">Difficulty:</span>
                             <span className="text-[#b0b0c0]">{item.preview.difficulty}</span>
                           </div>
-                        </div>
-                        <div className="font-mono text-xs text-[#6090b0] tracking-[0.1em] uppercase mb-2">
-                          Techniques:
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {item.preview.techniques.map((tech, i) => (
-                            <span
-                              key={i}
-                              className="font-mono text-xs text-[#80a0c0] bg-[#101828] px-3 py-1"
-                            >
-                              {tech}
-                            </span>
-                          ))}
                         </div>
                         <div
                           style={{

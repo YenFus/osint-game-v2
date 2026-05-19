@@ -53,7 +53,7 @@ export const GAME_DATA = {
                 { name: 'lena_timeline.txt', type: 'file', content: 'LENA VASQUEZ — TIMELINE\n\nApr 14 — Last confirmed location: Millhaven Arts Night (Instagram post, @velvet.echo)\nApr 15 — No posts, no replies, phone off\nApr 16 — Reported missing by flatmate\nApr 17 — Police file: "no evidence of foul play"\n\nFlatmate said she\'d been anxious for weeks. Said she was "waiting for something to end."' },
                 { name: 'university_docs', type: 'folder', children: [
                   { name: 'SOC340_syllabus_spring.pdf', type: 'file', content: '[PDF Viewer] Sociology 340: Media & Society. Professor H. Vance. Mondays and Wednesdays, 10:00 AM. Final paper constitutes 40% of grade.' },
-                  { name: 'tuition_receipt_winter.pdf', type: 'file', content: '[PDF Viewer] Portland State University. Receipt of Payment. Amount: $4,200.\nStatus: PAID.' },
+                  { name: 'tuition_receipt_winter.pdf', type: 'file', content: '[PDF Viewer] Millhaven University. Receipt of Payment. Amount: $4,200.\nStatus: PAID.' },
                   { name: 'thesis_draft_v3.docx', type: 'file', content: 'Title: The Erosion of Privacy in the Digital Panopticon.\n\nAbstract: This paper explores how participatory surveillance platforms reconstruct social norms around expected visibility...' },
                 ]},
                 { name: 'desktop_archive', type: 'folder', children: [
@@ -687,7 +687,7 @@ export const GAME_DATA = {
             { id: 'dp-02', username: 'stillwater_m · Nov 26', text: 'I keep looking at that last Instagram photo. The building behind her — does anyone know what that is?', suspicious: false, wrongFeedback: "Asking about the building. He already knows — this is performed ignorance." },
             { id: 'dp-03', username: 'stillwater_m · Dec 6', text: 'The flatmate\'s name is Priya, right? Has she been interviewed extensively? I ask because flatmates often notice behavioral changes that family misses.', suspicious: true, correctFeedback: "Priya's name was only in the police report — not publicly available. This account named her without a source.", tagRequired: true },
             { id: 'dp-04', username: 'stillwater_m · Dec 14', text: 'I think the arts night location matters more than people are saying. I\'ve been to events there. Good venue but lots of exit points.', suspicious: true, correctFeedback: 'He describes the venue\'s exit points — knowledge a photographer with full access would have, not a distant community member.', tagRequired: true },
-            { id: 'dp-05', username: 'stillwater_m · Jan 3', text: 'She was at Pacific University, yeah? I know someone who might have taken a class with her.', suspicious: false, wrongFeedback: "Pacific University was mentioned in multiple news articles. Not insider knowledge." },
+            { id: 'dp-05', username: 'stillwater_m · Jan 3', text: 'She was at Millhaven University, yeah? I know someone who might have taken a class with her.', suspicious: false, wrongFeedback: "Millhaven University was mentioned in multiple news articles. Not insider knowledge." },
             { id: 'dp-06', username: 'stillwater_m · Jan 19', text: 'From what I understand, she\'d been anxious for several weeks before the disappearance. "Waiting for something to end" — that phrase keeps coming up from people who knew her.', suspicious: true, correctFeedback: "That exact phrase came from Priya's police interview. Not a public document — not reported in any news coverage. He has access to it.", tagRequired: true },
             { id: 'dp-07', username: 'stillwater_m · Feb 3', text: 'Corey Marsh is still my main focus. The location overlaps are hard to explain otherwise.', wrongFeedback: 'Still pushing the Corey misdirection. At this point Maya had already started to see through it.' },
             { id: 'dp-08', username: 'stillwater_m · Feb 10', text: 'Has anyone looked at her email contacts? There might be someone there who knew her movements.', wrongFeedback: 'General investigation suggestion. Too vague to flag.' },
@@ -963,16 +963,16 @@ export const GAME_DATA = {
             {
               name: 'Inbox',
               emails: [
-                { from: 'prof.chen@pacific.edu', subject: 'Re: Essay extension', date: 'Mar 8', preview: 'That\'s fine, Maya — just get it to me by the 15th.', body: 'Maya,\n\nThat\'s fine. Just get it to me by the 15th. Your writing has been strong this term.\n\n— Prof. Chen' },
-                { from: 'university-library@pacific.edu', subject: 'Library reminder', date: 'Mar 7', preview: '2 items due in 3 days.', body: 'Dear Maya,\n\nYou have 2 items due in 3 days:\n— The Art of Disappearing (Reference)\n— Digital Privacy: A Practical Guide\n\nRenew online or at the front desk.' },
-                { from: 'no-reply@pacific.edu', subject: 'Tuition payment processed', date: 'Mar 3', preview: 'Your spring semester payment has been received.', body: 'Your spring semester tuition payment has been processed. No action required.' },
+                { from: 'prof.chen@millhaven.edu', subject: 'Re: Essay extension', date: 'Mar 8', preview: 'That\'s fine, Maya — just get it to me by the 15th.', body: 'Maya,\n\nThat\'s fine. Just get it to me by the 15th. Your writing has been strong this term.\n\n— Prof. Chen' },
+                { from: 'university-library@millhaven.edu', subject: 'Library reminder', date: 'Mar 7', preview: '2 items due in 3 days.', body: 'Dear Maya,\n\nYou have 2 items due in 3 days:\n— The Art of Disappearing (Reference)\n— Digital Privacy: A Practical Guide\n\nRenew online or at the front desk.' },
+                { from: 'no-reply@millhaven.edu', subject: 'Tuition payment processed', date: 'Mar 3', preview: 'Your spring semester payment has been received.', body: 'Your spring semester tuition payment has been processed. No action required.' },
               ],
             },
             {
               name: 'Sent',
               emails: [
                 { to: 'rvelasquez@pacificreporter.org', subject: 'Re: Digital stalking research — potential case', date: 'Mar 6', preview: 'Rosa, I have three independent sources now...', body: 'Rosa,\n\nI have three independent sources. WHOIS, court record (harassment, case #MH-2021-0384), and direct photographic evidence placing this person at the last known location of the victim.\n\nI know who he is. I need to understand my options before I go to the police.\n\nCan we speak Thursday?\n\n— M', isJournalistClue: true },
-                { to: 'prof.chen@pacific.edu', subject: 'Essay extension request', date: 'Mar 5', preview: 'Hi Professor Chen, I need a week more on the essay...', body: 'Hi Professor Chen,\n\nI need a week more on the essay — personal situation. Nothing I can explain right now.\n\nThank you,\nMaya' },
+                { to: 'prof.chen@millhaven.edu', subject: 'Essay extension request', date: 'Mar 5', preview: 'Hi Professor Chen, I need a week more on the essay...', body: 'Hi Professor Chen,\n\nI need a week more on the essay — personal situation. Nothing I can explain right now.\n\nThank you,\nMaya' },
               ],
             },
             {

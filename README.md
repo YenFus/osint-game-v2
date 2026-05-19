@@ -2,7 +2,7 @@
 
 A noir mystery game where you play as a father using real OSINT (Open Source Intelligence) techniques to investigate your missing daughter's secret case.
 
-**Play it now:** [https://yenfus.github.io/osint-game/](https://yenfus.github.io/osint-game/)
+**Play it now:** [https://yenfus.github.io/osint-game-v2/](https://yenfus.github.io/osint-game-v2/)
 
 ---
 
@@ -60,3 +60,11 @@ npm run build
 ## Tech Stack
 
 React 19 + Vite + Zustand + Tailwind CSS v4, deployed to GitHub Pages.
+
+---
+
+## Copyright
+
+© 2025 Mohit Sarode. All rights reserved.
+
+This game and all its content — source code, story, characters, and design — are proprietary. The repository is public for transparency and to accept bug reports, but copying, redistribution, or derivative use is not permitted without written permission. See [LICENSE](./LICENSE) for details.

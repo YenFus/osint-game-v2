@@ -16,7 +16,7 @@ const ITEMS = [
     preview: {
       focus: 'Digital Trail',
       techniques: ['Social media analysis', 'Username correlation', 'Post timing'],
-      nodeCount: 14,
+      nodeCount: 13,
       difficulty: 'Moderate',
     },
   },
@@ -30,7 +30,7 @@ const ITEMS = [
     preview: {
       focus: 'Private Notes',
       techniques: ['Document recovery', 'Handwriting analysis', 'Timeline reconstruction'],
-      nodeCount: 11,
+      nodeCount: 12,
       difficulty: 'Challenging',
     },
   },
@@ -44,7 +44,7 @@ const ITEMS = [
     preview: {
       focus: 'Public Record',
       techniques: ['Court records', 'News archives', 'Public database search'],
-      nodeCount: 14,
+      nodeCount: 8,
       difficulty: 'Moderate',
     },
   },
@@ -80,13 +80,23 @@ export default function ApartmentPage() {
   }, [handleQuickSave])
 
   return (
-    <div className="crt h-screen bg-[#08080e] flex flex-col overflow-hidden">
+    <div
+      className="crt h-screen flex flex-col overflow-hidden"
+      style={{
+        backgroundImage: `url('${import.meta.env.BASE_URL}images/apartment-bg.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 40%',
+        backgroundColor: '#08080e',
+      }}
+    >
+      {/* Single dark overlay — mobile gets heavier tint for readability */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(4,4,10,0.55)', zIndex: 0 }} />
 
       {/* ── HEADER ── */}
-      <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between gap-2">
+      <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 md:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 relative" style={{ zIndex: 1, background: 'rgba(4,4,10,0.70)' }}>
         <button
           onClick={() => setPhase('menu')}
-          className="font-mono text-xs sm:text-sm text-[#a0a098] hover:text-[#e0e0d8] hover:bg-[#1a1a28] tracking-[0.1em] sm:tracking-[0.15em] uppercase transition-all cursor-pointer px-2 sm:px-4 py-2 border border-[#3a3a48] hover:border-[#5a5a68] min-h-[44px] whitespace-nowrap"
+          className="font-mono text-xs sm:text-sm text-[#a0a098] hover:text-[#e0e0d8] tracking-[0.1em] sm:tracking-[0.15em] uppercase transition-all cursor-pointer px-2 sm:px-4 py-2 min-h-[44px] whitespace-nowrap opacity-70 hover:opacity-100"
           aria-label="Return to main menu"
         >
           ← Back
@@ -96,7 +106,7 @@ export default function ApartmentPage() {
         </div>
         <button
           onClick={() => setShowSaveModal(true)}
-          className="font-mono text-xs sm:text-sm text-[#8ab0c8] border border-[#4a6080] px-2 sm:px-4 py-2 hover:border-[#6a90b0] hover:text-[#b0d0e8] hover:bg-[#0a1020] transition-all cursor-pointer tracking-[0.05em] sm:tracking-[0.1em] uppercase min-h-[44px] whitespace-nowrap"
+          className="font-mono text-xs sm:text-sm text-[#6a8aaa] hover:text-[#a0c8e0] px-2 sm:px-4 py-2 transition-all cursor-pointer tracking-[0.05em] sm:tracking-[0.1em] uppercase min-h-[44px] whitespace-nowrap opacity-70 hover:opacity-100"
           aria-label="Save game (Ctrl+S for quick save)"
           title="Save game (Ctrl+S for quick save)"
         >
@@ -105,10 +115,10 @@ export default function ApartmentPage() {
       </div>
 
       {/* ── MAIN LAYOUT ── */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 relative" style={{ zIndex: 1 }}>
 
         {/* ── LEFT SIDEBAR ── */}
-        <div className="apartment-sidebar w-full md:w-80 shrink-0 md:border-r border-[#0e0e18] flex flex-col overflow-y-auto flex-1 md:flex-none">
+        <div className="apartment-sidebar w-full md:w-80 shrink-0 md:border-r border-[#1a1a2a] flex flex-col overflow-y-auto flex-1 md:flex-none" style={{ background: 'rgba(4,4,10,0.82)' }}>
 
           {/* Location */}
           <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
@@ -126,7 +136,7 @@ export default function ApartmentPage() {
           </div>
 
           {/* Scene note */}
-          <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28] hidden sm:block">
+          <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
             <p className="text-[#a09888] text-base italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif" }}>
               "You haven't been inside since she painted it. There's a monstera on the windowsill you don't recognise. Fairy lights she strung up before Christmas. One shoe by the door — the left one. The right one is nowhere."
             </p>
@@ -154,12 +164,13 @@ export default function ApartmentPage() {
                       disabled={done}
                       aria-describedby={`preview-${item.id}`}
                       className={`
-                        w-full text-left border-2 transition-all duration-200 cursor-pointer
+                        w-full text-left transition-all duration-200 cursor-pointer
+                        border-l-2
                         ${done
-                          ? 'border-[#1a1a24] opacity-50 cursor-default'
+                          ? 'border-l-transparent opacity-40 cursor-default'
                           : isHovered
-                          ? 'border-red-700 bg-[#140808]'
-                          : 'border-[#2a2a38] hover:border-[#3a3a48]'
+                          ? 'border-l-red-700 bg-red-950/10'
+                          : 'border-l-transparent'
                         }
                       `}
                     >
@@ -185,7 +196,7 @@ export default function ApartmentPage() {
                                   setShowPreview(isShowingPreview ? null : item.id)
                                 }
                               }}
-                              className="font-mono text-sm text-[#6a8aaa] hover:text-[#8ab0d0] transition-colors cursor-pointer px-2 py-1 border border-[#3a5068] hover:border-[#5a80a8]"
+                              className="font-mono text-sm text-[#6a8aaa] hover:text-[#8ab0d0] transition-colors cursor-pointer px-2 py-1"
                               aria-label="Preview this investigation path"
                             >
                               ?
@@ -214,8 +225,8 @@ export default function ApartmentPage() {
                           left: '50%',
                           transform: 'translateX(-50%)',
                           width: 300,
-                          background: '#0a0a14',
-                          border: '2px solid #3a4a60',
+                          background: 'rgba(6,6,16,0.96)',
+                          borderTop: '1px solid #2a3a50',
                           padding: 18,
                           zIndex: 70,
                         }}
@@ -236,19 +247,6 @@ export default function ApartmentPage() {
                             <span className="text-[#b0b0c0]">{item.preview.difficulty}</span>
                           </div>
                         </div>
-                        <div className="font-mono text-xs text-[#6090b0] tracking-[0.1em] uppercase mb-2">
-                          Techniques:
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {item.preview.techniques.map((tech, i) => (
-                            <span
-                              key={i}
-                              className="font-mono text-xs text-[#80a0c0] bg-[#101828] px-3 py-1"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
                         <div
                           style={{
                             position: 'absolute',
@@ -257,9 +255,9 @@ export default function ApartmentPage() {
                             transform: 'translateX(-50%)',
                             width: 0,
                             height: 0,
-                            borderLeft: '10px solid transparent',
-                            borderRight: '10px solid transparent',
-                            borderTop: '10px solid #3a4a60',
+                            borderLeft: '8px solid transparent',
+                            borderRight: '8px solid transparent',
+                            borderTop: '8px solid rgba(6,6,16,0.96)',
                           }}
                         />
                       </div>
@@ -275,23 +273,28 @@ export default function ApartmentPage() {
             <div className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-4">
               Investigation Threads
             </div>
-            <div className="flex gap-3 mb-4">
+            <div className="flex gap-6 mb-4">
               {['A', 'B', 'C'].map((p) => (
-                <div key={p}
-                  className={`w-12 h-12 flex items-center justify-center font-mono text-base border-2 transition-all duration-300 font-medium ${
-                    paths[p].completed ? 'border-green-600 text-green-500 bg-green-950/20'
-                    : paths[p].started ? 'border-amber-600 text-amber-500 bg-amber-950/20'
-                    : 'border-[#3a3a48] text-[#6a6a78]'
-                  }`}
-                >
-                  {p}
+                <div key={p} className="flex flex-col items-center gap-1.5">
+                  <span className={`font-mono text-sm tracking-widest transition-all duration-300 font-medium ${
+                    paths[p].completed ? 'text-green-500'
+                    : paths[p].started ? 'text-amber-500'
+                    : 'text-[#4a4a58]'
+                  }`}>
+                    {p}
+                  </span>
+                  <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    paths[p].completed ? 'bg-green-500'
+                    : paths[p].started ? 'bg-amber-500'
+                    : 'bg-[#2a2a38]'
+                  }`} />
                 </div>
               ))}
             </div>
             {completedCount >= 2 && (
               <button
                 onClick={() => setPhase('convergence')}
-                className="w-full font-mono text-sm text-red-500 border-2 border-red-700 px-4 py-3 hover:bg-red-950 hover:bg-opacity-30 transition-all cursor-pointer tracking-wider uppercase fade-in pulse-red font-medium"
+                className="w-full font-mono text-sm text-red-500 hover:text-red-400 px-4 py-3 transition-all cursor-pointer tracking-wider uppercase fade-in pulse-red font-medium text-left"
               >
                 Convergence Available →
               </button>

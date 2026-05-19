@@ -68,13 +68,13 @@ export const GAME_DATA = {
                 ]},
                 { name: 'suspect_research', type: 'folder', children: [
                   { name: 'c_marsh_crossref.txt', type: 'file', handwritten: false, content: 'COREY MARSH — PERSON OF INTEREST\nCreated: Feb 4\nLast modified: Feb 15\n\nCorey Marsh. Lena\'s ex-boyfriend from before she moved to Portland.\n\nInitially flagged by forum member "stillwater_m" as obsessive.\nWent through his Reddit, Twitter archive, Flickr.\n\nHis Flickr has photos that look like they were taken near Lena\'s street. I need to pull the EXIF data from those photos. If he\'s taking pictures outside her apartment, I\'m calling the police.' },
-                  { name: 'username_scan_results_OLD.txt', type: 'file', content: 'USERNAME SCAN — c_marsh_pdx\nRun: Feb 4\n\nReddit: Active (u/c_marsh_pdx) — r/classiccars, r/Portland, r/mechanicadvice\nTwitter: Active\nFlickr: Active (c_marsh_pdx)\nForum (PDXmissing): Not registered' },
+                  { name: 'username_scan_results_OLD.txt', type: 'file', content: 'USERNAME SCAN — c_marsh_pdx\nRun: Feb 4\n\nReddit: Active (u/c_marsh_pdx) — r/classiccars, r/Portland, r/mechanicadvice\nTwitter: Active\nFlickr: Active (c_marsh_pdx)\nForum (PDXmissing): Not registered\n\n—\n\nNeed to run the same scan on stillwater_m.\nFlickr may have gone private by now — check Wayback Machine for cached public versions before the profile was locked.' },
                 ]},
-                { name: 'NOTES_DO_NOT_DELETE.txt', type: 'file', handwritten: true, content: 'The account pushing Corey as a suspect is stillwater_m.\n\nThis account knew Lena went to specific coffee shops she never mentioned online.\nKnew her university schedule.\nKnew her flatmate\'s name before I posted it anywhere.\n\nWho is stillwater_m?\n\nStarted forum account 14 months ago — one month after Lena disappeared.\nPost history is too clean. The concern sounds real but the knowledge is wrong.\n\nI need to find the person behind this handle.' },
+                { name: 'NOTES_DO_NOT_DELETE.txt', type: 'file', handwritten: true, content: 'The account pushing Corey as a suspect is stillwater_m.\n\nThis account knew Lena went to specific coffee shops she never mentioned online.\nKnew her university schedule.\nKnew her flatmate\'s name before I posted it anywhere.\n\nWho is stillwater_m?\n\nStarted forum account 14 months ago — one month after Lena disappeared.\nPost history is too clean. The concern sounds real but the knowledge is wrong.\n\nI need to find the person behind this handle.\n\n——\n\nChecked for a Twitter account. The link in the forum bio leads nowhere. Username search returns nothing — account is gone.' },
               ]},
               { name: 'photos', type: 'folder', children: [
                 { name: 'us_christmas_2023.jpg', type: 'file', content: '[Photo — Tom and Maya at the kitchen table, Christmas morning. Ray Callahan visible in the background, out of focus, holding a cup of coffee. His hand rests on the back of Maya\'s chair.]\n\nMetadata: "Ray\'s been at every Christmas since I was twelve. He was always around. — M"' },
-                { name: 'maya_bday_2024.jpg', type: 'file', content: '[Photo — Maya blowing out candles. Ray is leaning in from the right side of the frame, too close. His smile doesn\'t match his eyes.]' },
+                { name: 'maya_bday_2024.jpg', type: 'file', content: '[Photo — Maya blowing out candles, birthday cake. Ray Callahan is leaning in from the right side of the frame. He has a hand on Maya\'s shoulder.]' },
               ]},
             ],
           },
@@ -154,21 +154,21 @@ export const GAME_DATA = {
         content: {
           questions: [
             {
-              prompt: 'Maya\'s scanner found stillwater_m on six platforms. One of them shows the account was deleted after she began her investigation. Which platform?',
-              contextNote: 'Results from NOTES_DO_NOT_DELETE.txt: Reddit (active), Twitter (DELETED — account removed Oct 12), Flickr (active, private), Forum/PDXmissing (active), Instagram (no match), LinkedIn (no match).',
+              prompt: "Maya ran a username scan on stillwater_m across six platforms. On one, the profile doesn't exist at all — not private, not suspended, just gone. Which platform?",
+              contextNote: "Check NOTES_DO_NOT_DELETE.txt — Maya noted something about one of the linked accounts while she was building the profile.",
               acceptedAnswers: ['twitter', 'twitter.com', 'x.com', 'x'],
-              wrongFeedback: 'Check the results above again. Look for the platform listed as DELETED, not just inactive.',
-              hintFeedback: 'It\'s Twitter. The account was removed on October 12th — the same week the forum community began discussing the suspicious posts.',
+              wrongFeedback: "Maya noticed this in her own notes before running the formal scan. Check what she wrote about the forum bio link.",
+              hintFeedback: "In NOTES_DO_NOT_DELETE.txt: 'The link in the forum bio leads nowhere. Username search returns nothing.' She's talking about Twitter.",
             },
             {
-              prompt: 'The Flickr account is private, but Maya was able to access something. What did she use to recover the cached public version?',
-              contextNote: 'Her notes mention a web archiving tool that captures public pages before they\'re made private.',
+              prompt: "The Flickr profile went private before Maya could access it. She recovered the photos anyway. What tool did she use?",
+              contextNote: "Maya anticipated this might happen. She left herself a note about it in the earlier scan file.",
               acceptedAnswers: ['wayback', 'wayback machine', 'web.archive.org', 'archive.org', 'internet archive'],
-              wrongFeedback: 'Think about tools that take snapshots of websites over time. Maya mentioned it in her notes.',
-              hintFeedback: 'The Wayback Machine — web.archive.org — archives public pages automatically. Private settings only apply to future crawls.',
+              wrongFeedback: "Look at username_scan_results_OLD.txt — right at the bottom. Maya wrote a note to herself about how to handle a private Flickr profile.",
+              hintFeedback: "From Maya's note: 'Flickr may have gone private — check Wayback Machine for cached public versions before the profile was locked.'",
             },
           ],
-          completionNote: "Twitter deleted. Flickr cached.",
+          completionNote: "One account deleted. One gone private. Both changes happened after she started looking.",
         },
         unlocks: ['A6'],
       },
@@ -230,30 +230,26 @@ export const GAME_DATA = {
         unlocks: ['A5'],
       },
 
-      // A5 — Read: EXIF summary + Corey car verification
+      // A5 — Read: Brief working notes after cross-checking both Flickr archives
       {
         id: 'A5',
         type: 'read',
         path: 'A',
-        title: "Maya's Analysis Notes — EXIF + Corey Elimination",
+        title: "Maya's Notebook — Feb 15",
         tool: 'Document Viewer',
         timestamp: { text: '2 days before Maya disappeared', urgent: false },
         monologue: null,
         content: {
-          requiredScrollRatio: 0.82,
+          requiredScrollRatio: 0.75,
           sections: [
             {
-              heading: 'ANALYSIS — stillwater_m',
-              body: 'I have pulled the EXIF metadata from the cached stillwater_m photos.\n\nThree facts this account posted that were never public:\n\n1. Lena\'s Tuesday route (the coffee shop she used before class)\n2. Her flatmate Priya\'s name (disclosed only to police)\n3. That she was "waiting for something to end" (a phrase Priya used only in the police report)\n\nThis is not a helpful community member. This is someone with access to information that was either obtained through surveillance or proximity.',
-            },
-            {
-              heading: 'THE MILLHAVEN PHOTOS',
-              body: 'Three photos from the Flickr archive place stillwater_m at:\n\n— The Willamette Waterfront, April 13 at 7:52pm (one block from Lena\'s apartment, the night before she disappeared)\n— The Callahan Building, Millhaven, April 14 at 6:38pm (arts night, same venue as Lena\'s last post)\n— The Callahan Building, April 14 at 8:11pm (Lena was photographed there at 7:47pm)\n\nThis person was physically present at the venue on the night Lena disappeared. I need to find out who owns the Callahan Building.',
-              handwritten: false,
+              heading: null,
+              body: 'c_marsh_pdx — Tigard. 4414 Burnside Ave. Both nights.\n\nNot him.\n\nBack to stillwater_m.',
+              handwritten: true,
             },
             {
               heading: null,
-              body: 'The forum member pushing me toward Corey was misdirecting me. I wasted weeks. Stillwater_m watched me look the wrong way.',
+              body: 'stillwater-media.net\n\nWhoever owns that domain registered it under a real name. WHOIS lookup next.\n\nIf there\'s no privacy protection, I have a name.',
               handwritten: true,
             },
           ],
@@ -270,7 +266,6 @@ export const GAME_DATA = {
         tool: 'Twitter Archive',
         timestamp: { text: '1 day before Maya disappeared', urgent: false },
         monologue: null,
-        intercutAfter: "March 9, 11:47pm.\n\nRay opens his laptop.",
         osintTip: {
           id: 'twitter-archive',
           title: 'Archived Social Media',
@@ -323,7 +318,7 @@ export const GAME_DATA = {
             },
             {
               heading: 'WHOIS RESULTS',
-              body: 'Registrar: NameCheap\nRegistration date: October 28\nExpiry: October 28 (next year, auto-renewed)\nPrivacy protection: No\n\nRegistrant Name: R. Callahan\nRegistrant Organization: Callahan Media\nRegistrant Address: PO Box 441, Millhaven, OR 97411\nRegistrant Email: rcallahan@[redacted by me]\n\nCallahan.\n\nNot a common name. I cross-referenced with the Millhaven Arts Night attendee records I found in a local newspaper archive. There was a photographer listed: Ray Callahan, Callahan Media.',
+              body: 'Registrar: NameCheap\nRegistration date: October 28\nExpiry: October 28 (next year, auto-renewed)\nPrivacy protection: No\n\nRegistrant Name: R. Callahan\nRegistrant Organization: Callahan Media\nRegistrant Address: PO Box 441, Millhaven, OR 97411\nRegistrant Email: rcallahan@[redacted by me]\n\nCallahan.\n\nNot a common name. The Millhaven Arts Night gets local press coverage every year. I need to pull the newspaper archive and check for a photographer credit. If the name matches, the domain, the Twitter, and the newspaper are three independent sources.',
               handwritten: false,
             },
             {
@@ -354,14 +349,15 @@ export const GAME_DATA = {
               wrongFeedback: 'Look at the registrant organization field in the WHOIS results Maya recorded.',
             },
             {
-              prompt: 'Maya found the same name in a local newspaper archive listing for the arts night. What role is listed next to "Ray Callahan"?',
-              contextNote: 'She wrote: "There was a photographer listed: Ray Callahan, Callahan Media." Check what role the newspaper listed.',
-              acceptedAnswers: ['photographer', 'photography'],
-              wrongFeedback: "Re-read Maya's note about the newspaper archive. She records his listed role.",
+              prompt: 'You found Ray Callahan\'s name in the Millhaven Courier archive. What role is listed next to his name in the arts night coverage?',
+              contextNote: 'From the Millhaven Courier article you found in Thread C: look at the credit line for event photography.',
+              acceptedAnswers: ['photographer', 'photography', 'event photographer', 'event photography'],
+              wrongFeedback: "Check the Millhaven Courier article from the arts night — look at the photography credit.",
             },
           ],
           completionNote: "Callahan Media. The photographer.",
         },
+        requiresCompleted: { path: 'C', nodeId: 'C4', hint: 'Find the newspaper archive in Thread C first — the arts night coverage is what confirms his name.' },
         unlocks: ['A10'],
       },
 
@@ -467,7 +463,7 @@ export const GAME_DATA = {
             },
             {
               heading: null,
-              body: 'Thread A complete. The digital trail leads to a name.\n\nThe notebook will show you what she knew before she had the name.',
+              body: 'She was right about everything except Corey.\n\nThe trail runs cold here. But she knew that too — she left the notebook open on the desk for a reason.',
               handwritten: false,
             },
           ],
@@ -488,48 +484,40 @@ export const GAME_DATA = {
         content: {
           variant: 'flickr',
           username: 'c_marsh_pdx',
-          description: 'Portland, OR. Cars, mostly.',
-          photos: [
+          albums: [
             {
-              id: 'cm-001',
-              url: '/api/placeholder/400/300',
-              caption: '1967 Chevelle Quarter Panel - Primer',
-              date: 'Oct 14, 2023',
-              metadata: {
-                Camera: 'iPhone 11',
-                Location: '4414 Burnside, Tigard, OR (Pacific Restorations Auto Body)',
-                Time: '8:42 PM',
-              },
-              suspicious: false,
-            },
-            {
-              id: 'cm-002',
-              url: '/api/placeholder/400/300',
-              caption: 'Late night shift at the shop',
-              date: 'Oct 14, 2023',
-              metadata: {
-                Camera: 'iPhone 11',
-                Location: '4414 Burnside, Tigard, OR (Pacific Restorations Auto Body)',
-                Time: '11:15 PM',
-              },
-              suspicious: false,
-            },
-            {
-              id: 'cm-003',
-              url: '/api/placeholder/400/300',
-              caption: 'Almost ready for paint',
-              date: 'Nov 02, 2023',
-              metadata: {
-                Camera: 'iPhone 11',
-                Location: '4414 Burnside, Tigard, OR (Pacific Restorations Auto Body)',
-                Time: '6:30 PM',
-              },
-              suspicious: false,
+              id: 'album-restorations',
+              name: 'Pacific Restorations — 2023',
+              photos: [
+                {
+                  id: 'cm-001',
+                  filename: 'chevelle_primer_01.jpg',
+                  exif: { 'GPS Location': '4414 Burnside Ave, Tigard, OR — Pacific Restorations Auto Body', 'Taken': 'Apr 13, 2023 — 7:54 PM', 'Device': 'iPhone 11' },
+                  caption: '1967 Chevelle Quarter Panel — primer coat done. Long night ahead.',
+                  suspicious: false,
+                  wrongFeedback: "Auto body shop in Tigard, April 13th. He was at work — 35 miles from Lena's apartment.",
+                },
+                {
+                  id: 'cm-002',
+                  filename: 'late_shift_apr13.jpg',
+                  exif: { 'GPS Location': '4414 Burnside Ave, Tigard, OR — Pacific Restorations Auto Body', 'Taken': 'Apr 13, 2023 — 11:38 PM', 'Device': 'iPhone 11' },
+                  caption: 'Still here. Worth it though.',
+                  suspicious: false,
+                  wrongFeedback: "Same shop, 11:38pm on April 13th. Still at work. The night before Lena disappeared.",
+                },
+                {
+                  id: 'cm-003',
+                  filename: 'paint_booth_apr14.jpg',
+                  exif: { 'GPS Location': '4414 Burnside Ave, Tigard, OR — Pacific Restorations Auto Body', 'Taken': 'Apr 14, 2023 — 3:12 PM', 'Device': 'iPhone 11' },
+                  caption: 'Into the booth finally. Three months of work.',
+                  suspicious: false,
+                  wrongFeedback: "April 14th — the day Lena disappeared. He's photographed at the shop in Tigard at 3pm. He has an alibi.",
+                },
+              ],
             },
           ],
           requiredPhotoIds: ['cm-001', 'cm-002'],
-          wrongPhotoLimit: 3,
-          completionNote: "Wait... the address isn't near Lena's apartment. It's an auto body shop in Tigard. He was working on cars all night.",
+          completionNote: "April 13th, 11:38pm. April 14th, 3:12pm. Both at 4414 Burnside, Tigard — an auto body shop. Corey Marsh was at work on both critical dates. He couldn't have been following Lena. stillwater_m pointed me here knowing I'd waste weeks.",
         },
         unlocks: [],
       },
@@ -595,7 +583,7 @@ export const GAME_DATA = {
             },
           ],
         },
-        nextNode: 'B2',
+        unlocks: ['B2'],
       },
 
       // B2 — Browse: forum archive — find 23 stillwater_m posts
@@ -640,7 +628,7 @@ export const GAME_DATA = {
           requiredTagIds: ['fp-03', 'fp-05', 'fp-07', 'fp-09', 'fp-11'],
           completionNote: "Five posts. Each one either pushing the Corey angle or disclosing information that was never public. Maya underlined them all in red.",
         },
-        nextNode: 'B3',
+        unlocks: ['B3'],
       },
 
       // B3 — Slider: pages 4-6
@@ -680,7 +668,8 @@ export const GAME_DATA = {
             },
           ],
         },
-        nextNode: 'B4',
+        requiresCompleted: { path: 'C', nodeId: 'C4', hint: 'Check the newspaper archive in Thread C first — Maya cross-referenced it in this notebook entry.' },
+        unlocks: ['B4'],
       },
 
       // B4 — Tag: 3 posts showing insider knowledge (subtle)
@@ -707,7 +696,7 @@ export const GAME_DATA = {
           wrongTagLimit: 3,
           completionNote: "Three posts. The flatmate's name. The venue exit points. The exact phrase from a sealed police interview. Maya underlined these in green and wrote: 'He has access to things he shouldn't have access to.'",
         },
-        nextNode: 'B5',
+        unlocks: ['B5'],
         systemAlertAfter: true,
       },
 
@@ -736,7 +725,7 @@ export const GAME_DATA = {
           ],
           completionNote: "The police report. RC = Ray Callahan. Maya wrote both answers in the margin of her notebook and drew a line between them.",
         },
-        nextNode: 'B6',
+        unlocks: ['B6'],
       },
 
       // B6 — Input: WHOIS domain
@@ -759,7 +748,7 @@ export const GAME_DATA = {
           ],
           completionNote: "Millhaven. He never left. He's still there.",
         },
-        nextNode: 'B7',
+        unlocks: ['B7'],
       },
 
       // B7 — Navigate: cached Blogger page
@@ -801,7 +790,7 @@ export const GAME_DATA = {
           },
           requiredFiles: ['index.html', 'page-source.txt'],
         },
-        nextNode: 'B8',
+        unlocks: ['B8'],
       },
 
       // B8 — Input: what name in meta tag
@@ -830,7 +819,7 @@ export const GAME_DATA = {
           ],
           completionNote: "Ray Callahan. rcallahan_admin. The same name in every layer — the WHOIS, the HTML, the newspaper archive. This isn't circumstantial anymore.",
         },
-        nextNode: 'B9',
+        unlocks: ['B9'],
       },
 
       // B9 — Slider: pages 12-15
@@ -871,14 +860,15 @@ export const GAME_DATA = {
             {
               id: 'b-p15',
               date: 'March 1',
-              text: 'I went to Thread C.\n\nThe sticky note. On the back of the corkboard. She has a journalist contact.\n\nI wrote down the name.\n\nRosa Velasquez. Pacific Reporter.',
+              text: 'I went back to the corkboard.\n\nThe sticky note. On the back of the board — I almost missed it. She has a journalist contact.\n\nI wrote down the name.\n\nRosa Velasquez. Pacific Reporter.',
               targetBrightness: 155,
               targetContrast: 180,
               tolerance: 26,
             },
           ],
         },
-        nextNode: 'B10',
+        requiresCompleted: { path: 'C', nodeId: 'C8', hint: 'Explore the corkboard in Thread C first — Maya found something there.' },
+        unlocks: ['B10'],
       },
 
       // B10 — Input: who has access to what
@@ -901,7 +891,7 @@ export const GAME_DATA = {
           ],
           completionNote: "She was trying to protect him. By protecting him, she protected Ray. And Ray saw her coming.",
         },
-        nextNode: 'B11',
+        unlocks: ['B11'],
       },
 
       // B11 — Slider: pages 16-18 (system alert fires here)
@@ -942,8 +932,8 @@ export const GAME_DATA = {
             },
           ],
         },
-        nextNode: 'B12',
-        intercutAfter: "March 9. 11:52pm.\n\nRay's phone lights up.\n\nA notification from the laptop monitoring software.\n\n'New document created: draft_email.txt'",
+        requiresCompleted: { path: 'C', nodeId: 'C6', hint: "Pull the court record in Thread C first — it's what confirms the name." },
+        unlocks: ['B12'],
       },
 
       // B12 — Navigate: Gmail
@@ -996,52 +986,7 @@ export const GAME_DATA = {
           ],
           completionNote: null,
         },
-        nextNode: 'B13',
-      },
-
-      // B13 — TypewriterNode: the email reveal
-      {
-        id: 'B13',
-        type: 'typewriter',
-        path: 'B',
-        title: "The Unsent Email",
-        tool: null,
-        timestamp: { text: 'March 9, 11:47pm', urgent: true },
-        monologue: null,
-        content: {
-          fullscreen: true,
-          header: [
-            { label: 'From', value: 'maya.t@gmail.com' },
-            { label: 'To', value: '[unsent]' },
-            { label: 'Subject', value: 'Dad' },
-            { label: 'Drafted', value: 'March 9, 11:47pm' },
-          ],
-          segments: [
-            { text: 'Dad,\n\n', delay: 70 },
-            { text: "I don't know how to write this.\n\n", delay: 60 },
-            { text: "I've been working on a case for three months. A woman named Lena.\n\n", delay: 55 },
-            { text: "I know you'd have been upset that I didn't tell you. I'm sorry.\n\n", delay: 60 },
-            { text: "I found something.\n\n", delay: 65 },
-            { text: "Dad,", delay: 90, pauseAfter: 800 },
-            { text: " it's Ray.", delay: 130, pauseAfter: 3200 },
-            { text: "\n\n", delay: 50 },
-            { text: "I know how that sounds.\n\n", delay: 70 },
-            { text: "I've verified it three ways. The domain. The court record. The photos from the arts night.\n\n", delay: 55 },
-            { text: "He was there the night she disappeared. He had a restraining order. He knew things about her that were never public.\n\n", delay: 55 },
-            { text: "He has a key to the apartment.\n\n", delay: 75, pauseAfter: 1200 },
-            { text: "I'm sending this from the library tomorrow morning. Don't call him. Go straight to Detective Reyes.\n\n", delay: 55 },
-            { text: "I love you.\n\n", delay: 80 },
-            { text: "— M", delay: 90 },
-          ],
-          postTypingPause: 1800,
-          monologueLines: [
-            { text: 'I read it three times.', delay: 1400 },
-            { text: 'I kept waiting for a different name.', delay: 2000 },
-            { text: 'She was going to send it in the morning.', delay: 2200 },
-            { text: 'He knew she was going to send it in the morning.', delay: 2400 },
-          ],
-        },
-        nextNode: null,
+        unlocks: [],
       },
     ],
   },
@@ -1091,7 +1036,7 @@ export const GAME_DATA = {
           wrongTagLimit: 3,
           completionNote: "Three photos. The circled figure. The map. The building match. Maya built this board to show the same person in three places. You're going to find out who he is.",
         },
-        nextNode: 'C2',
+        unlocks: ['C2'],
       },
 
       // C2 — Tag: zoom into arts night photo
@@ -1115,7 +1060,7 @@ export const GAME_DATA = {
           wrongTagLimit: 3,
           completionNote: "The banner. The lanyard. The table. Three details in the same photo. She was building the case that Callahan Media — the photographer — was present at the venue when Lena disappeared.",
         },
-        nextNode: 'C3',
+        unlocks: ['C3'],
       },
 
       // C3 — Input: event search
@@ -1149,13 +1094,14 @@ export const GAME_DATA = {
             },
             {
               prompt: 'If you wanted to find the official organizer of the Millhaven Arts Night, where would you look first?',
+              contextNote: "Any public event with a venue and over ~50 attendees requires a permit filed with the city or county. That application names the official organizer — it's a public record.",
               acceptedAnswers: ['city clerk', 'permit', 'event permit', 'county', 'newspaper', 'millhaven courier', 'news', 'local newspaper', 'archive'],
               wrongFeedback: "Think about what public record would list an event's organizer. Hint: large public events require official permits.",
             },
           ],
           completionNote: "The Callahan Building. Named after the family. Ray Callahan's family. He wasn't just the photographer — he grew up there.",
         },
-        nextNode: 'C4',
+        unlocks: ['C4'],
       },
 
       // C4 — Browse: newspaper archive — find matching building
@@ -1197,7 +1143,7 @@ export const GAME_DATA = {
           requiredTagIds: ['ta-01', 'ta-02', 'ta-04'],
           completionNote: "Three items: the photographer credit, Lena's confirmed attendance, and the case number. Three fragments of the same story.",
         },
-        nextNode: 'C5',
+        unlocks: ['C5'],
       },
 
       // C5 — Browse: business registry
@@ -1237,7 +1183,7 @@ export const GAME_DATA = {
           requiredTagIds: ['br-01', 'br-02', 'br-04'],
           completionNote: "Raymond T. Callahan. PO Box 441. Callahan Media and Stillwater Media — both his, same address. The username was his old company name.",
         },
-        nextNode: 'C6',
+        unlocks: ['C6'],
       },
 
       // C6 — Tag: tag key facts in court record
@@ -1276,8 +1222,7 @@ export const GAME_DATA = {
           requiredTagIds: ['cr-01', 'cr-02', 'cr-03'],
           completionNote: "Four years ago. A different woman, a different city. The same pattern: pseudonymous accounts, email monitoring, showing up where she shouldn't be. He's done this before.",
         },
-        intercutAfter: "March 9th.\n\nLena was at the Callahan Building.\n\nThe exit she used leads to the staff parking lot.\n\nRay Callahan had a key to that lot.",
-        nextNode: 'C7',
+        unlocks: ['C7'],
       },
 
       // C7 — Connect: evidence chain
@@ -1307,7 +1252,7 @@ export const GAME_DATA = {
           wrongFeedback: 'No direct connection between those two. Try a different pair — look for shared names, addresses, or behaviors.',
           completionNote: "All five connections. One address. One name. Three independent trails from three separate starting points — and they all end in the same place.",
         },
-        nextNode: 'C8',
+        unlocks: ['C8'],
       },
 
       // C8 — Read: final board survey + journalist unlock
@@ -1333,7 +1278,7 @@ export const GAME_DATA = {
           },
           requiredFiles: ['front_of_board.txt', 'sticky_note_back_of_board.txt'],
         },
-        nextNode: null,
+        unlocks: [],
       },
     ],
   },

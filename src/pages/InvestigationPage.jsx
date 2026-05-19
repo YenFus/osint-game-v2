@@ -37,6 +37,25 @@ const NODE_INSTRUCTIONS = {
   connect: { action: 'Link related evidence', icon: '🔗' }, typewriter: { action: 'Watch carefully', icon: '⌨️' },
 }
 
+function EvidenceBoardButton({ onClick }) {
+  const evidence = useGameStore(s => s.evidence)
+  const count = evidence.length
+  return (
+    <button
+      onClick={onClick}
+      className="font-mono text-xs px-3 py-2 min-h-[44px] transition-all flex items-center gap-1.5 opacity-70 hover:opacity-100"
+      style={{ color: count > 0 ? '#d4a84b' : '#6a6a78' }}
+    >
+      {count > 0 && (
+        <span className="flex items-center justify-center rounded-full w-4 h-4 text-[9px] font-bold bg-[#c0392b] text-white">
+          {count}
+        </span>
+      )}
+      Board
+    </button>
+  )
+}
+
 export default function InvestigationPage() {
   const {
     activePath, systemAlertShown, perfectPaths, paths,
@@ -78,6 +97,7 @@ export default function InvestigationPage() {
   const [systemAlertTrigger, setSystemAlertTrigger] = useState(0)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showCaseNotes, setShowCaseNotes] = useState(false)
+  const [showEvidenceBoard, setShowEvidenceBoard] = useState(false)
 
   // Track intro
   const getPathIntroKey = (p) => `maya-path-intro-${p}-v2`
@@ -111,7 +131,10 @@ export default function InvestigationPage() {
       })
     }
 
-    if (currentNode.journalistUnlock) unlockJournalist()
+    if (currentNode.journalistUnlock) {
+      unlockJournalist()
+      addNotification("Rosa Velasquez. Maya wrote this after everything else. 'She'll understand.'", 'info')
+    }
     if (currentNode.systemAlertAfter && !systemAlertShown) { setSystemAlertTrigger(prev => prev + 1); markSystemAlert() }
     if (currentNode.intercutAfter) { setIntercutText(currentNode.intercutAfter); setIntercutVisible(true) }
 
@@ -174,8 +197,8 @@ export default function InvestigationPage() {
         </p>
         <button
           onClick={() => setPhase('apartment')}
-          className="font-mono text-sm px-6 py-3 border-2 transition-all hover:bg-[#1a2030]"
-          style={{ borderColor: '#4a90d9', color: '#4a90d9' }}
+          className="font-mono text-sm px-6 py-3 transition-all hover:opacity-100 opacity-70"
+          style={{ color: '#4a90d9' }}
         >
           ← Return to Apartment
         </button>
@@ -189,7 +212,7 @@ export default function InvestigationPage() {
       <div className="shrink-0 border-b border-[#1a1a28] px-3 sm:px-4 py-3 relative flex items-center justify-between z-10">
         <button
           onClick={() => currentNode ? closeNode() : setPhase('apartment')}
-          className="font-mono text-xs sm:text-sm px-3 py-2 border-2 border-[#3a3a48] text-[#a0a098] hover:border-[#5a5a68] hover:text-[#d0d0c8] transition-all min-h-[44px]"
+          className="font-mono text-xs sm:text-sm px-3 py-2 text-[#a0a098] hover:text-[#d0d0c8] transition-all min-h-[44px] opacity-70 hover:opacity-100"
         >
           ← {currentNode ? 'Desktop' : 'Back'}
         </button>
@@ -206,27 +229,25 @@ export default function InvestigationPage() {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <div className="font-mono text-xs px-2 py-1 bg-[#1a1a28] rounded" style={{ color: '#6a8aaa' }}>
             {completedNodeIds.length}/{nodes.length}
           </div>
 
+          <EvidenceBoardButton onClick={() => setShowEvidenceBoard(true)} />
+
           <button
             onClick={() => setShowCaseNotes(true)}
-            className="font-mono text-xs px-3 py-2 border-2 min-h-[44px] transition-all"
-            style={{
-              borderColor: '#5a4030', color: '#c09070', background: 'rgba(58, 40, 32, 0.3)',
-            }}
+            className="font-mono text-xs px-3 py-2 min-h-[44px] transition-all opacity-70 hover:opacity-100"
+            style={{ color: '#c09070' }}
           >
             Notes
           </button>
 
           <button
             onClick={() => setShowSaveModal(true)}
-            className="font-mono text-xs px-3 py-2 border-2 min-h-[44px] transition-all"
-            style={{
-              borderColor: '#4a6080', color: '#8aa0b8', background: 'rgba(42, 48, 64, 0.3)',
-            }}
+            className="font-mono text-xs px-3 py-2 min-h-[44px] transition-all opacity-70 hover:opacity-100"
+            style={{ color: '#8aa0b8' }}
           >
             Save
           </button>
@@ -290,8 +311,13 @@ export default function InvestigationPage() {
                    <h2 className="font-mono text-sm tracking-widest text-[#d8d0c0] uppercase">{meta.label} // Desktop</h2>
                    <p className="font-mono text-xs text-[#5a5a68] mt-1">Investigate leads in any order to form connections.</p>
                 </div>
-                <div className="font-mono text-xs text-[#8a8a98] bg-[#0f0f18] px-3 py-1 border border-[#2a2a38] rounded">
-                   {unlockedNodeIds.length - completedNodeIds.length} ACTIVE LEADS
+                <div className="font-mono text-xs text-[#8a8a98] px-3 py-1">
+                   {unlockedNodeIds.filter(id => {
+                     const n = nodes.find(nn => nn.id === id)
+                     if (!n || completedNodeIds.includes(id)) return false
+                     const req = n.requiresCompleted
+                     return !req || paths[req.path]?.completedNodes?.includes(req.nodeId)
+                   }).length} ACTIVE LEADS
                 </div>
              </div>
              
@@ -301,6 +327,34 @@ export default function InvestigationPage() {
                  if (!node) return null
                  const isCompleted = completedNodeIds.includes(nodeId)
                  const nodeInst = NODE_INSTRUCTIONS[node.type]
+
+                 // Cross-path lock check
+                 const req = node.requiresCompleted
+                 const isLocked = req && !paths[req.path]?.completedNodes?.includes(req.nodeId)
+
+                 if (isLocked) {
+                   return (
+                     <div
+                       key={nodeId}
+                       className="flex flex-col items-center justify-center p-6 border text-center gap-3 relative"
+                       style={{
+                         borderColor: '#1e1e26',
+                         background: 'rgba(10,10,14,0.7)',
+                         opacity: 0.55,
+                       }}
+                     >
+                       <span className="text-3xl" style={{ filter: 'grayscale(100%) opacity(40%)' }}>🔒</span>
+                       <div>
+                         <div className="font-mono text-xs font-semibold mb-2" style={{ color: '#5a5a68' }}>
+                           {node.title}
+                         </div>
+                         <div className="font-mono text-[9px] leading-relaxed" style={{ color: '#4a4a58' }}>
+                           {req.hint}
+                         </div>
+                       </div>
+                     </div>
+                   )
+                 }
 
                  return (
                    <button
@@ -316,7 +370,7 @@ export default function InvestigationPage() {
                      {!isCompleted && (
                        <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#d4a017] animate-pulse shadow-[0_0_8px_#d4a017]" />
                      )}
-                     <span 
+                     <span
                         className="text-4xl transition-all"
                         style={{ filter: isCompleted ? 'grayscale(100%) opacity(60%)' : 'drop-shadow(0 0 10px rgba(255,255,255,0.1))' }}
                      >
@@ -338,7 +392,7 @@ export default function InvestigationPage() {
         </div>
       )}
 
-      <EvidenceBoard />
+      <EvidenceBoard isOpen={showEvidenceBoard} onClose={() => setShowEvidenceBoard(false)} />
 
       <IntercutOverlay text={intercutText} visible={intercutVisible} onDismiss={() => { setIntercutVisible(false); setIntercutText(null) }} />
       <SystemAlertFlash trigger={systemAlertTrigger} />

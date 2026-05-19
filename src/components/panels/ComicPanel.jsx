@@ -3,12 +3,17 @@
 //
 // Displays narration text centered on a dark background.
 // Used for the text-only prologue sequence.
+//
+// Supports two panel types:
+//   'chapter' — centered single-line typewriter narration
+//   'diary'   — full journal-page layout (DiaryPanel)
 // ─────────────────────────────────────────────────────────────────
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import NarrationBox from './NarrationBox'
+import DiaryPanel from './DiaryPanel'
 
-// ── Chapter panel (full black, centered text) ─────────────────────
+// ── Chapter panel (full black, centered typewriter text) ──────────
 function ChapterPanel({ panelData, onNarrationComplete, skipToEnd }) {
   return (
     <div className="absolute inset-0 flex items-center justify-center"
@@ -46,11 +51,18 @@ export default function ComicPanel({
       className={`absolute inset-0 ${transitionClass}`}
       style={{ zIndex: 10 }}
     >
-      <ChapterPanel
-        panelData={panelData}
-        onNarrationComplete={onNarrationComplete}
-        skipToEnd={skipToEnd}
-      />
+      {panelData.type === 'diary' ? (
+        <DiaryPanel
+          panelData={panelData}
+          onNarrationComplete={onNarrationComplete}
+        />
+      ) : (
+        <ChapterPanel
+          panelData={panelData}
+          onNarrationComplete={onNarrationComplete}
+          skipToEnd={skipToEnd}
+        />
+      )}
     </div>
   )
 }

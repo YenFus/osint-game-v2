@@ -5,7 +5,7 @@ import { useAudio } from '../hooks/useAudio'
 // Map game phases to ambient tracks — convergence and ending now have distinct sounds
 const PHASE_AUDIO = {
   menu: 'drone',
-  story: 'rain',
+  story: 'drone',
   apartment: 'apartment',
   investigation: 'investigation',
   convergence: 'convergence',

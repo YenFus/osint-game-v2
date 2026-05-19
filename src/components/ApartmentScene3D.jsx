@@ -1,194 +1,226 @@
 // ─────────────────────────────────────────────────────────────────
-// APARTMENT SCENE — Clean card-based selection
+// APARTMENT SCENE — Hybrid visual: Blender bg + 3D evidence board
 //
-// Instead of a messy SVG room, present three clear investigation
-// options as cards. Clean, professional, no confusion.
+// The right panel of the Apartment hub. Shows a Blender-rendered
+// noir apartment interior as a background, with a react-three-fiber
+// evidence board (corkboard + photos + red string) as the 3D accent.
+//
+// Navigation stays entirely in the left sidebar — this panel is
+// purely atmospheric. No click targets here.
 // ─────────────────────────────────────────────────────────────────
 
-import { useState } from 'react'
-import { useGameStore } from '../store/gameStore'
+import { useRef, useMemo, Suspense } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Line } from '@react-three/drei'
 
-const INVESTIGATIONS = [
-  {
-    id: 'A',
-    label: "Maya's Laptop",
-    icon: '💻',
-    description: 'Her screen was still on when I found it. Seventeen tabs. She was in the middle of something.',
-    focus: 'Digital Trail',
-    techniques: ['Social media analysis', 'Username correlation', 'File metadata'],
-    color: '#4a90d9',
-    bgColor: 'rgba(74, 144, 217, 0.08)',
-  },
-  {
-    id: 'B',
-    label: 'Burned Notebook',
-    icon: '📓',
-    description: 'Sitting in the kitchen sink. Someone tried to burn it. Not everything is gone.',
-    focus: 'Private Notes',
-    techniques: ['Document recovery', 'Handwriting analysis', 'Timeline reconstruction'],
-    color: '#c0392b',
-    bgColor: 'rgba(192, 57, 43, 0.08)',
-  },
-  {
-    id: 'C',
-    label: 'Investigation Board',
-    icon: '📌',
-    description: "A corkboard covered in photos and red string. This wasn't here last time I visited.",
-    focus: 'Public Record',
-    techniques: ['Court records', 'News archives', 'Public databases'],
-    color: '#d4a017',
-    bgColor: 'rgba(212, 160, 23, 0.08)',
-  },
-]
+// ── Evidence Board (3D accent) ────────────────────────────────────
+function EvidenceBoard() {
+  const groupRef = useRef(null)
 
-export function ApartmentScene3D({ onNavigate }) {
-  const { paths } = useGameStore()
-  const [hoveredId, setHoveredId] = useState(null)
-  const [fading, setFading] = useState(false)
+  // Slow idle sway — like a board on a wall with air movement
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return
+    const t = clock.elapsedTime
+    groupRef.current.rotation.z = Math.sin(t * 0.28) * 0.018
+    groupRef.current.rotation.x = Math.sin(t * 0.19) * 0.008
+  })
 
-  const handleClick = (id) => {
-    if (paths[id]?.completed) return
-    setFading(true)
-    setTimeout(() => {
-      onNavigate(id)
-    }, 300)
-  }
+  // Photo positions scattered across the board face
+  const photos = useMemo(() => [
+    { x: -0.82, y:  0.58, rot: -0.14 },
+    { x:  0.15, y:  0.75, rot:  0.07 },
+    { x:  0.88, y:  0.50, rot: -0.05 },
+    { x: -0.60, y: -0.18, rot:  0.13 },
+    { x:  0.52, y: -0.08, rot: -0.17 },
+    { x: -0.10, y: -0.68, rot:  0.06 },
+    { x:  0.82, y: -0.58, rot: -0.10 },
+  ], [])
+
+  // String routes: pairs of photo indices
+  const strings = useMemo(() => [
+    [0, 1], [1, 2], [2, 4], [0, 3], [3, 5], [1, 4], [4, 6], [3, 6],
+  ], [])
+
+  const photoTones = ['#e8dcc8', '#d4c8b4', '#c8bea8']
+  const pinColors  = ['#c0392b', '#d4a84b', '#c0392b', '#d4a84b', '#c0392b', '#d4a84b', '#c0392b']
 
   return (
+    <group ref={groupRef}>
+
+      {/* ── Frame (dark wood border) ───────────────────────────── */}
+      <mesh position={[0, 0, -0.01]}>
+        <boxGeometry args={[3.1, 2.55, 0.06]} />
+        <meshStandardMaterial color="#2a1c10" roughness={1.0} metalness={0} />
+      </mesh>
+
+      {/* ── Cork board surface ─────────────────────────────────── */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[2.9, 2.35, 0.07]} />
+        <meshStandardMaterial color="#5c3d1e" roughness={0.97} metalness={0} />
+      </mesh>
+
+      {/* ── Subtle cork texture overlay (slightly lighter patches) */}
+      {[-0.6, 0, 0.7].map((x, i) =>
+        [-0.5, 0.5].map((y, j) => (
+          <mesh key={`tex-${i}-${j}`} position={[x, y, 0.04]}>
+            <planeGeometry args={[0.6, 0.4]} />
+            <meshStandardMaterial
+              color="#6b4a25"
+              roughness={1}
+              transparent
+              opacity={0.4}
+            />
+          </mesh>
+        ))
+      )}
+
+      {/* ── Photos ─────────────────────────────────────────────── */}
+      {photos.map((p, i) => (
+        <mesh key={`photo-${i}`} position={[p.x, p.y, 0.08]} rotation={[0, 0, p.rot]}>
+          <planeGeometry args={[0.52, 0.37]} />
+          <meshStandardMaterial
+            color={photoTones[i % 3]}
+            roughness={0.85}
+          />
+        </mesh>
+      ))}
+
+      {/* ── Pins ───────────────────────────────────────────────── */}
+      {photos.map((p, i) => (
+        <mesh key={`pin-${i}`} position={[p.x, p.y + 0.18, 0.13]}>
+          <sphereGeometry args={[0.032, 10, 10]} />
+          <meshStandardMaterial
+            color={pinColors[i]}
+            emissive={pinColors[i]}
+            emissiveIntensity={0.25}
+            roughness={0.25}
+            metalness={0.6}
+          />
+        </mesh>
+      ))}
+
+      {/* ── Red string ─────────────────────────────────────────── */}
+      {strings.map(([ai, bi], i) => {
+        const a = photos[ai]
+        const b = photos[bi]
+        // Add a slight sag in the middle for realism
+        const mx = (a.x + b.x) / 2
+        const my = (a.y + b.y) / 2 - 0.04
+        return (
+          <Line
+            key={`string-${i}`}
+            points={[
+              [a.x, a.y + 0.18, 0.12],
+              [mx,  my,         0.12],
+              [b.x, b.y + 0.18, 0.12],
+            ]}
+            color="#a02020"
+            lineWidth={1.2}
+          />
+        )
+      })}
+
+    </group>
+  )
+}
+
+// ── Fallback (shown while Canvas initialises) ─────────────────────
+function SceneFallback() {
+  return (
     <div
-      className="relative w-full h-full flex flex-col items-center justify-center p-6"
-      style={{ background: 'linear-gradient(180deg, #0c0c14 0%, #08080e 100%)' }}
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ background: 'transparent' }}
     >
-      {/* Header */}
-      <div className="text-center mb-8">
-        <p
-          className="text-lg sm:text-xl text-[#8a8898] mb-2"
-          style={{ fontFamily: "'Crimson Pro', serif", fontStyle: 'italic' }}
-        >
-          "Three things she left behind. Three threads to pull."
-        </p>
-        <p className="font-mono text-xs text-[#4a4a58] tracking-[0.2em] uppercase">
-          Choose where to begin
-        </p>
+      <div style={{
+        fontFamily: "'Share Tech Mono', monospace",
+        fontSize: 10,
+        color: '#2a2a38',
+        letterSpacing: '0.2em',
+        textTransform: 'uppercase',
+      }}>
+        Loading…
       </div>
+    </div>
+  )
+}
 
-      {/* Investigation cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
-        {INVESTIGATIONS.map((item) => {
-          const done = paths[item.id]?.completed
-          const started = paths[item.id]?.started
-          const isHovered = hoveredId === item.id
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleClick(item.id)}
-              onMouseEnter={() => !done && setHoveredId(item.id)}
-              onMouseLeave={() => setHoveredId(null)}
-              disabled={done}
-              className="text-left transition-all duration-200"
-              style={{
-                background: done ? '#0a0a12' : isHovered ? item.bgColor : '#0c0c16',
-                border: `2px solid ${done ? '#1a1a28' : isHovered ? item.color : '#2a2a3a'}`,
-                borderRadius: 8,
-                padding: 20,
-                opacity: done ? 0.5 : 1,
-                cursor: done ? 'default' : 'pointer',
-                transform: isHovered && !done ? 'translateY(-4px)' : 'none',
-                boxShadow: isHovered && !done ? `0 8px 24px ${item.color}20` : 'none',
-              }}
-              aria-label={`${item.label}${done ? ' (completed)' : started ? ' (in progress)' : ''}`}
-            >
-              {/* Icon and status */}
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-3xl">{item.icon}</span>
-                {done && (
-                  <span className="font-mono text-xs text-green-600 bg-green-950/30 px-2 py-1 rounded">
-                    ✓ Complete
-                  </span>
-                )}
-                {started && !done && (
-                  <span className="font-mono text-xs text-amber-600 bg-amber-950/30 px-2 py-1 rounded">
-                    In Progress
-                  </span>
-                )}
-              </div>
-
-              {/* Title */}
-              <h3
-                className="text-lg font-bold mb-2"
-                style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  color: isHovered && !done ? item.color : '#d8d0c0',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                }}
-              >
-                {item.label}
-              </h3>
-
-              {/* Description */}
-              <p
-                className="text-sm mb-4 leading-relaxed"
-                style={{
-                  fontFamily: "'Crimson Pro', serif",
-                  color: '#9a9a98',
-                  fontStyle: 'italic',
-                }}
-              >
-                {item.description}
-              </p>
-
-              {/* Focus area */}
-              <div className="mb-3">
-                <span
-                  className="font-mono text-xs tracking-[0.1em] uppercase"
-                  style={{ color: item.color }}
-                >
-                  {item.focus}
-                </span>
-              </div>
-
-              {/* Techniques */}
-              <div className="flex flex-wrap gap-1">
-                {item.techniques.map((tech, i) => (
-                  <span
-                    key={i}
-                    className="font-mono text-[10px] px-2 py-0.5 rounded"
-                    style={{
-                      background: `${item.color}15`,
-                      color: '#7a7a88',
-                    }}
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              {/* CTA */}
-              {!done && (
-                <div
-                  className="mt-4 pt-3 border-t flex items-center justify-between"
-                  style={{ borderColor: '#2a2a3a' }}
-                >
-                  <span
-                    className="font-mono text-sm"
-                    style={{ color: isHovered ? item.color : '#6a6a78' }}
-                  >
-                    {started ? 'Continue →' : 'Begin →'}
-                  </span>
-                </div>
-              )}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Fade overlay */}
+// ── Main export ───────────────────────────────────────────────────
+export function ApartmentScene3D() {
+  return (
+    <div
+      className="relative w-full h-full overflow-hidden"
+      style={{
+        backgroundImage: "url('/images/apartment-bg.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 40%',
+      }}
+    >
+      {/* Dark overlay so the bg is atmospheric, not distracting */}
       <div
-        className="absolute inset-0 pointer-events-none bg-black transition-opacity duration-300"
-        style={{ opacity: fading ? 1 : 0 }}
+        className="absolute inset-0"
+        style={{ background: 'rgba(4, 4, 10, 0.55)', zIndex: 1 }}
       />
+
+      {/* Vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(4,4,10,0.8) 100%)',
+          zIndex: 2,
+        }}
+      />
+
+      {/* Three.js canvas — sits above the bg, below the vignette */}
+      <div className="absolute inset-0" style={{ zIndex: 2 }}>
+        <Suspense fallback={<SceneFallback />}>
+          <Canvas
+            camera={{ position: [0, 0, 4.2], fov: 48 }}
+            style={{ background: 'transparent' }}
+            gl={{ alpha: true, antialias: true }}
+          >
+            {/* Ambient fill — very dim */}
+            <ambientLight intensity={0.12} />
+
+            {/* Warm overhead lamp */}
+            <pointLight
+              position={[0.5, 2, 2]}
+              intensity={1.8}
+              color="#f0c878"
+              distance={8}
+              decay={2}
+            />
+
+            {/* Cool side fill — moonlight from window */}
+            <pointLight
+              position={[-3, 1, 2]}
+              intensity={0.6}
+              color="#8ab0e8"
+              distance={6}
+              decay={2}
+            />
+
+            <EvidenceBoard />
+          </Canvas>
+        </Suspense>
+      </div>
+
+      {/* "Three threads. One answer." — atmospheric caption */}
+      <div
+        className="absolute bottom-8 left-0 right-0 flex justify-center pointer-events-none"
+        style={{ zIndex: 10 }}
+      >
+        <p
+          style={{
+            fontFamily: "'Crimson Pro', serif",
+            fontStyle: 'italic',
+            fontSize: 15,
+            color: 'rgba(160, 148, 128, 0.5)',
+            letterSpacing: '0.04em',
+          }}
+        >
+          Three threads. One answer.
+        </p>
+      </div>
     </div>
   )
 }

@@ -39,6 +39,8 @@ export default function ConvergencePage() {
   const [choice, setChoice] = useState(null)
   const [blockedChoice, setBlockedChoice] = useState(null)
 
+  const pathBDone = paths.B?.completed
+
   const handleChoice = (c) => {
     // Gate: "Call Ray" requires at least 2 paths completed
     if (c === 'call' && evidenceScore < 2) {
@@ -97,17 +99,26 @@ export default function ConvergencePage() {
               return (
                 <div
                   key={t.path}
-                  className={`border p-5 transition-opacity duration-500 ${t.borderColor} border-opacity-40 ${!done ? 'opacity-30' : ''}`}
+                  className={`border p-5 transition-opacity duration-500 ${t.borderColor} border-opacity-40`}
+                  style={{ opacity: done ? 1 : 0.2 }}
                 >
                   <div className={`font-mono text-[9px] ${t.textColor} tracking-[0.3em] uppercase mb-3`}>
                     {t.icon} {t.label}
                   </div>
-                  <blockquote className={`text-sm italic mb-4 leading-relaxed ${done ? t.quoteColor : 'text-[#3a3830]'}`}>
-                    {t.quote}
-                  </blockquote>
-                  <p className="font-mono text-[10px] text-[#6a6058] leading-relaxed">
-                    {t.detail}
-                  </p>
+                  {done ? (
+                    <>
+                      <blockquote className={`text-sm italic mb-4 leading-relaxed ${t.quoteColor}`}>
+                        {t.quote}
+                      </blockquote>
+                      <p className="font-mono text-[10px] text-[#6a6058] leading-relaxed">
+                        {t.detail}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-mono text-[10px] text-[#3a3830] leading-relaxed italic">
+                      Complete this thread to see what it revealed.
+                    </p>
+                  )}
                 </div>
               )
             })}
@@ -115,7 +126,7 @@ export default function ConvergencePage() {
         </div>
 
         {/* ── THE NAME ── */}
-        <div className="border border-[#1e1e28] bg-[#0c0c14] p-8 fade-in">
+        <div className="bg-[#0c0c14] p-8 fade-in">
           <div className="font-mono text-[10px] text-[#5a5248] tracking-[0.3em] uppercase mb-8">
             The person at the centre of every thread
           </div>
@@ -189,26 +200,30 @@ export default function ConvergencePage() {
           <p className="text-[#7a7268] text-sm italic leading-loose mt-3">
             He has a key to your house. He knows Maya's phone number, her email address, the name of her university. She trusted him because you trusted him.
           </p>
-          <p className="text-[#7a7268] text-sm italic leading-loose mt-3">
-            Maya stopped herself from sending the email because she knew he had access to your devices. She was afraid that telling you would tell him first.
-          </p>
+          {pathBDone && (
+            <p className="text-[#7a7268] text-sm italic leading-loose mt-3">
+              Maya stopped herself from sending the email because she knew he had access to your devices. She was afraid that telling you would tell him first.
+            </p>
+          )}
         </div>
 
-        {/* ── MAYA'S QUOTE ── */}
-        <div className="border-l-4 border-red-900 pl-8 py-4 fade-in">
-          <div className="font-mono text-[10px] text-red-900 tracking-[0.3em] uppercase mb-4">
-            From Maya's unsent email — Mar 9, 11:47pm
+        {/* ── MAYA'S QUOTE — only shown if Path B complete ── */}
+        {pathBDone && (
+          <div className="border-l-4 border-red-900 pl-8 py-4 fade-in">
+            <div className="font-mono text-[10px] text-red-900 tracking-[0.3em] uppercase mb-4">
+              From Maya's unsent email — Mar 9, 11:47pm
+            </div>
+            <blockquote
+              className="text-[#d5cdb8] text-3xl italic leading-snug"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+            >
+              "Dad, it's Ray."
+            </blockquote>
+            <p className="font-mono text-[10px] text-[#5a5248] mt-4">
+              She disappeared the following morning. March 10th.
+            </p>
           </div>
-          <blockquote
-            className="text-[#d5cdb8] text-3xl italic leading-snug"
-            style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-          >
-            "Dad, it's Ray."
-          </blockquote>
-          <p className="font-mono text-[10px] text-[#5a5248] mt-4">
-            She disappeared the following morning. March 10th.
-          </p>
-        </div>
+        )}
 
         {/* ── DECISION ── */}
         <div className="border-t border-[#1a1a24] pt-10 pb-8 fade-in">

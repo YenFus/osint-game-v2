@@ -61,7 +61,7 @@ export function SliderNode({ content, onComplete }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, height: '100%' }} role="region" aria-label="Document recovery task">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, flex: 1, minHeight: 0, overflow: 'hidden' }} role="region" aria-label="Document recovery task">
 
       {/* Screen reader status */}
       <div ref={statusRef} className="sr-only" aria-live="polite" aria-atomic="true" />
@@ -76,7 +76,7 @@ export function SliderNode({ content, onComplete }) {
       </div>
 
       {/* Page content */}
-      <div style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div
           style={{
             position: 'relative',

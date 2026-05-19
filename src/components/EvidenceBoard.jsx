@@ -7,11 +7,16 @@ const PATH_META = {
   C: { label: 'Public Record', color: '#d4a017' },
 }
 
-export function EvidenceBoard() {
-  const [isOpen, setIsOpen] = useState(false)
+export function EvidenceBoard({ isOpen: controlledOpen, onClose: controlledClose }) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setIsOpen = controlledClose !== undefined
+    ? (v) => { if (!v) controlledClose() }
+    : setInternalOpen
+
   const evidence = useGameStore(s => s.evidence)
   const updateEvidencePosition = useGameStore(s => s.updateEvidencePosition)
-  
+
   const [draggingId, setDraggingId] = useState(null)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const boardRef = useRef(null)
@@ -45,25 +50,7 @@ export function EvidenceBoard() {
     setDraggingId(null)
   }
 
-  if (!isOpen) {
-    const hasEvidence = evidence.length > 0
-    return (
-      <button
-        className={`fixed bottom-6 left-6 z-40 font-mono text-sm px-4 py-3 border-2 transition-all flex items-center gap-3 ${hasEvidence ? 'cursor-pointer hover:bg-[#1a1505] backdrop-blur-sm' : 'opacity-50 hover:opacity-100 bg-[#0a0a0e] hover:bg-[#1a1a28]'}`}
-        style={{
-          borderColor: hasEvidence ? '#b8860b' : '#3a3a48', color: hasEvidence ? '#d4a84b' : '#6a6a78', 
-          background: hasEvidence ? 'rgba(20, 15, 5, 0.85)' : undefined,
-          boxShadow: hasEvidence ? '0 4px 12px rgba(0,0,0,0.5)' : 'none'
-        }}
-        onClick={() => setIsOpen(true)}
-      >
-        <span className={`flex items-center justify-center rounded-full w-5 h-5 text-[10px] font-bold ${hasEvidence ? 'bg-[#c0392b] text-white' : 'bg-[#2a2a38] text-[#5a5a68]'}`}>
-          {evidence.length}
-        </span>
-        Evidence Board
-      </button>
-    )
-  }
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 bg-[#08080e] overflow-hidden flex flex-col crt">
@@ -79,7 +66,7 @@ export function EvidenceBoard() {
         </div>
         <button 
           onClick={() => setIsOpen(false)} 
-          className="px-4 py-2 border border-[#3a3a48] text-[#a0a098] font-mono text-sm hover:bg-[#1a1a28] hover:text-white transition-all uppercase tracking-wider"
+          className="px-4 py-2 text-[#a0a098] font-mono text-sm hover:text-white transition-all uppercase tracking-wider opacity-60 hover:opacity-100"
         >
           Close Board
         </button>

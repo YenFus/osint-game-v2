@@ -84,7 +84,7 @@ export function CaseNotes({ onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="font-mono text-lg text-[#6a6a78] hover:text-[#b0b0a8] cursor-pointer p-3 border border-[#3a3a48] hover:border-[#5a5a68] transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center"
+            className="font-mono text-lg text-[#6a6a78] hover:text-[#b0b0a8] cursor-pointer p-3 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center opacity-60 hover:opacity-100"
             aria-label="Close case notes"
           >
             ✕

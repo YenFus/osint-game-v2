@@ -40,7 +40,7 @@ const TECHNIQUES = [
 export default function OSINTGuide({ onClose, onStart }) {
   return (
     <div className="absolute inset-0 bg-[#08080e] bg-opacity-97 z-50 flex items-start justify-center overflow-y-auto p-6 fade-in">
-      <div className="max-w-2xl w-full border border-[#1e1e2a] bg-[#0c0c14] my-4">
+      <div className="max-w-2xl w-full bg-[#0c0c14] my-4">
 
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-[#1a1a24]">
@@ -53,7 +53,7 @@ export default function OSINTGuide({ onClose, onStart }) {
               What Is OSINT?
             </h2>
           </div>
-          <button onClick={onClose} className="font-mono text-sm text-[#a09888] hover:text-[#e8e0d0] cursor-pointer transition-colors px-4 py-2 border border-[#3a3a48] hover:border-[#5a5a68]">
+          <button onClick={onClose} className="font-mono text-sm text-[#a09888] hover:text-[#e8e0d0] cursor-pointer transition-colors px-4 py-2 opacity-60 hover:opacity-100">
             ✕ Close
           </button>
         </div>
@@ -93,7 +93,7 @@ export default function OSINTGuide({ onClose, onStart }) {
           </div>
           <div className="grid grid-cols-1 gap-4">
             {TECHNIQUES.map((t) => (
-              <div key={t.name} className="flex gap-4 p-5 border border-[#242434] hover:border-[#3a3a4a] transition-colors bg-[#0c0c14]">
+              <div key={t.name} className="flex gap-4 p-5 bg-[#0c0c14] hover:bg-[#0e0e18] transition-colors">
                 <div className="text-3xl shrink-0 mt-0.5">{t.icon}</div>
                 <div>
                   <div className="font-mono text-sm text-[#e8e0d0] tracking-wide uppercase mb-2 font-medium">{t.name}</div>
@@ -140,7 +140,7 @@ export default function OSINTGuide({ onClose, onStart }) {
         <div className="px-8 py-6 border-t border-[#1a1a24] flex justify-end">
           <button
             onClick={onStart ?? onClose}
-            className="font-mono text-base tracking-widest uppercase border-2 border-red-700 text-red-500 px-8 py-3 hover:bg-red-950 hover:bg-opacity-40 hover:text-red-400 transition-all cursor-pointer font-medium"
+            className="font-mono text-base tracking-widest uppercase text-red-500 px-8 py-3 hover:text-red-400 transition-all cursor-pointer font-medium opacity-80 hover:opacity-100"
           >
             I'm Ready →
           </button>

@@ -255,8 +255,8 @@ export default function EndingPage() {
 
           {/* ═══ RATING BANNER ═══ */}
           <div
-            className="border-2 p-4 sm:p-8 text-center"
-            style={{ borderColor: ending.ratingColor, background: ending.ratingBg }}
+            className="p-4 sm:p-8 text-center"
+            style={{ background: ending.ratingBg }}
           >
             <div
               className="text-8xl font-black mb-2"
@@ -283,7 +283,7 @@ export default function EndingPage() {
           </div>
 
           {/* ═══ YOUR INVESTIGATION STATS ═══ */}
-          <div className="border border-[#2a2a38] p-6">
+          <div className="p-6">
             <div className="font-mono text-xs text-[#6a6a78] tracking-[0.2em] uppercase mb-6">
               Your Investigation
             </div>
@@ -370,7 +370,7 @@ export default function EndingPage() {
           </div>
 
           {/* ═══ THE CALL (expandable) ═══ */}
-          <div className="border border-[#1a1a28] bg-[#0a0a10]">
+          <div className="bg-[#0a0a10]">
             <button
               onClick={() => setShowCall(!showCall)}
               className="w-full px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-[#0c0c14] transition-colors"
@@ -430,7 +430,7 @@ export default function EndingPage() {
 
           {/* ═══ OTHER ENDINGS HINT ═══ */}
           {(endingType !== 'perfect' && endingType !== 'journalist') && (
-            <div className="border border-[#2a2a38] border-dashed p-6 text-center">
+            <div className="p-6 text-center">
               <div className="font-mono text-xs text-[#5a5a68] tracking-[0.15em] uppercase mb-3">
                 Other Endings Exist
               </div>
@@ -474,8 +474,8 @@ export default function EndingPage() {
             </div>
             <button
               onClick={handleRestart}
-              className="font-mono text-sm tracking-[0.15em] uppercase border-2 px-8 py-3 transition-all hover:bg-[#1a1a28] min-h-[48px]"
-              style={{ borderColor: '#4a90d9', color: '#4a90d9' }}
+              className="font-mono text-sm tracking-[0.15em] uppercase px-8 py-3 transition-all min-h-[48px] opacity-70 hover:opacity-100"
+              style={{ color: '#4a90d9' }}
             >
               ← Play Again
             </button>

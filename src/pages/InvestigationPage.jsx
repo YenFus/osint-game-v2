@@ -11,7 +11,6 @@ import { SliderNode } from '../components/nodes/SliderNode'
 import { BrowseNode } from '../components/nodes/BrowseNode'
 import { ConnectNode } from '../components/nodes/ConnectNode'
 import { TypewriterNode } from '../components/nodes/TypewriterNode'
-import { IntercutOverlay } from '../components/IntercutOverlay'
 import { SystemAlertFlash } from '../components/SystemAlertFlash'
 import { SaveLoadModal } from '../components/SaveLoadModal'
 import { EvidenceBoard } from '../components/EvidenceBoard'
@@ -92,8 +91,6 @@ export default function InvestigationPage() {
   // When all nodes inside the path are completed -> thread is done
   const pathComplete = nodes.length > 0 && completedNodeIds.length === nodes.length
 
-  const [intercutText, setIntercutText] = useState(null)
-  const [intercutVisible, setIntercutVisible] = useState(false)
   const [systemAlertTrigger, setSystemAlertTrigger] = useState(0)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showCaseNotes, setShowCaseNotes] = useState(false)
@@ -136,7 +133,6 @@ export default function InvestigationPage() {
       addNotification("Rosa Velasquez. Maya wrote this after everything else. 'She'll understand.'", 'info')
     }
     if (currentNode.systemAlertAfter && !systemAlertShown) { setSystemAlertTrigger(prev => prev + 1); markSystemAlert() }
-    if (currentNode.intercutAfter) { setIntercutText(currentNode.intercutAfter); setIntercutVisible(true) }
 
     // Commit completion and unlock next wave
     completeNode(path, currentNode.id, currentNode.unlocks || [])
@@ -394,7 +390,6 @@ export default function InvestigationPage() {
 
       <EvidenceBoard isOpen={showEvidenceBoard} onClose={() => setShowEvidenceBoard(false)} />
 
-      <IntercutOverlay text={intercutText} visible={intercutVisible} onDismiss={() => { setIntercutVisible(false); setIntercutText(null) }} />
       <SystemAlertFlash trigger={systemAlertTrigger} />
       {showSaveModal && <SaveLoadModal mode="save" onClose={() => setShowSaveModal(false)} />}
       {showCaseNotes && <CaseNotes onClose={() => setShowCaseNotes(false)} />}

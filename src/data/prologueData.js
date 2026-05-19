@@ -71,7 +71,7 @@ export const PROLOGUE_PANELS = [
     lines: [
       { voice: 'thomas', text: 'Eight o\'clock.' },
       { voice: 'thomas', text: 'I called her. The phone rang out. Not voicemail — just rings. Seven of them. I counted.' },
-      { voice: 'thomas', text: 'I texted: "You coming?" Three words. Her last read receipt was from three days ago.' },
+      { voice: 'thomas', text: 'I texted: "You coming?" Two words. Her last read receipt was from three days ago.' },
       { voice: 'thomas', text: 'Three days ago. I had not noticed.' },
     ],
   },
@@ -135,8 +135,8 @@ export const PROLOGUE_PANELS = [
     lines: [
       { voice: 'thomas', text: 'Her laptop was open.' },
       { voice: 'thomas', text: 'Seventeen tabs. I counted.' },
-      { voice: 'thomas', text: 'Research notes in a document titled "Stillwater — thread 4." A social media profile she had been tracking for six months.' },
-      { voice: 'thomas', text: 'She had been investigating someone. Someone who knew she was doing it.' },
+      { voice: 'thomas', text: 'Research notes in a document. A social media profile.' },
+      { voice: 'thomas', text: 'She had been investigating someone.' },
     ],
   },
 
@@ -148,8 +148,8 @@ export const PROLOGUE_PANELS = [
     lines: [
       { voice: 'thomas', text: 'I am not a detective. I am a journalist.' },
       { voice: 'thomas', text: 'For twenty-three years I made a living from noticing what other people missed.' },
-      { voice: 'thomas', text: 'My daughter was trying to tell me something for months. I was not paying attention.' },
-      { voice: 'thomas', text: 'I am paying attention now.' },
+      { voice: 'thomas', text: 'I missed my own daughter.' },
+      { voice: 'thomas', text: 'The police have an open report. They are waiting. I cannot wait.' },
     ],
   },
 

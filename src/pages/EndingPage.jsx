@@ -279,7 +279,7 @@ export default function EndingPage() {
   const deds = Object.keys(st.deductions).length
   const totalDeds = Object.values(DEDUCTIONS).flat().length
 
-  const [showCall, setShowCall] = useState(false)
+  const [showCall, setShowCall] = useState(true)
   const [phase, setPhase] = useState('reveal')
   useEffect(() => {
     const t = setTimeout(() => setPhase('details'), 5200)
@@ -362,7 +362,7 @@ export default function EndingPage() {
             onClick={() => setShowCall(v => !v)}
             className="w-full flex items-center justify-between font-mono text-xs text-[#9a9aa8] tracking-[0.2em] uppercase mb-4"
           >
-            <span>▸ {st.endingChoice === 'confront' ? 'Outside the building' : 'The call'} — {call.length} lines</span>
+            <span>{showCall ? '▾' : '▸'} {st.endingChoice === 'confront' ? 'Outside the building' : 'The call'} — {call.length} lines</span>
             <span style={{ color: '#c0a060' }}>{showCall ? 'hide' : 'read it'}</span>
           </button>
           <div className="space-y-3" hidden={!showCall}>

@@ -74,6 +74,7 @@ export function InputNode({ content, onComplete, nodeId = null }) {
     if (!inputValue.trim()) return
 
     if (isAccepted(inputValue, currentQ.acceptedAnswers)) {
+      if (currentQ.revealsName) useGameStore.getState().flagNameSeen()
       const newAnswers = [...answers, { q: currentQ.prompt, a: inputValue }]
       setAnswers(newAnswers)
       setInputValue('')
@@ -109,9 +110,17 @@ export function InputNode({ content, onComplete, nodeId = null }) {
     }
   }
 
-  // everything Thomas has written down so far, newest first
+  // Everything Thomas has written down so far, newest first — except the
+  // note that simply contains the answer to the question on screen. The
+  // column is here so the player does not have to remember what they read
+  // in another lead, not so they can copy a line out of it.
   const clues = useGameStore(st => st.clues)
-  const notes = [...clues].reverse().map(id => CLUES[id]).filter(Boolean)
+  const accepted = (currentQ?.acceptedAnswers ?? []).map(a => a.toLowerCase())
+  const givesItAway = (clue) => {
+    const text = `${clue.title} ${clue.detail}`.toLowerCase()
+    return accepted.some(a => a.length > 4 && text.includes(a))
+  }
+  const notes = [...clues].reverse().map(id => CLUES[id]).filter(c => c && !givesItAway(c))
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0, height: '100%' }}>

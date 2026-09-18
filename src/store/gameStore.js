@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import {
   DEDUCTIONS, RAY_BEATS, WRONG_THEORY_COST, HINT_COST, SUSPICION_STEPS,
-  wrongCost, pinComplete, pinCorrect,
+  wrongCost, pinComplete, pinCorrect, NAME_CLUES,
 } from '../data/caseData'
 
 // Ray's unease is clamped 0–100. Crossing a step makes him leave earlier;
@@ -152,7 +152,13 @@ export const useGameStore = create(
       // ── Clues & deductions ───────────────────────────────────────
       addClue: (clueId) => set((state) => {
         if (!clueId || state.clues.includes(clueId)) return state
-        return { clues: [...state.clues, clueId], lastClue: { id: clueId, at: Date.now() } }
+        return {
+          clues: [...state.clues, clueId],
+          lastClue: { id: clueId, at: Date.now() },
+          // the surname stops the game wherever it is found, not only in the
+          // records viewer that happened to implement it first
+          namePending: state.nameRevealSeen ? false : (NAME_CLUES.includes(clueId) || state.namePending),
+        }
       }),
 
       // Tentative pin — no feedback. clueId null clears the slot.

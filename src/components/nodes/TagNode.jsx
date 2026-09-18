@@ -103,10 +103,10 @@ export function TagNode({ content, onComplete, nodeId = null }) {
   const examine = (item) => {
     setFocusId(item.id)
     if (!examined.includes(item.id)) setExamined(prev => [...prev, item.id])
-    // the zoom panel sits under the plate on a narrow screen
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
-      requestAnimationFrame(() => zoomRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }))
-    }
+    // The zoom sits under the plate on a narrow screen. It used to be
+    // scrolled to, which pushed the photograph off the top of the screen —
+    // you could see the detail or the picture it came from, never both.
+    // The plate stays put now and the zoom comes to meet it.
   }
 
   const flagButton = (item) => {
@@ -202,15 +202,27 @@ export function TagNode({ content, onComplete, nodeId = null }) {
               {focused ? (
                 <>
                   <div className="zoomwin">
-                    <div
-                      className="zoominner"
-                      style={{
-                        transformOrigin: `${focused.spot.x + focused.spot.w / 2}% ${focused.spot.y + focused.spot.h / 2}%`,
-                        transform: `translate(${50 - (focused.spot.x + focused.spot.w / 2)}%, ${50 - (focused.spot.y + focused.spot.h / 2)}%) scale(var(--zoom, 3.2))`,
-                      }}
-                    >
-                      <PhotoPlate content={content} items={content.items} tagged={tagged} required={required} examined={examined} focusId={null} onExamine={() => {}} />
-                    </div>
+                    {/* Keep the magnified view inside the photograph. Centring
+                        on a detail near an edge used to pan past the frame and
+                        fill a third of the panel with black. */}
+                    {(() => {
+                      const zoom = 3.2
+                      const half = 50 / zoom
+                      const clamp = (v) => Math.min(100 - half, Math.max(half, v))
+                      const cx = clamp(focused.spot.x + focused.spot.w / 2)
+                      const cy = clamp(focused.spot.y + focused.spot.h / 2)
+                      return (
+                        <div
+                          className="zoominner"
+                          style={{
+                            transformOrigin: `${cx}% ${cy}%`,
+                            transform: `translate(${50 - cx}%, ${50 - cy}%) scale(var(--zoom, 3.2))`,
+                          }}
+                        >
+                          <PhotoPlate content={content} items={content.items} tagged={tagged} required={required} examined={examined} focusId={null} onExamine={() => {}} />
+                        </div>
+                      )
+                    })()}
                     <span className="zoomlabel">3.2× · {focused.id.toUpperCase()}</span>
                   </div>
                   <div className="zoomcard">

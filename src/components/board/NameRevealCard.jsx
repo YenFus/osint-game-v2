@@ -7,9 +7,14 @@
 // they are reading, so the beat lands where the discovery happens.
 // ─────────────────────────────────────────────────────────────────
 
+import { useRef } from 'react'
+import { useModalFocus } from '../../hooks/useModalFocus'
+
 export function NameRevealCard({ onDone }) {
+  const ref = useRef(null)
+  useModalFocus(ref)
   return (
-    <div className="cb-tut name-reveal" role="alertdialog" aria-modal="true" aria-label="A name">
+    <div ref={ref} className="cb-tut name-reveal" role="alertdialog" aria-modal="true" aria-label="A name">
       <div className="card">
         <div className="type" style={{ fontSize: 12, letterSpacing: '0.3em', color: '#c8a050' }}>I HAVE READ IT THREE TIMES</div>
         <div className="hand" style={{ fontSize: 44, lineHeight: 1.05, color: '#f4e6d8', margin: '10px 0 4px' }}>Raymond T. Callahan</div>

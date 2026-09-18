@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
+import { useGameStore } from '../../store/gameStore'
 import { useLeadProgress } from '../../hooks/useLeadProgress'
 
 // Rows are real buttons. They were <div onClick> with no role and no
@@ -126,6 +127,8 @@ export function NavigateNode({ content, onComplete, nodeId = null }) {
   const handleOpen = (file) => {
     setActiveFile(file)
     setOpenedFiles(prev => prev.includes(file.name) ? prev : [...prev, file.name])
+    // a file that spells out the surname is the reveal, wherever it is read
+    if (file.revealsName) useGameStore.getState().flagNameSeen()
   }
 
   const allRequired = content.requiredFiles.every(f => openedFiles.includes(f))

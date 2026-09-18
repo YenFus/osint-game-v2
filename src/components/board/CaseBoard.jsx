@@ -25,6 +25,7 @@ import { PolaroidArt } from './PolaroidArt'
 import { NameRevealCard } from './NameRevealCard'
 import { GalleryPlate } from './ScenePlate'
 import { useAudio } from '../../hooks/useAudio'
+import { useModalFocus } from '../../hooks/useModalFocus'
 import '../../styles/board.css'
 
 const THREAD_KEYS = ['A', 'B', 'C']
@@ -495,8 +496,10 @@ const TUT = [
 function BoardTutorial({ onDone }) {
   const [i, setI] = useState(0)
   const step = TUT[i]
+  const ref = useRef(null)
+  useModalFocus(ref)
   return (
-    <div className="cb-tut" role="dialog" aria-modal="true" aria-label="How the board works">
+    <div ref={ref} className="cb-tut" role="dialog" aria-modal="true" aria-label="How the board works">
       <div className="card">
         <span className="pin" />
         <div className="hand">{step.h}</div>
@@ -512,8 +515,10 @@ function BoardTutorial({ onDone }) {
 }
 
 function RayGoneCard({ onDone }) {
+  const ref = useRef(null)
+  useModalFocus(ref)
   return (
-    <div className="cb-tut" role="alertdialog" aria-modal="true" aria-label="Ray has left">
+    <div ref={ref} className="cb-tut" role="alertdialog" aria-modal="true" aria-label="Ray has left">
       <div className="card" style={{ background: '#1a0c0a', color: '#f0d8c8' }}>
         <div className="type" style={{ fontSize: 12, letterSpacing: '0.3em', color: '#e04a3a' }}>NEW MESSAGE · RAY</div>
         <p style={{ color: '#f4e6d8', fontFamily: '-apple-system, sans-serif', fontSize: 17 }}>"Heading out now. Talk when I'm back, Tom. Hang in there."</p>

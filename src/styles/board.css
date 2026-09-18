@@ -1342,3 +1342,18 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   .inp-cols { grid-template-columns: 1fr; }
   .inp-notes { max-height: 260px; }
 }
+
+/* ── Photo leads on a phone ────────────────────────────────────────
+   The picture stays on screen while you read the magnified detail
+   underneath it, so tapping a second hotspot does not mean scrolling
+   back up to find the photograph again. */
+@media (max-width: 768px) {
+  .photo-main {
+    position: sticky; top: 0; z-index: 3;
+    background: #0c0b0e; padding-bottom: 6px;
+  }
+  .photo-main .plate { border-width: 6px; border-bottom-width: 14px; }
+  .zoomwin { margin-top: 8px; }
+  /* the magnified pane does not need to be as tall as the photo itself */
+  .zoomwin, .zoomwin.empty { max-height: 40vh; }
+}

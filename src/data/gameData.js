@@ -723,7 +723,7 @@ export const GAME_DATA = {
                 { name: 'landscape-series.html', type: 'file', content: 'Gallery — Pacific Northwest Landscapes\n\nAll photographs © Stillwater Media\n\n[Image gallery — forest trails, river scenes, hill fog. Matches the Flickr albums from stillwater_m.]' },
               ]},
               { name: 'source', type: 'folder', children: [
-                { name: 'page-source.txt', type: 'file', content: 'Full source of index.html:\n\n<meta name="author" content="Ray Callahan">\n<meta name="generator" content="WordPress">\n<meta name="wp-user" content="rcallahan_admin">\n\n<!-- Site built by rcallahan_admin for Stillwater Media -->\n<!-- Admin email: rcallahan@millhavenpost.net -->' },
+                { name: 'page-source.txt', type: 'file', revealsName: true, content: 'Full source of index.html:\n\n<meta name="author" content="Ray Callahan">\n<meta name="generator" content="WordPress">\n<meta name="wp-user" content="rcallahan_admin">\n\n<!-- Site built by rcallahan_admin for Stillwater Media -->\n<!-- Admin email: rcallahan@millhavenpost.net -->' },
               ]},
             ],
           },
@@ -746,7 +746,7 @@ export const GAME_DATA = {
             {
               prompt: 'Who built this website?',
               contextNote: 'Sites carry their author\'s name where visitors never look.',
-              acceptedAnswers: ['ray callahan', 'callahan', 'r callahan'],
+              revealsName: true, acceptedAnswers: ['ray callahan', 'callahan', 'r callahan'],
               wrongFeedback: 'Look at the <meta name="author" content="..."> tag in the page source.',
             },
             {

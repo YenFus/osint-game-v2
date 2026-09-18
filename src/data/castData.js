@@ -62,14 +62,14 @@ export const CAST = [
     name: 'Owen Pryce',
     relation: 'Director of the Millhaven Arts Collective',
     line: 'Ran the arts night Lena vanished from, and would not give the paper his guest list. The account has been pointing people at him for a year.',
-    from: 'C4',
+    from: 'A2',
   },
   {
     id: 'rosa',
     name: 'Rosa Velasquez',
     relation: 'A journalist Maya trusted',
     line: 'Pacific Reporter, digital safety beat. Maya wrote to her before she wrote to me.',
-    from: 'C8',
+    from: 'A9',
   },
   {
     id: 'okafor',

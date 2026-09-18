@@ -121,7 +121,7 @@ export const LEAD_META = {
   C3: {
     clue: 'building_owner', card: { kind: 'index', scene: 'building' },
     hint: 'Q1: it\'s on Maya\'s corkboard map. Q2: big public events need official paperwork — or get covered by the local paper.',
-    summary: 'The venue is the Alder Hall. I have stood in that room. His family has owned it for eighty years.',
+    summary: 'The venue is Alder Hall on Main Street, Millhaven — a hall some family trust has kept up since the war. The listing does not say whose.',
   },
   C4: {
     clue: 'courier', card: { kind: 'index', scene: 'newspaper' },
@@ -135,7 +135,7 @@ export const LEAD_META = {
   },
   C5: {
     clue: 'registry', card: { kind: 'index', scene: 'document' },
-    hint: 'Open both registry entries. Tag the registered agent, the address, and the dissolved company\'s name.',
+    hint: 'Open both filings. Flag the registered agent, the principal address, and the trustee on the second one.',
     summary: 'Stillwater Media LLC and the Alder Hall Trust, both filed by Raymond T. Callahan to the same postbox. The company behind the account, and the hall she vanished from.',
   },
   C6: {

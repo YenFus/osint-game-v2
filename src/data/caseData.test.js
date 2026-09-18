@@ -306,3 +306,33 @@ describe('typed answers exist somewhere in the game', () => {
     }
   })
 })
+
+// Owen Pryce was first named in A2 but the Who's Who did not introduce him
+// until C4, and Rosa in A9 against C8 — so the player met two names the
+// reference page refused to explain. That is the exact complaint the cast
+// page exists to answer.
+describe("the cast page keeps up with the script", () => {
+  const nodes = Object.fromEntries(allLeads().map(n => [n.id, n]))
+  const unlockerOf = {}
+  for (const n of allLeads()) for (const u of n.unlocks ?? []) unlockerOf[u] = n.id
+  const depth = (id, seen = new Set()) => {
+    const add = (x) => { if (x && !seen.has(x)) { seen.add(x); depth(x, seen) } }
+    add(unlockerOf[id])
+    if (nodes[id]?.requiresCompleted) add(nodes[id].requiresCompleted.nodeId)
+    return seen.size
+  }
+  const mentions = (node, name) => JSON.stringify(node.content).includes(name)
+
+  it('introduces everyone no later than the lead that first says their name', () => {
+    for (const person of CAST) {
+      if (person.from === 'prologue') continue
+      const surname = person.name.split(' ').pop()
+      const first = allLeads()
+        .filter(n => mentions(n, person.name) || mentions(n, surname))
+        .sort((a, b) => depth(a.id) - depth(b.id))[0]
+      if (!first) continue
+      expect(depth(person.from), `${person.name} is named in ${first.id} but introduced at ${person.from}`)
+        .toBeLessThanOrEqual(depth(first.id))
+    }
+  })
+})

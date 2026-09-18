@@ -166,8 +166,11 @@ function buildCall(type, evaluation, choice, gone) {
     return lines
   }
 
-  you('"Detective Okafor. This is Thomas Reyes. Maya Reyes is my daughter. I know who took her."')
-  ok('"Go ahead, Mr. Reyes."')
+  // A man with nobody circled cannot open by saying he knows who took her.
+  you(evaluation.suspect
+    ? '"Detective Okafor. This is Thomas Reyes. Maya Reyes is my daughter. I know who took her."'
+    : '"Detective Okafor. This is Thomas Reyes. Maya Reyes is my daughter. I have been working all night and I need somebody to look at what I have."')
+  ok(evaluation.suspect ? '"Go ahead, Mr. Reyes."' : '"I am listening, Mr. Reyes. Take it slowly."')
   if (evaluation.suspect === 'corey') {
     you('"Corey Marsh. Lena Vasquez\'s ex. He was stalking her — Maya had it on file."')
     ok('"Corey Marsh was cleared last year. Timestamped photos from his shop in Tigard, both nights. Who pointed you at him?"')
@@ -202,10 +205,16 @@ function buildCall(type, evaluation, choice, gone) {
     there: 'I can\'t put him at the arts night.',
     before: 'I don\'t have anything showing he\'s done this before.',
   }
-  evaluation.perSlot.forEach(p => {
+  const EMPTY_LINES = [
+    '"Nothing on who. All right."',
+    '"And nothing putting him at the hall."',
+    '"And nothing showing a pattern. Mr. Reyes — I believe you. I cannot act on belief."',
+  ]
+  evaluation.perSlot.forEach((p, i) => {
     // `spoken`, not `title` — see caseData's CLUES
     you(p.clueId ? `"${LEAD_IN[p.slot.id]}${CLUES[p.clueId].spoken ?? CLUES[p.clueId].title}."` : `"${MISSING[p.slot.id]}"`)
-    ok(`"${p.reaction}"`)
+    // three identical "You have nothing for this" lines read as a bug
+    ok(p.clueId ? `"${p.reaction}"` : EMPTY_LINES[i] ?? `"${p.reaction}"`)
   })
   if (evaluation.suspect === 'unknown') {
     ok('"All of this is real work, Mr. Reyes. But you have handed me an account, not a man. One of those records has a name printed on it."')

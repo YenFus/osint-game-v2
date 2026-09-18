@@ -520,6 +520,15 @@ class AudioEngine {
     }
   }
 
+  // The music slider used to apply only to the next room tone you walked
+  // into, so dragging it while one was playing appeared to do nothing.
+  setAmbientVolume(volume) {
+    if (!this.ctx) return
+    for (const nodes of this.ambientNodes.values()) {
+      nodes.gain?.gain.setTargetAtTime(volume * 0.15, this.ctx.currentTime, 0.25)
+    }
+  }
+
   stopAmbient(name) {
     const nodes = this.ambientNodes.get(name)
     if (!nodes) return
@@ -557,6 +566,11 @@ export function useAudio() {
   useEffect(() => {
     engineRef.current.setMasterVolume(masterVolume, muted)
   }, [masterVolume, muted])
+
+  // and the music slider applies to whatever is already playing
+  useEffect(() => {
+    engineRef.current.setAmbientVolume(musicVolume)
+  }, [musicVolume])
 
   const playAmbient = useCallback((track) => {
     engineRef.current.init()

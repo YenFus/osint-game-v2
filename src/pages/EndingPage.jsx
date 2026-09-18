@@ -1,486 +1,444 @@
-import { useState, useEffect } from 'react'
+// ─────────────────────────────────────────────────────────────────
+// ENDING — built from the case the player assembled:
+//   suspect · the three clues and how strong each was · Ray's
+//   suspicion (replies + hours taken) · the final choice.
+// ─────────────────────────────────────────────────────────────────
+
+import { useState, useEffect, useMemo } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useGameStore } from '../store/gameStore'
+import {
+  CLUES, FINAL_SLOTS, DEDUCTIONS, START_MISSING_MINUTES,
+  evaluateCase, effectiveSuspicion, rayMood, rayDeadline, clockLabel, RAY_ALARM_THRESHOLD, WRONG_SUSPECTS,
+} from '../data/caseData'
+import { GAME_DATA } from '../data/gameData'
+// the ending is built out of the board's material, so it needs its styles
+import '../styles/board.css'
 
-// Derive ending type from state
-function deriveEnding(evidenceScore, journalistUnlocked, endingChoice) {
-  if (endingChoice === 'call') return 'tipoff'
-  if (endingChoice === 'journalist' && journalistUnlocked && evidenceScore >= 3) return 'journalist'
-  if (endingChoice === 'police') {
-    if (evidenceScore >= 3) return 'perfect'
-    if (evidenceScore >= 2) return 'partial'
-    return 'cold'
-  }
-  return 'cold'
-}
+const LENA = 'In a storage unit Ray rented off Route 9, investigators found Lena Vasquez\'s camera and phone. Eleven months after she vanished, her family finally had an answer. Not the one they had prayed for.'
 
-// Ending configurations with strong visual differentiation
 const ENDINGS = {
   perfect: {
-    rating: 'S',
-    ratingLabel: 'Perfect Investigation',
-    ratingColor: '#4a9060',
-    ratingBg: 'rgba(74, 144, 96, 0.15)',
-    icon: '★',
-    heading: 'The Right Call',
-    subheading: 'Three threads. One name. Complete evidence.',
-    mayaStatus: 'FOUND ALIVE — 31 HOURS',
-    mayaStatusColor: '#5a9060',
-    rayStatus: 'ARRESTED',
-    outcome: 'Maya is found 31 hours later in a storage unit off Route 9, Millhaven. She is dehydrated and frightened, but alive. Ray Callahan is arrested at a motel in Grants Pass the same night.',
-    detail: 'Your complete evidence package — three independent sources, cross-verified — gave Detective Reyes enough for an immediate warrant. No delays. No second-guessing. Maya\'s own research, finished by you.',
-    callLines: [
-      { speaker: 'You', text: '"Detective Reyes. This is Tom Reyes — Maya Reyes is my daughter. I have evidence. I need you to listen."' },
-      { speaker: 'Reyes', text: '"Mr. Reyes. Go ahead."' },
-      { speaker: 'You', text: '"Three separate investigations. The domain stillwater-media.net is registered to Ray Callahan, PO Box 441, Millhaven. That\'s WHOIS — public record. The county business registry confirms it under Callahan Media LLC. There\'s a prior restraining order, case MH-2021-0384 — harassment, pseudonymous online accounts, email monitoring. Same pattern. And his Flickr puts him at the arts night the night Lena disappeared, location data confirmed."' },
-      { speaker: 'Reyes', text: '"...Ray Callahan. As in—"' },
-      { speaker: 'You', text: '"As in he was at your wife\'s funeral. As in he has a key to my house. Yes."' },
-      { speaker: '—silence—', text: null },
-      { speaker: 'Reyes', text: '"Stay where you are. Don\'t contact him. We\'re dispatching now."' },
-    ],
-    coda: '"She built a complete case. Three independent source types, all converging. In twenty years of investigations I haven\'t seen civilian work this thorough. She saved herself by doing it right — and you finished it by doing the same."',
-    codaAttrib: '— Detective I. Reyes, Millhaven PD',
+    stamp: 'CHARGED', label: 'The Right Call', color: '#5aa070', afterCall: 4,
+    status: 'FOUND ALIVE', ray: 'ARRESTED',
+    sub: 'Three sources. One name. You did it the way she would have.',
+    outcome: 'Patrol cars reach Maya\'s street while Ray is still leaning on the buzzer. By morning the warrant covers a storage unit off Route 9. Maya is inside — dehydrated, frightened, alive.',
+    coda: '"Your daughter built a case I could take to a judge in the middle of the night. You finished it the same way. That\'s why she\'s alive."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: true,
   },
-
   journalist: {
-    rating: 'S',
-    ratingLabel: 'Hidden Ending Unlocked',
-    ratingColor: '#4a7ab0',
-    ratingBg: 'rgba(74, 122, 176, 0.15)',
-    icon: '📰',
-    heading: 'The Public Record',
-    subheading: 'You gave Maya\'s work to someone who knew how to use it.',
-    mayaStatus: 'FOUND ALIVE — 61 HOURS',
-    mayaStatusColor: '#4a7ab0',
-    rayStatus: 'ARRESTED — CASE MADE PUBLIC',
-    outcome: 'Rosa Velasquez publishes a documented piece in the Pacific Reporter 61 hours later. Ray Callahan is arrested before it goes live. Maya is found that afternoon. The case becomes a national story about online safety.',
-    detail: 'The simultaneous pressure of documented journalism and police investigation creates a window where Callahan cannot maneuver. The journalism doesn\'t replace law enforcement — it prevents the case from being quietly shelved.',
-    callLines: [
-      { speaker: 'You', text: '"Rosa Velasquez. This is Tom Reyes. My daughter Maya contacted you about the Lena Vasquez case. She found everything. I\'m going to forward it to you and to Detective Reyes simultaneously."' },
-      { speaker: 'Rosa', text: '"Mr. Reyes. I\'ve been waiting for this call. Maya told me she was close. Send everything."' },
-      { speaker: 'You', text: '"WHOIS records. Flickr geolocation. Business registry. A court filing from four years ago — harassment, pseudonymous accounts, email access. And the unsent email she wrote the night she disappeared."' },
-      { speaker: 'Rosa', text: '"I can have something ready to publish within 48 hours if the police move. Is Detective Reyes aware?"' },
-      { speaker: 'You', text: '"Calling them next."' },
-    ],
-    coda: '"Maya\'s research was airtight. Verifiable, cross-referenced, sourced. She understood that evidence has to be able to withstand scrutiny. She was right about everything."',
-    codaAttrib: '— Rosa Velasquez, Pacific Reporter',
+    stamp: 'CHARGED', label: 'The Public Record', color: '#6a8ad0', afterCall: 6,
+    status: 'FOUND ALIVE', ray: 'ARRESTED — CASE MADE PUBLIC',
+    sub: 'You gave Maya\'s work to the people who knew how to use it.',
+    outcome: 'Okafor moves within the hour. Rosa\'s story goes live the moment Ray is in cuffs — there\'s no quiet way to shelve it now. Maya is found before dawn.',
+    coda: '"She understood that evidence has to survive scrutiny. Every source checked out. She was right about everything. The story is hers."',
+    attrib: '— Rosa Velasquez, Pacific Reporter',
+    lena: true,
   },
-
+  fled: {
+    stamp: 'AT LARGE', label: 'He Ran', color: '#a0a050', afterCall: 19,
+    status: 'FOUND ALIVE', ray: 'FLED — ARRESTED',
+    sub: 'The case was airtight. Ray was already spooked.',
+    outcome: 'Ray stops buzzing before the patrol cars turn the corner. He\'d read something in your silence. It takes a state-wide alert and nineteen hours to find the second location.',
+    coda: '"The case you gave us was flawless. But he knew you were coming. With someone like him, you don\'t let them know you know."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: true,
+  },
   partial: {
-    rating: 'A',
-    ratingLabel: 'Good Investigation',
-    ratingColor: '#7a9a50',
-    ratingBg: 'rgba(122, 154, 80, 0.15)',
-    icon: '◆',
-    heading: 'Enough',
-    subheading: 'Not everything. But enough to act.',
-    mayaStatus: 'FOUND ALIVE — 54 HOURS',
-    mayaStatusColor: '#7a9a50',
-    rayStatus: 'ARRESTED',
-    outcome: 'Maya is found 54 hours later. The investigation takes longer than it might have — the police need time to build a warrant from two sources rather than three. But they get there.',
-    detail: 'The restraining order — which you didn\'t find — would have confirmed the prior pattern of surveillance immediately. Without it, investigators have to locate it themselves. It adds time. Those 23 extra hours are their own kind of cost.',
-    callLines: [
-      { speaker: 'You', text: '"I have evidence about my daughter\'s disappearance. The person responsible. His name is Ray Callahan."' },
-      { speaker: 'Reyes', text: '"What kind of evidence?"' },
-      { speaker: 'You', text: '"A domain registration in his name. Location data placing him at the scene. He operated under a fake username — stillwater_m — and he knew things about the victim that were never public. I have the WHOIS record and the Flickr archive."' },
-      { speaker: 'Reyes', text: '"That\'s... that\'s substantive. Where are you?"' },
-      { speaker: 'You', text: '"Maya\'s apartment."' },
-      { speaker: 'Reyes', text: '"Don\'t leave. And don\'t call Callahan. We\'re coming."' },
-    ],
-    coda: '"You gave us enough to start. That\'s what mattered. The third thread was already in the county system — we would have found it. But finding it first ourselves took time you didn\'t have."',
-    codaAttrib: '— From the case review, May 2026',
+    stamp: 'CHARGED', label: 'Enough', color: '#9a9a60', afterCall: 30,
+    status: 'FOUND ALIVE', ray: 'ARRESTED',
+    sub: 'Not airtight. But enough to start.',
+    outcome: 'Okafor believes you. A judge needs more. It takes until the next afternoon to fill the gaps you left. Ray is picked up at a motel in Grants Pass.',
+    coda: '"You gave us a name and part of a case. We did the rest. It just took time she didn\'t have to spare."',
+    attrib: '— Detective Dana Okafor, case review',
+    lena: true,
   },
-
-  cold: {
-    rating: 'C',
-    ratingLabel: 'Incomplete Investigation',
-    ratingColor: '#8a7060',
-    ratingBg: 'rgba(138, 112, 96, 0.15)',
-    icon: '◇',
-    heading: 'The Thin File',
-    subheading: 'You gave them a name. You couldn\'t give them the evidence.',
-    mayaStatus: 'FOUND ALIVE — 11 DAYS',
-    mayaStatusColor: '#a07050',
-    rayStatus: 'ARRESTED (DELAYED)',
-    outcome: 'The police open a supplementary file with Ray\'s name. Without a warrant, they can only conduct informal inquiries. He has time.',
-    detail: 'Maya is found eleven days later. She is alive. In the investigation that follows, every piece of evidence Maya built — the WHOIS record, the Flickr data, the court filing — is recovered from her laptop. It was all there. It just needed someone to follow it.',
-    callLines: [
-      { speaker: 'You', text: '"I think I know who took my daughter. His name is Ray Callahan."' },
-      { speaker: 'Reyes', text: '"What\'s your evidence, Mr. Reyes?"' },
-      { speaker: 'You', text: '"He — he was at the arts night. He has a key to my house. I found a name. A username. I think it\'s him."' },
-      { speaker: 'Reyes', text: '"That\'s not going to be enough for a warrant. Is there anything else? A document, a record, something verifiable?"' },
-      { speaker: '—silence—', text: null },
-      { speaker: 'Reyes', text: '"Mr. Reyes. We\'ll note the name. But we need something more than belief."' },
-    ],
-    coda: '"The evidence was in the apartment the whole time. In her files. Her notebooks. She had documented everything. We just needed someone to hand it to us."',
-    codaAttrib: '— Detective I. Reyes, post-case debrief',
+  thin: {
+    stamp: 'OPEN', label: 'The Thin File', color: '#a08060', afterCall: 9 * 24,
+    status: 'FOUND ALIVE', ray: 'ARRESTED (DELAYED)',
+    sub: 'You knew. You couldn\'t prove it.',
+    outcome: 'Okafor writes the name down. Without evidence that holds there\'s no warrant — only questions Ray answers politely at his door. A tip from the storage company finds Maya nine days later.',
+    coda: '"Everything we needed was in her apartment. Her files. Her notebook. Her board. Someone just had to hand it to us in a form we could use."',
+    attrib: '— Detective Dana Okafor, post-case debrief',
+    lena: false,
   },
-
   tipoff: {
-    rating: 'D',
-    ratingLabel: 'Critical Mistake',
-    ratingColor: '#a03030',
-    ratingBg: 'rgba(160, 48, 48, 0.15)',
-    icon: '✗',
-    heading: 'Too Close',
-    subheading: 'He heard something in your voice. He moved.',
-    mayaStatus: 'FOUND ALIVE — 6 DAYS',
-    mayaStatusColor: '#c04040',
-    rayStatus: 'FLED — ARRESTED LATER',
-    outcome: 'You call the police two minutes later. They reach Ray\'s listed address in Millhaven within 40 minutes. The location where Maya was being held is already empty.',
-    detail: 'Maya is found six days later in a secondary location. She is alive. Ray Callahan is apprehended the following week in Nevada. The case closes. But the six days between your call and her rescue are their own kind of cost.',
-    callLines: [
-      { speaker: 'You', text: '"Ray. I\'ve been going through Maya\'s things. Her investigation. I found some things."' },
-      { speaker: 'Ray', text: '"Tom. Hey. What kind of things?"' },
-      { speaker: 'You', text: '"She found your name. The domain. The forum account. The restraining order."' },
-      { speaker: '—silence—', text: null },
-      { speaker: 'Ray', text: '"I don\'t know what she told you, but—"' },
-      { speaker: 'You', text: '"Where is she, Ray?"' },
-      { speaker: '—call ended—', text: null },
-    ],
-    coda: '"He had a monitoring app on his phone flagging public records searches on his name. He would have known you were close regardless. But calling him confirmed it immediately."',
-    codaAttrib: '— From the police report, April 2026',
+    stamp: 'OPEN', label: 'Too Close', color: '#c04040', afterCall: 6 * 24,
+    status: 'FOUND ALIVE', ray: 'FLED — ARRESTED LATER',
+    sub: 'You needed him to know you knew. He did.',
+    outcome: 'He reads your face before you finish the sentence. Forty minutes later the storage unit is empty. Maya is found six days later, near the Nevada line.',
+    coda: '"She wrote it in capitals: don\'t call him. I understand why you went down those stairs. I\'d have wanted to as well."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: false,
+  },
+  gone: {
+    stamp: 'AT LARGE', label: 'Head Start', color: '#b08050', afterCall: 3 * 24,
+    status: 'FOUND ALIVE', ray: 'ARRESTED AT THE BORDER',
+    sub: 'The case was strong. Ray was already on the road.',
+    outcome: 'Ray was on I-5 north when you called. A trooper stops him at the border that afternoon. Maya isn\'t in the car — it takes three more days to find the cabin.',
+    coda: '"Your case was good. If we\'d had it six hours earlier, we\'d have caught him with her."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: true,
+  },
+  lost: {
+    stamp: 'UNSOLVED', label: 'Still Missing', color: '#7a5a6a', afterCall: null,
+    status: 'STILL MISSING', ray: 'ARRESTED — SILENT',
+    sub: 'He left before dawn. Nobody could stop him.',
+    outcome: 'By the time anyone is looking for him his phone is in the Columbia River. He\'s picked up at the border eleven days later, alone, and says nothing.',
+    coda: '"Every piece of it was in her apartment. We just needed it sooner."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: false,
+  },
+  thin_unknown: {
+    stamp: 'OPEN', label: 'A Name You Didn\'t Have', color: '#a08060', afterCall: 9 * 24,
+    status: 'FOUND ALIVE', ray: 'IDENTIFIED LATER',
+    sub: 'You had an account. You never had a person.',
+    outcome: 'Okafor subpoenas the registrar. The answer comes back nine days later with a name on it: Raymond T. Callahan — the man who was at your table every Christmas. Maya is found that evening.',
+    coda: '"You were three quarters of the way there. The quarter you were missing was his name."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: false,
+  },
+  lost_unknown: {
+    stamp: 'UNSOLVED', label: 'Still Missing', color: '#7a5a6a', afterCall: null,
+    status: 'STILL MISSING', ray: 'IDENTIFIED — GONE',
+    sub: 'A handle isn\'t a man. He was gone before anyone could put a name to it.',
+    outcome: 'The registrar answers eleven days after Ray drives out of Millhaven. By then his house is empty. He is picked up at the border, alone, and says nothing at all.',
+    coda: '"Everything we needed was in her apartment. We just needed the name sooner."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: false,
+  },
+  traced: {
+    stamp: 'CHARGED', label: 'The Registrar Answered', color: '#9a9a60', afterCall: 20,
+    status: 'FOUND ALIVE', ray: 'ARRESTED',
+    sub: 'You couldn\'t say his name. The paperwork said it for you.',
+    outcome: 'You hand over everything and let Okafor draw the line you wouldn\'t. The registrar confirms it inside two hours. They take him at a motel outside Grants Pass.',
+    coda: '"You had all of it. You just couldn\'t make yourself say the name — and I have seen that before, Mr. Reyes. It cost you a night."',
+    attrib: '— Detective Dana Okafor, Millhaven PD',
+    lena: true,
+  },
+  wrongman: {
+    stamp: 'NO CHARGES', label: 'The Wrong Man', color: '#8a4a4a', afterCall: 11 * 24,
+    status: 'FOUND ALIVE', ray: 'FREE — FOR NOW',
+    sub: 'Someone wanted you chasing the wrong man. It worked twice.',
+    outcome: 'Police spend two days on a man the records had already cleared. Maya is found eleven days later, after an anonymous tip.',
+    coda: '"Somebody spent a year pushing that forum at other men. Your daughter saw through it. We didn\'t."',
+    attrib: '— Detective Dana Okafor, case review',
+    lena: false,
   },
 }
 
-const PATH_NAMES = {
-  A: { icon: '💻', name: 'Digital Trail', color: '#4a90d9' },
-  B: { icon: '📓', name: 'Private Notes', color: '#c0392b' },
-  C: { icon: '📌', name: 'Public Record', color: '#d4a017' },
+const SUSPECT_NAME = { corey: 'Corey Marsh', pryce: 'Owen Pryce', unknown: 'stillwater_m', ray: 'Ray Callahan' }
+
+function deriveEnding(evaluation, choice, suspicion, gone) {
+  const { suspect, caseAgainstRay: strength } = evaluation
+  const wrongMan = WRONG_SUSPECTS.includes(suspect)
+  if (choice === 'confront') return wrongMan ? 'wrongman' : 'tipoff'
+  if (wrongMan) return 'wrongman'
+  const traceable = evaluation.strength >= 2.5 && evaluation.namesSomeone
+  if (gone) {
+    if (suspect !== 'ray') return traceable ? 'gone' : 'lost_unknown'
+    return strength >= 2.5 ? 'gone' : 'lost'
+  }
+  if (suspect !== 'ray') return traceable ? 'traced' : 'thin_unknown'
+  if (strength >= 2.5) {
+    if (suspicion >= RAY_ALARM_THRESHOLD) return 'fled'
+    return choice === 'journalist' ? 'journalist' : 'perfect'
+  }
+  if (strength >= 1.5) return 'partial'
+  return 'thin'
+}
+
+function buildCall(type, evaluation, choice, gone) {
+  const lines = []
+  const you = (text) => lines.push({ who: 'You', text })
+  const ok = (text) => lines.push({ who: 'Okafor', text })
+  const pause = (text) => lines.push({ who: null, text })
+
+  if (choice === 'confront') {
+    pause('Ray is leaning against his car under the streetlight. He smiles when he sees you.')
+    lines.push({ who: 'Ray', text: '"Tom. Christ, you look terrible. Any news?"' })
+    const wrong = WRONG_SUSPECTS.includes(evaluation.suspect)
+    you(wrong ? `"Ray. I think I know who did it. ${SUSPECT_NAME[evaluation.suspect]}."` : '"stillwater_m, Ray."')
+    pause(wrong ? 'Something in his face relaxes.' : 'Nothing moves in his face. That\'s how you know.')
+    lines.push({ who: 'Ray', text: wrong ? '"Then tell the police, Tom. Go on."' : '"I don\'t know what she told you, but—"' })
+    if (!wrong) { you('"Where is she?"'); pause('He gets in the car.') }
+    return lines
+  }
+
+  you('"Detective Okafor. This is Thomas Reyes. Maya Reyes is my daughter. I know who took her."')
+  ok('"Go ahead, Mr. Reyes."')
+  if (evaluation.suspect === 'corey') {
+    you('"Corey Marsh. Lena Vasquez\'s ex. He was stalking her — Maya had it on file."')
+    ok('"Corey Marsh was cleared last year. Timestamped photos from his shop in Tigard, both nights. Who pointed you at him?"')
+    pause('You don\'t have an answer.')
+    return lines
+  }
+  if (evaluation.suspect === 'pryce') {
+    you('"Owen Pryce. He ran that arts night. He wouldn\'t give anyone the guest list."')
+    ok('"Mr. Pryce was on a stage in front of four hundred people at a quarter to eight, introducing her. It is in the programme you have in your hand. Who has been pointing you at these men?"')
+    pause('You don\'t have an answer.')
+    return lines
+  }
+  if (evaluation.suspect === 'unknown') {
+    you('"There\'s an account. stillwater_m. He knew things about Lena nobody should have known. Maya was onto him."')
+    ok('"A username. Do you have a name?"')
+    pause('You don\'t say it. Thirty years. You can\'t make yourself say it.')
+  } else if (!evaluation.suspect) {
+    // Nobody circled. He has a phone in his hand and nothing to say into it.
+    you('"I have been at this all night and I do not have a name for you."')
+    ok('"Then tell me what you do have, Mr. Reyes, and let me decide what it is worth."')
+  } else {
+    you(gone ? '"Ray Callahan. He left town a few hours ago. He said Seattle. I don\'t believe him."' : '"Ray Callahan. He\'s outside my daughter\'s building right now."')
+    ok('"...Callahan. What do you have?"')
+  }
+  const LEAD_IN = {
+    who: 'Who\'s behind the account — ',
+    there: 'Where he was the night Lena vanished — ',
+    before: 'And why I believe it — ',
+  }
+  const MISSING = {
+    who: 'I can\'t prove it\'s his account.',
+    there: 'I can\'t put him at the arts night.',
+    before: 'I don\'t have anything showing he\'s done this before.',
+  }
+  evaluation.perSlot.forEach(p => {
+    // `spoken`, not `title` — see caseData's CLUES
+    you(p.clueId ? `"${LEAD_IN[p.slot.id]}${CLUES[p.clueId].spoken ?? CLUES[p.clueId].title}."` : `"${MISSING[p.slot.id]}"`)
+    ok(`"${p.reaction}"`)
+  })
+  if (evaluation.suspect === 'unknown') {
+    ok('"All of this is real work, Mr. Reyes. But you have handed me an account, not a man. One of those records has a name printed on it."')
+    if (evaluation.namesSomeone) pause('You look down at the registrar printout in your hand. You cannot make yourself say it.')
+  } else if (WRONG_SUSPECTS.includes(evaluation.suspect)) {
+    ok(`"And none of it points at ${SUSPECT_NAME[evaluation.suspect]}. It points at whoever registered that domain."`)
+  }
+  if (gone && type === 'gone') ok('"That\'s enough for a warrant. I\'m putting out an alert on his car now. Every road north."')
+  else if (type === 'perfect' || type === 'journalist' || type === 'fled') ok('"That\'s enough. Don\'t open the door. Don\'t answer him. We\'re coming."')
+  else if (type === 'partial') ok('"It\'s a start. I can\'t get a warrant on this alone tonight — but I can start pulling. Stay put."')
+  else ok('"I\'ll note the name. But I need something I can put in front of a judge."')
+  if (choice === 'journalist') lines.push({ who: 'Rosa', text: '"Mr. Reyes — I\'ve been waiting for this since Thursday. Maya said she was close. I have everything. It\'s ready when you are."' })
+  return lines
+}
+
+function lessons(type, evaluation, suspicion, clues) {
+  const out = []
+  if (evaluation.suspect === 'corey') out.push('Corey Marsh has an alibi on his own Flickr. The forum account that accused him is the one to follow.')
+  if (evaluation.suspect === 'pryce') out.push('Owen Pryce was on stage at 7:45, in the programme. The account that nudged you towards him is the one to follow.')
+  if (evaluation.suspect === 'unknown') {
+    out.push(evaluation.namesSomeone
+      ? 'You handed over a record with his name printed on it — and still circled an account instead of a man. Name him.'
+      : 'You had a username, not a person. The WHOIS record, the business registry or the site\'s source code would have given you a name.')
+  }
+  if (evaluation.suspect === 'ray') {
+    evaluation.perSlot.forEach(p => {
+      if (p.weight >= 1) return
+      const best = Object.entries(p.slot.weights).filter(([, w]) => w >= 1).map(([id]) => id)
+      const have = best.filter(id => clues.includes(id))
+      out.push(have.length
+        ? `${p.slot.label}: you had "${CLUES[have[0]].title}" — it would have held.`
+        : `${p.slot.label}: you never found ${best.map(id => `"${CLUES[id].title}"`).join(' or ')}.`)
+    })
+  }
+  if (type === 'gone' || type === 'lost') out.push('Ray left before you made the call. Failed theories, hints and careless texts all brought his departure closer.')
+  else if (suspicion >= RAY_ALARM_THRESHOLD) out.push('Ray was alarmed. What you texted him told him you were close.')
+  if (type === 'tipoff') out.push('Maya\'s draft said it plainly: "Please don\'t call anyone."')
+  return out
 }
 
 export default function EndingPage() {
-  const { endingChoice, evidenceScore, journalistUnlocked, paths, perfectPaths, caseSummaries } = useGameStore()
-  const endingType = deriveEnding(evidenceScore, journalistUnlocked, endingChoice)
-  const ending = ENDINGS[endingType]
+  const st = useGameStore(useShallow(s => ({
+    finalCase: s.finalCase, endingChoice: s.endingChoice, raySuspicion: s.raySuspicion, clock: s.clock,
+    paths: s.paths, deductions: s.deductions, hintsUsed: s.hintsUsed, wrongGuesses: s.wrongGuesses, clues: s.clues,
+  })))
+  const evaluation = useMemo(() => evaluateCase(st.finalCase), [st.finalCase])
+  const suspicion = effectiveSuspicion(st.raySuspicion)
+  const gone = st.clock >= rayDeadline(suspicion)
+  const type = deriveEnding(evaluation, st.endingChoice, suspicion, gone)
+  const ending = ENDINGS[type]
+  const call = buildCall(type, evaluation, st.endingChoice, gone)
+  const tips = lessons(type, evaluation, suspicion, st.clues)
 
-  const [phase, setPhase] = useState('reveal') // 'reveal' -> 'details'
+  const totalHours = ending.afterCall === null ? null : Math.round((START_MISSING_MINUTES + st.clock) / 60 + ending.afterCall)
+  const afterLabel = ending.afterCall === null
+    ? null
+    : ending.afterCall < 48
+      ? `found ${ending.afterCall} hours after your call`
+      : `found ${Math.round(ending.afterCall / 24)} days after your call`
+  const leads = Object.values(st.paths).reduce((n, p) => n + p.completedNodes.length, 0)
+  const totalLeads = ['A', 'B', 'C'].reduce((n, k) => n + GAME_DATA[k].nodes.length, 0)
+  const deds = Object.keys(st.deductions).length
+  const totalDeds = Object.values(DEDUCTIONS).flat().length
+
   const [showCall, setShowCall] = useState(false)
-
-  // Auto-advance from reveal to details
+  const [phase, setPhase] = useState('reveal')
   useEffect(() => {
-    const timer = setTimeout(() => setPhase('details'), 4000)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => setPhase('details'), 5200)
+    return () => clearTimeout(t)
   }, [])
 
-  const handleRestart = () => {
+  const restart = () => {
     useGameStore.getState().resetGame()
     useGameStore.setState({ phase: 'menu' })
   }
 
-  // Calculate stats
-  const completedPaths = Object.keys(paths).filter(k => paths[k].completed)
-  const perfectCount = Object.keys(perfectPaths).filter(k => paths[k].completed && perfectPaths[k]).length
-  const totalClues = Object.values(caseSummaries).flat().length
-
-  // Reveal phase - dramatic "MAYA FOUND" moment
   if (phase === 'reveal') {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8"
-        style={{ background: `radial-gradient(circle at center, ${ending.ratingBg} 0%, #08080e 70%)` }}
-      >
-        <div className="text-center animate-fadeIn">
-          {/* Status */}
-          <div
-            className="font-mono text-xs tracking-[0.4em] uppercase mb-6 animate-pulse"
-            style={{ color: ending.mayaStatusColor }}
-          >
-            Maya Reyes
-          </div>
-
-          {/* Main status */}
-          <h1
-            className="font-black uppercase tracking-tight mb-4 whitespace-nowrap"
-            style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: 'clamp(1.6rem, 8vw, 6rem)',
-              color: ending.mayaStatusColor,
-              textShadow: `0 0 60px ${ending.mayaStatusColor}40`,
-            }}
-          >
-            {ending.mayaStatus}
+      <div className="fixed inset-0 flex items-center justify-center p-6 cursor-pointer" onClick={() => setPhase('details')}
+        style={{ background: `radial-gradient(circle at center, ${ending.color}26 0%, #08080e 70%)` }}>
+        <div className="text-center" style={{ animation: 'fadeUp 1.4s ease forwards' }}>
+          <div className="font-mono text-xs tracking-[0.4em] uppercase mb-5" style={{ color: ending.color }}>Maya Reyes</div>
+          <h1 className="font-black uppercase tracking-tight mb-4"
+            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.4rem, 9vw, 6.5rem)', color: ending.color, textShadow: `0 0 60px ${ending.color}55` }}>
+            {ending.status}
           </h1>
-
-          {/* Ray status */}
-          <div className="font-mono text-sm tracking-[0.2em] uppercase" style={{ color: '#8a8a88' }}>
-            Ray Callahan: <span style={{ color: endingType === 'tipoff' ? '#a03030' : '#5a9060' }}>{ending.rayStatus}</span>
+          {afterLabel && (
+            <div className="font-mono text-xs tracking-[0.3em] uppercase text-[#8a8a88] mb-3">{afterLabel}</div>
+          )}
+          <div className="font-mono text-sm tracking-[0.2em] uppercase text-[#9a9a98]">
+            {totalHours === null ? 'Missing since Monday' : `Missing ${totalHours} hours in total`} · {evaluation.suspect === 'ray' ? 'Ray Callahan' : 'The man who took her'}: <span style={{ color: ending.color }}>{ending.ray}</span>
           </div>
-
-          {/* Click hint */}
-          <div className="font-mono text-xs text-[#4a4a58] mt-12 animate-pulse">
-            Click anywhere to continue
-          </div>
+          <div className="font-mono text-xs text-[#5a5a68] mt-12 animate-pulse">Click to continue</div>
         </div>
-
-        {/* Click to advance */}
-        <div
-          className="fixed inset-0 cursor-pointer z-10"
-          onClick={() => setPhase('details')}
-        />
-
-        <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeIn { animation: fadeIn 1.5s ease forwards; }
-        `}</style>
       </div>
     )
   }
 
-  // Details phase - full ending with stats
+  const mood = rayMood(suspicion)
+
   return (
-    <div className="min-h-screen bg-[#08080e] flex flex-col">
-      {/* Header */}
-      <div className="shrink-0 border-b border-[#1a1a28] px-6 py-4 flex items-center justify-between">
-        <div className="font-mono text-xs text-[#4a4a58] tracking-[0.2em] uppercase">
-          What Maya Knew
-        </div>
-        <div className="flex items-center gap-3">
-          <span
-            className="text-2xl"
-            style={{ filter: `drop-shadow(0 0 8px ${ending.ratingColor})` }}
-          >
-            {ending.icon}
-          </span>
-          <div className="font-mono text-xs tracking-[0.15em]" style={{ color: ending.ratingColor }}>
-            {ending.ratingLabel}
+    <div className="end-root" style={{ '--cork': `url(${import.meta.env.BASE_URL}art/cork-surface.jpg)` }}>
+      <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-8 relative">
+
+        {/* the file, closed and stamped — not a score */}
+        <div className="end-file">
+          <span className="end-stamp" style={{ color: ending.color }}>{ending.stamp}</span>
+          <div className="kicker">Millhaven PD · case 2025-0310</div>
+          <h1 className="verdict">{ending.label}</h1>
+          <p className="sub">{ending.sub}</p>
+          <div className="filed">
+            <span>{st.endingChoice === 'confront' ? 'Filed by D. Okafor' : 'Filed by T. Reyes'}</span>
+            <span>{clockLabel(st.clock)}</span>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-6 sm:gap-10">
+        {/* taken → you called → found */}
+        <div className="border border-[#2a2a38] bg-[#0b0b12] p-5">
+          <div className="flex items-center gap-2 text-center">
+            {[
+              ['MON 07:52', 'taken', '#e04a3a'],
+              [clockLabel(st.clock), st.endingChoice === 'confront' ? 'you went down' : 'you called', '#c0a060'],
+              [totalHours === null ? '—' : `+${ending.afterCall < 48 ? `${ending.afterCall}h` : `${Math.round(ending.afterCall / 24)}d`}`, totalHours === null ? 'never found' : 'found', ending.color],
+            ].map(([big, small, color], i) => (
+              <div key={small} className="flex-1 flex items-center gap-2">
+                {i > 0 && <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#2a2a38,#4a4a58)' }} />}
+                <div className="shrink-0">
+                  <div className="font-mono text-base" style={{ color }}>{big}</div>
+                  <div className="font-mono text-[12px] tracking-[0.2em] uppercase text-[#6a6a78]">{small}</div>
+                </div>
+                {i < 2 && <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#4a4a58,#2a2a38)' }} />}
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* ═══ RATING BANNER ═══ */}
-          <div
-            className="p-4 sm:p-8 text-center"
-            style={{ background: ending.ratingBg }}
+        <div>
+          <div className="font-mono text-xs text-[#7a7a88] tracking-[0.2em] uppercase mb-3">What happened</div>
+          <p className="text-lg leading-relaxed text-[#d8d0c0]" style={{ fontFamily: "'Crimson Pro', serif" }}>{ending.outcome}</p>
+          {ending.lena && <p className="text-base leading-relaxed text-[#9a9088] italic mt-4" style={{ fontFamily: "'Crimson Pro', serif" }}>{LENA}</p>}
+        </div>
+
+        <div className="border border-[#2a2a38] bg-[#0b0b12] p-5 sm:p-7">
+          <button
+            onClick={() => setShowCall(v => !v)}
+            className="w-full flex items-center justify-between font-mono text-xs text-[#9a9aa8] tracking-[0.2em] uppercase mb-4"
           >
-            <div
-              className="text-8xl font-black mb-2"
-              style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                color: ending.ratingColor,
-                textShadow: `0 0 30px ${ending.ratingColor}50`,
-              }}
-            >
-              {ending.rating}
-            </div>
-            <div className="font-mono text-sm tracking-[0.2em] uppercase" style={{ color: ending.ratingColor }}>
-              {ending.ratingLabel}
-            </div>
-            <h1
-              className="text-3xl sm:text-4xl font-black uppercase mt-6 mb-2"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#e8e0d0' }}
-            >
-              {ending.heading}
-            </h1>
-            <p className="text-base" style={{ fontFamily: "'Crimson Pro', serif", color: '#a0a098', fontStyle: 'italic' }}>
-              {ending.subheading}
-            </p>
+            <span>▸ {st.endingChoice === 'confront' ? 'Outside the building' : 'The call'} — {call.length} lines</span>
+            <span style={{ color: '#c0a060' }}>{showCall ? 'hide' : 'read it'}</span>
+          </button>
+          <div className="space-y-3" hidden={!showCall}>
+            {call.map((l, i) => l.who ? (
+              <div key={i} className="flex gap-4">
+                <span className="font-mono text-xs shrink-0 w-16 pt-1" style={{ color: l.who === 'You' ? '#c0a060' : l.who === 'Ray' ? '#d05040' : l.who === 'Rosa' ? '#6a8ad0' : '#7a9ab0' }}>{l.who}</span>
+                <p className="text-base italic leading-relaxed text-[#d0c8b8]" style={{ fontFamily: "'Crimson Pro', serif" }}>{l.text}</p>
+              </div>
+            ) : (
+              <p key={i} className="text-sm italic text-[#7a7268] pl-20" style={{ fontFamily: "'Crimson Pro', serif" }}>{l.text}</p>
+            ))}
           </div>
+        </div>
 
-          {/* ═══ YOUR INVESTIGATION STATS ═══ */}
-          <div className="p-6">
-            <div className="font-mono text-xs text-[#6a6a78] tracking-[0.2em] uppercase mb-6">
-              Your Investigation
-            </div>
+        <div className="pl-5 py-2" style={{ borderLeft: `3px solid ${ending.color}` }}>
+          <blockquote className="text-lg italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif", color: '#e0d4bc' }}>{ending.coda}</blockquote>
+          <div className="font-mono text-xs text-[#6a6a78] mt-2">{ending.attrib}</div>
+        </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {/* Threads completed */}
-              <div className="text-center">
-                <div className="text-4xl font-black mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#d8d0c0' }}>
-                  {completedPaths.length}/3
-                </div>
-                <div className="font-mono text-xs text-[#6a6a78]">Threads</div>
+        <div className="border border-[#2a2a38] p-5 sm:p-7">
+          <div className="font-mono text-xs text-[#7a7a88] tracking-[0.2em] uppercase mb-5">Your investigation</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 text-center">
+            {[
+              [totalHours === null ? '—' : `${totalHours}h`, totalHours === null ? 'Still missing' : 'Maya missing'],
+              [`${Math.floor(st.clock / 60)}h ${st.clock % 60}m`, 'You spent'],
+              [`${deds}/${totalDeds}`, 'Deductions'],
+              [`${leads}/${totalLeads}`, 'Leads examined'],
+            ].map(([v, k]) => (
+              <div key={k}>
+                <div className="text-3xl font-black" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#e8e0d0' }}>{v}</div>
+                <div className="font-mono text-[12px] text-[#7a7a88] mt-1">{k}</div>
               </div>
-
-              {/* Clues found */}
-              <div className="text-center">
-                <div className="text-4xl font-black mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: '#d8d0c0' }}>
-                  {totalClues}
-                </div>
-                <div className="font-mono text-xs text-[#6a6a78]">Clues Found</div>
-                <div className="font-mono text-[9px] text-[#4a4a58] mt-1">
-                  across {completedPaths.length} thread{completedPaths.length !== 1 ? 's' : ''}
-                </div>
-              </div>
-
-              {/* Perfect paths */}
-              <div className="text-center">
-                <div className="text-4xl font-black mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: perfectCount === 3 ? '#d4a84b' : '#d8d0c0' }}>
-                  {perfectCount}
-                </div>
-                <div className="font-mono text-xs text-[#6a6a78]">Perfect Threads</div>
-              </div>
-
-              {/* Time taken (maya found) */}
-              <div className="text-center">
-                <div className="text-4xl font-black mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", color: ending.mayaStatusColor }}>
-                  {ending.mayaStatus.split('—')[1]?.trim() || 'SAFE'}
-                </div>
-                <div className="font-mono text-xs text-[#6a6a78]">Maya Found</div>
-              </div>
-            </div>
-
-            {/* Thread breakdown */}
-            <div className="mt-8 pt-6 border-t border-[#1a1a28]">
-              <div className="font-mono text-xs text-[#5a5a68] mb-4">Threads Completed</div>
-              <div className="flex flex-wrap gap-3">
-                {['A', 'B', 'C'].map(p => {
-                  const done = paths[p]?.completed
-                  const perfect = perfectPaths[p] && done
-                  const info = PATH_NAMES[p]
-                  return (
-                    <div
-                      key={p}
-                      className="flex items-center gap-2 px-4 py-2 border"
-                      style={{
-                        borderColor: done ? info.color : '#2a2a38',
-                        background: done ? `${info.color}10` : 'transparent',
-                        opacity: done ? 1 : 0.3,
-                      }}
-                    >
-                      <span className="text-lg">{info.icon}</span>
-                      <span className="font-mono text-xs" style={{ color: done ? info.color : '#5a5a68' }}>
-                        {info.name}
-                      </span>
-                      {perfect && <span className="text-xs text-[#d4a84b]">★</span>}
-                      {done && !perfect && <span className="text-xs text-[#5a9060]">✓</span>}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* ═══ WHAT HAPPENED ═══ */}
-          <div>
-            <div className="font-mono text-xs text-[#6a6a78] tracking-[0.2em] uppercase mb-4">
-              What Happened
-            </div>
-            <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: "'Crimson Pro', serif", color: '#c8c0b0' }}>
-              {ending.outcome}
-            </p>
-            <p className="text-base leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif", color: '#8a8278', fontStyle: 'italic' }}>
-              {ending.detail}
-            </p>
-          </div>
-
-          {/* ═══ THE CALL (expandable) ═══ */}
-          <div className="bg-[#0a0a10]">
-            <button
-              onClick={() => setShowCall(!showCall)}
-              className="w-full px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-[#0c0c14] transition-colors"
-            >
-              <div className="font-mono text-xs text-[#6a6a78] tracking-[0.2em] uppercase">
-                The Call — Full Transcript
-              </div>
-              <span className="font-mono text-lg text-[#4a4a58]">{showCall ? '−' : '+'}</span>
-            </button>
-
-            {showCall && (
-              <div className="px-6 pb-6 space-y-4 border-t border-[#1a1a28]">
-                <div className="h-4" />
-                {ending.callLines.map((line, i) => {
-                  const isSystem = line.text === null
-                  return (
-                    <div key={i} className={`flex gap-4 ${isSystem ? 'my-2' : ''}`}>
-                      {isSystem ? (
-                        <div className="font-mono text-xs text-[#3a3a48] tracking-widest pl-28 italic">
-                          {line.speaker}
-                        </div>
-                      ) : (
-                        <>
-                          <span className="font-mono text-xs shrink-0 w-24 pt-0.5" style={{
-                            color: line.speaker === 'You' ? '#8a7040'
-                              : line.speaker === 'Ray' ? '#7a2020'
-                              : line.speaker === 'Rosa' ? '#3a6080'
-                              : '#6a6a78',
-                          }}>
-                            {line.speaker}
-                          </span>
-                          <p className="text-sm italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif", color: '#c0b8a8' }}>
-                            {line.text}
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* ═══ CLOSING QUOTE ═══ */}
-          <div
-            className="pl-6 py-4"
-            style={{ borderLeft: `3px solid ${ending.ratingColor}` }}
-          >
-            <blockquote
-              className="text-lg italic leading-relaxed mb-3"
-              style={{ fontFamily: "'Crimson Pro', serif", color: ending.ratingColor }}
-            >
-              {ending.coda}
-            </blockquote>
-            <div className="font-mono text-xs text-[#5a5a68]">{ending.codaAttrib}</div>
-          </div>
-
-          {/* ═══ OTHER ENDINGS HINT ═══ */}
-          {(endingType !== 'perfect' && endingType !== 'journalist') && (
-            <div className="p-6 text-center">
-              <div className="font-mono text-xs text-[#5a5a68] tracking-[0.15em] uppercase mb-3">
-                Other Endings Exist
-              </div>
-              <p className="text-sm text-[#6a6a78]" style={{ fontFamily: "'Crimson Pro', serif" }}>
-                {evidenceScore < 3
-                  ? `Complete all 3 investigation threads for a better outcome. You found ${evidenceScore}.`
-                  : endingType === 'tipoff'
-                    ? 'You called him because you needed him to know you knew. It gave him time he shouldn\'t have had.'
-                    : 'Find the journalist contact in Maya\'s research for a hidden ending.'}
-              </p>
-              <div className="flex justify-center gap-4 mt-4">
-                {['A', 'B', 'C'].map(p => {
-                  const done = paths[p]?.completed
-                  return (
-                    <div
-                      key={p}
-                      className="w-8 h-8 flex items-center justify-center rounded border"
-                      style={{
-                        borderColor: done ? PATH_NAMES[p].color : '#3a3a48',
-                        color: done ? PATH_NAMES[p].color : '#3a3a48',
-                        background: done ? `${PATH_NAMES[p].color}10` : 'transparent',
-                      }}
-                    >
-                      {done ? '✓' : '?'}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* ═══ PLAY AGAIN ═══ */}
-          <div className="border-t border-[#1a1a28] pt-8 pb-4 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="mt-6 pt-5 border-t border-[#1a1a28] grid sm:grid-cols-2 gap-4 font-mono text-xs">
             <div>
-              <div className="font-mono text-xs text-[#3a3a48] tracking-[0.2em] uppercase mb-1">
-                What Maya Knew — End
+              <div className="text-[#7a7a88] mb-2">
+                CASE STRENGTH · {evaluation.strength.toFixed(1)} / 3
+                <span className="block text-[12px] mt-0.5" style={{ color: evaluation.suspect === 'ray' ? '#6a9a70' : '#c08060' }}>
+                  {/* The records you hand over are strong or they are not; who you
+                      accused is a separate question, and naming the wrong man does
+                      not make the paperwork weaker — it makes it point elsewhere. */}
+                  {evaluation.suspect === 'ray' ? 'against Ray Callahan'
+                    : WRONG_SUSPECTS.includes(evaluation.suspect)
+                      ? `— and none of it points at ${SUSPECT_NAME[evaluation.suspect]}, who you named`
+                      : evaluation.namesSomeone
+                        ? '— and one of these records carries a name you did not say'
+                        : '— but you never named a man'}
+                </span>
               </div>
-              <div className="font-mono text-xs text-[#5a5a68]">
-                Thank you for playing
-              </div>
+              {FINAL_SLOTS.map((slot, i) => {
+                const p = evaluation.perSlot[i]
+                return (
+                  <div key={slot.id} className="flex items-center gap-2 mb-1.5">
+                    <span className="w-16 text-[#9a9aa8]">{slot.label}</span>
+                    <span className="flex-1 h-1.5 bg-[#1a1a28]"><span className="block h-full" style={{ width: `${p.weight * 100}%`, background: p.weight >= 1 ? '#5aa070' : p.weight > 0 ? '#b0a050' : '#6a2a2a' }} /></span>
+                    <span className="w-40 truncate text-[#b0a898]">{p.clueId ? CLUES[p.clueId].title : '—'}</span>
+                  </div>
+                )
+              })}
             </div>
-            <button
-              onClick={handleRestart}
-              className="font-mono text-sm tracking-[0.15em] uppercase px-8 py-3 transition-all min-h-[48px] opacity-70 hover:opacity-100"
-              style={{ color: '#4a90d9' }}
-            >
-              ← Play Again
-            </button>
+            <div className="text-[#9a9aa8] space-y-1.5">
+              <div>HOW WORRIED RAY GOT: <span style={{ color: mood.color }}>{mood.label.toUpperCase()}</span></div>
+              <div>HINTS BOUGHT: {st.hintsUsed}</div>
+              <div>WRONG GUESSES: {st.wrongGuesses}</div>
+            </div>
           </div>
+        </div>
 
+        {tips.length > 0 && (
+          <div className="border border-dashed border-[#3a3a48] p-5 sm:p-6">
+            <div className="font-mono text-xs text-[#9a9aa8] tracking-[0.2em] uppercase mb-3">What would have changed it</div>
+            <ul className="space-y-2">
+              {tips.map((t, i) => <li key={i} className="text-base text-[#b8b0a0]" style={{ fontFamily: "'Crimson Pro', serif" }}>— {t}</li>)}
+            </ul>
+            {/* The letter grades are gone — this line used to advertise them. */}
+            <p className="font-mono text-[12px] text-[#6a6a78] mt-4">{Object.keys(ENDINGS).length} endings. Two of them get her home the same night.</p>
+          </div>
+        )}
+
+        <div className="border-t border-[#1a1a28] pt-6 pb-4 flex flex-col sm:flex-row items-center justify-between gap-5">
+          <div className="font-mono text-xs text-[#5a5a68]">What Maya Knew — thank you for playing</div>
+          <button onClick={restart} className="font-mono text-sm tracking-[0.15em] uppercase border-2 px-8 py-3 min-h-[48px] hover:bg-[#1a1a28]" style={{ borderColor: '#c0a060', color: '#e0c890' }}>
+            ← Play again
+          </button>
         </div>
       </div>
     </div>

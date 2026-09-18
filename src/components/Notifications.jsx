@@ -7,7 +7,7 @@ const NOTIFICATION_CONFIG = {
   info: {
     icon: 'ℹ',
     borderColor: 'border-[#2a4060]',
-    iconColor: 'text-[#4a90d9]',
+    iconColor: 'text-[#c09a5a]',
   },
   success: {
     icon: '✓',

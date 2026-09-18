@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useModalFocus } from '../hooks/useModalFocus'
 import { useGameStore } from '../store/gameStore'
 
 const PHASE_NAMES = {
@@ -35,17 +36,15 @@ function formatDate(timestamp) {
   })
 }
 
-// NEW FEATURE: Mobile-friendly save slots
+// Mobile-friendly save slots
 function SaveSlot({ slot, index, mode, onSave, onLoad, onDelete }) {
   const isEmpty = !slot
-  const isDisabled = mode === 'load' && isEmpty
+  const canSave = mode === 'save' || mode === 'both'
+  const isDisabled = !canSave && isEmpty
 
   const handleAction = () => {
-    if (mode === 'save') {
-      onSave(index)
-    } else if (!isEmpty) {
-      onLoad(index)
-    }
+    if (canSave) onSave(index)
+    else if (!isEmpty) onLoad(index)
   }
 
   const completedPaths = slot ? Object.entries(slot.paths).filter(([, p]) => p.completed).map(([k]) => k) : []
@@ -97,10 +96,10 @@ function SaveSlot({ slot, index, mode, onSave, onLoad, onDelete }) {
                     className={`
                       w-8 h-8 flex items-center justify-center font-mono text-sm border
                       ${completedPaths.includes(p)
-                        ? 'border-green-600 text-green-500 bg-green-950/30'
+                        ? 'border-[#4a7a52] text-[#86c48e] bg-[#0d1a0f]'
                         : slot.paths[p]?.started
-                        ? 'border-amber-600 text-amber-500 bg-amber-950/30'
-                        : 'border-[#3a3a48] text-[#5a5a68]'
+                        ? 'border-[#7a5a2a] text-[#d4a84b] bg-[#1a1408]'
+                        : 'border-[#3a2c20] text-[#6a5a48]'
                       }
                     `}
                   >
@@ -122,22 +121,32 @@ function SaveSlot({ slot, index, mode, onSave, onLoad, onDelete }) {
             className={`
               flex-1 font-mono text-sm tracking-[0.1em] uppercase py-3 px-4
               border-2 transition-all cursor-pointer rounded min-h-[48px]
-              ${mode === 'save'
-                ? 'border-blue-600 text-blue-400 hover:bg-blue-950/30'
-                : isEmpty
+              ${isEmpty && !canSave
                 ? 'border-[#2a2a38] text-[#4a4858] cursor-not-allowed'
-                : 'border-green-600 text-green-400 hover:bg-green-950/30'
+                : 'border-[#5a4430] text-[#d8c49c] hover:bg-[#241a10] hover:border-[#8a6a44]'
               }
             `}
-            aria-label={mode === 'save' ? `Save to slot ${index + 1}` : `Load from slot ${index + 1}`}
+            aria-label={canSave ? `Save to slot ${index + 1}` : `Load from slot ${index + 1}`}
           >
-            {mode === 'save' ? (isEmpty ? 'Save' : 'Overwrite') : 'Load'}
+            {canSave ? (isEmpty ? 'Save' : 'Overwrite') : 'Load'}
           </button>
+
+          {/* Loading used to live on the main menu only — which is the screen
+              you could not reach without risking the run you were playing. */}
+          {mode === 'both' && !isEmpty && (
+            <button
+              onClick={() => onLoad(index)}
+              className="font-mono text-sm tracking-[0.1em] uppercase py-3 px-4 border-2 border-[#3a5a8a] text-[#9ab8e0] hover:bg-[#101a2a] hover:border-[#5a7aaa] transition-all cursor-pointer rounded min-h-[48px]"
+              aria-label={`Load the save in slot ${index + 1}`}
+            >
+              Load
+            </button>
+          )}
 
           {!isEmpty && (
             <button
               onClick={() => onDelete(index)}
-              className="font-mono text-sm text-red-500 border-2 border-red-700 px-4 py-3 hover:bg-red-950/30 transition-all cursor-pointer rounded min-h-[48px]"
+              className="font-mono text-sm text-[#b4584c] border-2 border-[#5c2a24] px-4 py-3 hover:bg-[#241010] hover:border-[#8a3a30] transition-all cursor-pointer rounded min-h-[48px]"
               aria-label={`Delete save in slot ${index + 1}`}
             >
               Delete
@@ -150,6 +159,8 @@ function SaveSlot({ slot, index, mode, onSave, onLoad, onDelete }) {
 }
 
 export function SaveLoadModal({ mode = 'save', onClose }) {
+  const dialogRef = useRef(null)
+  useModalFocus(dialogRef)
   const { saveSlots, saveGame, loadGame, deleteSave, addNotification } = useGameStore()
   const modalRef = useRef(null)
   const firstFocusRef = useRef(null)
@@ -187,9 +198,9 @@ export function SaveLoadModal({ mode = 'save', onClose }) {
     addNotification(`Save slot ${index + 1} deleted`, 'info')
   }
 
-  // NEW FEATURE: Mobile-friendly modal
+  // Mobile-friendly modal
   return (
-    <div
+    <div ref={dialogRef}
       className="fixed inset-0 bg-[#08080e]/95 z-50 flex items-center justify-center p-2 sm:p-4 fade-in"
       role="dialog"
       aria-modal="true"
@@ -201,17 +212,17 @@ export function SaveLoadModal({ mode = 'save', onClose }) {
         className="modal-content w-full max-w-lg border border-[#2a2a3a] bg-[#0a0a12] max-h-[90vh] overflow-y-auto rounded-lg sm:rounded-none"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[#2a2a38]">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[#3a2c20]">
           <h2
             id="save-load-title"
-            className="font-mono text-base text-red-500 tracking-[0.2em] uppercase font-medium"
+            className="font-mono text-base text-[#c96a54] tracking-[0.2em] uppercase font-medium"
           >
-            {mode === 'save' ? 'Save Game' : 'Load Game'}
+            {mode === 'load' ? 'Load Game' : mode === 'both' ? 'Save or Load' : 'Save Game'}
           </h2>
           <button
             ref={firstFocusRef}
             onClick={onClose}
-            className="font-mono text-base text-[#9a9898] hover:text-[#e8e0d8] cursor-pointer p-2 border border-[#3a3a48] hover:border-[#5a5a68] min-w-[48px] min-h-[48px] flex items-center justify-center"
+            className="font-mono text-base text-[#b8a88a] hover:text-[#f0e0c0] cursor-pointer p-2 border border-[#3a2c20] hover:border-[#7a5a3a] min-w-[48px] min-h-[48px] flex items-center justify-center"
             aria-label="Close modal (press Escape)"
           >
             ✕
@@ -234,11 +245,11 @@ export function SaveLoadModal({ mode = 'save', onClose }) {
         </div>
 
         {/* Footer hint */}
-        <div className="px-4 sm:px-6 py-4 border-t border-[#2a2a38]">
+        <div className="px-4 sm:px-6 py-4 border-t border-[#3a2c20]">
           <p className="font-mono text-sm text-[#6a6868] text-center">
-            {mode === 'save'
-              ? 'Saves are stored in your browser. Clearing browser data will erase saves.'
-              : 'Select a save slot to continue your investigation.'
+            {mode === 'load'
+              ? 'Select a save slot to continue your investigation.'
+              : 'Saves are stored in your browser. Clearing browser data will erase saves. Your current run is kept even without saving.'
             }
           </p>
         </div>

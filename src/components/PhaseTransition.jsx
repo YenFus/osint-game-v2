@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 const PHASE_LABELS = {
   menu: 'Main Menu',
@@ -10,34 +10,27 @@ const PHASE_LABELS = {
 }
 
 export function PhaseTransition({ phase, children }) {
-  const [transitioning, setTransitioning] = useState(false)
-  const [showLabel, setShowLabel] = useState(false)
-  const prevPhase = useRef(phase)
+  // One value, advanced by a timer, instead of two booleans flipped
+  // synchronously inside an effect body (which cascaded a second render
+  // on every phase change) and a ref read during render.
+  //   'in'   — settled
+  //   'fade' — content hidden behind the card
+  //   'card' — content back, card still lifting
+  const [lastPhase, setLastPhase] = useState(phase)
+  const [stage, setStage] = useState('in')
+  if (phase !== lastPhase) { setLastPhase(phase); setStage('fade') }
 
   useEffect(() => {
-    if (phase !== prevPhase.current) {
-      // Start transition
-      setTransitioning(true)
-      setShowLabel(true)
+    if (stage === 'in') return undefined
+    const t = setTimeout(
+      () => setStage(s => (s === 'fade' ? 'card' : 'in')),
+      stage === 'fade' ? 500 : 700,
+    )
+    return () => clearTimeout(t)
+  }, [stage])
 
-      // After fade out completes, fade back in
-      const fadeInTimeout = setTimeout(() => {
-        setTransitioning(false)
-      }, 500)
-
-      // Hide label
-      const labelTimeout = setTimeout(() => {
-        setShowLabel(false)
-      }, 1200)
-
-      prevPhase.current = phase
-
-      return () => {
-        clearTimeout(fadeInTimeout)
-        clearTimeout(labelTimeout)
-      }
-    }
-  }, [phase])
+  const transitioning = stage === 'fade'
+  const showLabel = stage !== 'in'
 
   return (
     <>
@@ -68,7 +61,7 @@ export function PhaseTransition({ phase, children }) {
             }}
           >
             <div
-              className="font-mono text-[10px] text-red-800 tracking-[0.4em] uppercase mb-3"
+              className="font-mono text-[12px] text-red-800 tracking-[0.4em] uppercase mb-3"
             >
               Loading
             </div>

@@ -1,18 +1,43 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense, useSyncExternalStore } from 'react'
+import { Announcer } from './components/Announcer'
+import { useAccessibilityStore } from './store/accessibilityStore'
 import { useGameStore } from './store/gameStore'
 import MainMenuPage from './pages/MainMenuPage'
-import StoryPage from './pages/StoryPage'
-import ApartmentPage from './pages/ApartmentPage'
-import InvestigationPage from './pages/InvestigationPage'
-import ConvergencePage from './pages/ConvergencePage'
-import EndingPage from './pages/EndingPage'
 import Notifications from './components/Notifications'
 import { AudioManager } from './components/AudioManager'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PhaseTransition } from './components/PhaseTransition'
 import { DiscoveryFeedbackProvider } from './components/DiscoveryFeedback'
 
+// Everything past the menu is split out: the title screen used to ship
+// the case board, all six lead renderers, the case data and every ending
+// in one 518 kB chunk before a player had clicked anything.
+const StoryPage = lazy(() => import('./pages/StoryPage'))
+const ApartmentPage = lazy(() => import('./pages/ApartmentPage'))
+const InvestigationPage = lazy(() => import('./pages/InvestigationPage'))
+const ConvergencePage = lazy(() => import('./pages/ConvergencePage'))
+const EndingPage = lazy(() => import('./pages/EndingPage'))
+
+// A phase change already fades to black behind the transition card, so
+// the loading state is that black rather than a spinner.
+const PhaseFallback = () => <div style={{ position: 'fixed', inset: 0, background: '#08080e' }} />
+
 const DEV = import.meta.env.DEV
+
+// The store exposed shouldReduceMotion()/getEffectiveGraphicsQuality(), but
+// App wrote the raw settings to <html>: the OS reduce-motion preference was
+// ignored entirely, and "auto" graphics — the default — stamped
+// data-graphics="auto", which no stylesheet matches, so the quality
+// auto-detect never lowered anything on a weak device.
+const motionQuery = typeof window !== 'undefined' && window.matchMedia
+  ? window.matchMedia('(prefers-reduced-motion: reduce)')
+  : null
+const subscribeMotion = (cb) => {
+  if (!motionQuery) return () => {}
+  motionQuery.addEventListener('change', cb)
+  return () => motionQuery.removeEventListener('change', cb)
+}
+const systemReducedMotion = () => !!motionQuery?.matches
 
 // Dev tools - only shown when toggled with F12 or button
 function DevSkip({ visible }) {
@@ -35,7 +60,7 @@ function DevSkip({ visible }) {
       <div style={{
         width: '100%',
         fontFamily: 'monospace',
-        fontSize: 9,
+        fontSize: 12,
         color: '#666',
         marginBottom: 4,
         textAlign: 'center',
@@ -45,7 +70,7 @@ function DevSkip({ visible }) {
       {phases.map(p => (
         <button key={p} onClick={() => setPhase(p)}
           style={{
-            fontFamily:'monospace', fontSize:9, padding:'4px 8px',
+            fontFamily:'monospace', fontSize: 12, padding:'4px 8px',
             background: phase===p ? '#c0392b' : '#1a1a28',
             color: phase===p ? '#fff' : '#6a6a88',
             border:'1px solid #2a2a40', borderRadius:2, cursor:'pointer',
@@ -60,6 +85,18 @@ function DevSkip({ visible }) {
 }
 
 export default function App() {
+  // Accessibility preferences were persisted but never applied. These
+  // land on <html> so stylesheets can respond to them.
+  const a11y = useAccessibilityStore()
+  const osReducedMotion = useSyncExternalStore(subscribeMotion, systemReducedMotion, () => false)
+  useEffect(() => {
+    const el = document.documentElement
+    el.dataset.fontSize = a11y.fontSize
+    el.dataset.contrast = a11y.highContrast ? 'high' : 'normal'
+    el.dataset.motion = (a11y.reducedMotion || osReducedMotion) ? 'reduced' : 'normal'
+    el.dataset.graphics = useAccessibilityStore.getState().getEffectiveGraphicsQuality()
+  }, [a11y.fontSize, a11y.highContrast, a11y.reducedMotion, a11y.graphicsQuality, osReducedMotion])
+
   const phase = useGameStore(s => s.phase)
   const setPhase = useGameStore(s => s.setPhase)
   const [showDevTools, setShowDevTools] = useState(false)
@@ -91,12 +128,14 @@ export default function App() {
           <PhaseTransition phase={phase}>
             <main id="main-content">
               <ErrorBoundary onReset={() => setPhase('menu')}>
+                <Suspense fallback={<PhaseFallback />}>
                 {phase === 'menu'          && <MainMenuPage />}
                 {phase === 'story'         && <StoryPage />}
                 {phase === 'apartment'     && <ApartmentPage />}
                 {phase === 'investigation' && <InvestigationPage />}
                 {phase === 'convergence'   && <ConvergencePage />}
                 {phase === 'ending'        && <EndingPage />}
+                </Suspense>
               </ErrorBoundary>
             </main>
           </PhaseTransition>
@@ -105,7 +144,7 @@ export default function App() {
           {DEV && <DevSkip visible={showDevTools} />}
 
           {/* Screen reader announcements */}
-          <div aria-live="polite" className="sr-only" id="game-announcements" />
+          <Announcer />
         </div>
       </DiscoveryFeedbackProvider>
     </ErrorBoundary>

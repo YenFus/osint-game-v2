@@ -7,11 +7,14 @@
 
 // Colors
 export const COLORS = {
-  // Primary action (blue)
-  primary: '#4a90d9',
-  primaryText: '#8ac0f0',
-  primaryBg: 'rgba(74, 144, 217, 0.1)',
-  primaryHover: 'rgba(74, 144, 217, 0.2)',
+  // Primary action. This drives every "Continue →" in every lead, and it
+  // used to be a Tailwind-ish #4a90d9 — a cold web blue sitting inside a
+  // case file made of cork, paper and red string. Warmed into the board's
+  // range so the leads and the board read as one object.
+  primary: '#a8763a',
+  primaryText: '#f0c880',
+  primaryBg: 'rgba(168, 118, 58, 0.12)',
+  primaryHover: 'rgba(168, 118, 58, 0.22)',
 
   // Success (green)
   success: '#4a9060',
@@ -46,7 +49,7 @@ export const COLORS = {
   mutedText: '#7a5060',
 
   // Accent
-  accent: '#6a90b0',
+  accent: '#a08a6a',
 
   // Background variants
   bgSuccess: '#0c140a',
@@ -183,7 +186,7 @@ export const HEADER_BAR = {
 // Subheader (smaller)
 export const HEADER_SUB = {
   fontFamily: FONTS.mono,
-  fontSize: 10,
+  fontSize: 12,
   color: COLORS.accent,
   letterSpacing: '0.15em',
   textTransform: 'uppercase',

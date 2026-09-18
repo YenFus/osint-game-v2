@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
+import { useModalFocus } from '../hooks/useModalFocus'
 import { useAccessibilityStore } from '../store/accessibilityStore'
 import { useAudioStore } from '../store/audioStore'
-import { resetTutorials } from './NodeTutorial'
 import { OsintTipLibrary } from './OsintTipLibrary'
 
 function VolumeSlider({ label, value, onChange }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="font-mono text-[10px] text-[#8a8a88] w-20">{label}</div>
+      <div className="font-mono text-[12px] text-[#8a8a88] w-20">{label}</div>
       <input
         type="range"
         min="0"
@@ -19,7 +19,7 @@ function VolumeSlider({ label, value, onChange }) {
           background: `linear-gradient(to right, #c0392b 0%, #c0392b ${value * 100}%, #2a2a38 ${value * 100}%, #2a2a38 100%)`,
         }}
       />
-      <div className="font-mono text-[9px] text-[#6a6868] w-8 text-right">
+      <div className="font-mono text-[12px] text-[#6a6868] w-8 text-right">
         {Math.round(value * 100)}%
       </div>
     </div>
@@ -63,11 +63,11 @@ function Toggle({ label, checked, onChange, description }) {
         </div>
       </div>
       <div className="flex-1">
-        <div className="font-mono text-[11px] text-[#c8c0b0] tracking-wide group-hover:text-[#e8e0d0] transition-colors">
+        <div className="font-mono text-[12px] text-[#c8c0b0] tracking-wide group-hover:text-[#e8e0d0] transition-colors">
           {label}
         </div>
         {description && (
-          <div className="font-mono text-[9px] text-[#6a6868] mt-1 leading-relaxed">
+          <div className="font-mono text-[12px] text-[#6a6868] mt-1 leading-relaxed">
             {description}
           </div>
         )}
@@ -79,7 +79,7 @@ function Toggle({ label, checked, onChange, description }) {
 function RadioGroup({ label, options, value, onChange }) {
   return (
     <div>
-      <div className="font-mono text-[11px] text-[#c8c0b0] tracking-wide mb-2">
+      <div className="font-mono text-[12px] text-[#c8c0b0] tracking-wide mb-2">
         {label}
       </div>
       <div className="flex gap-2">
@@ -88,7 +88,7 @@ function RadioGroup({ label, options, value, onChange }) {
             key={opt.value}
             onClick={() => onChange(opt.value)}
             className={`
-              font-mono text-[10px] px-3 py-1.5 border transition-all cursor-pointer
+              font-mono text-[12px] px-3 py-1.5 border transition-all cursor-pointer
               ${value === opt.value
                 ? 'border-red-800 text-red-500 bg-red-950/20'
                 : 'border-[#2a2a38] text-[#6a6868] hover:border-[#3a3a48] hover:text-[#8a8888]'
@@ -105,6 +105,8 @@ function RadioGroup({ label, options, value, onChange }) {
 }
 
 export function SettingsPanel({ onClose }) {
+  const dialogRef = useRef(null)
+  useModalFocus(dialogRef)
   const {
     reducedMotion, setReducedMotion,
     highContrast, setHighContrast,
@@ -123,13 +125,7 @@ export function SettingsPanel({ onClose }) {
   const modalRef = useRef(null)
   const firstFocusRef = useRef(null)
   const [showTipLibrary, setShowTipLibrary] = useState(false)
-  const [tutorialsReset, setTutorialsReset] = useState(false)
 
-  const handleResetTutorials = () => {
-    resetTutorials()
-    setTutorialsReset(true)
-    setTimeout(() => setTutorialsReset(false), 2000)
-  }
 
   // Focus trap and escape key
   useEffect(() => {
@@ -166,7 +162,7 @@ export function SettingsPanel({ onClose }) {
   }, [reducedMotion, highContrast, fontSize])
 
   return (
-    <div
+    <div ref={dialogRef}
       className="fixed inset-0 bg-[#08080e]/95 z-50 flex items-center justify-center p-4 fade-in"
       role="dialog"
       aria-modal="true"
@@ -199,7 +195,7 @@ export function SettingsPanel({ onClose }) {
         <div className="p-6 space-y-6">
           {/* Accessibility Section */}
           <div>
-            <div className="font-mono text-[9px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
+            <div className="font-mono text-[12px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
               Accessibility
             </div>
 
@@ -236,7 +232,7 @@ export function SettingsPanel({ onClose }) {
 
           {/* Audio Section */}
           <div>
-            <div className="font-mono text-[9px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
+            <div className="font-mono text-[12px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
               Audio
             </div>
 
@@ -269,7 +265,7 @@ export function SettingsPanel({ onClose }) {
 
           {/* Performance Section */}
           <div>
-            <div className="font-mono text-[9px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
+            <div className="font-mono text-[12px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
               Performance
             </div>
 
@@ -279,44 +275,34 @@ export function SettingsPanel({ onClose }) {
               value={graphicsQuality}
               onChange={setGraphicsQuality}
             />
-            <p className="font-mono text-[9px] text-[#4a4848] mt-2">
+            <p className="font-mono text-[12px] text-[#4a4848] mt-2">
               Lower quality improves performance on older devices
             </p>
           </div>
 
           {/* Game Section */}
           <div>
-            <div className="font-mono text-[9px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
+            <div className="font-mono text-[12px] text-[#5a5858] tracking-[0.25em] uppercase mb-4">
               Game
             </div>
 
             <div className="space-y-3">
               <button
                 onClick={() => setShowTipLibrary(true)}
-                className="w-full font-mono text-[10px] text-[#4a90d9] border border-[#2a4060] px-4 py-2 hover:bg-[#0a1020] transition-all cursor-pointer text-left flex items-center gap-3"
+                className="w-full font-mono text-[12px] text-[#d8c49c] border border-[#5a4430] px-4 py-2 hover:bg-[#241a10] transition-all cursor-pointer text-left flex items-center gap-3"
               >
-                <span>📚</span>
+                
                 <span>OSINT Techniques Library</span>
               </button>
 
-              <button
-                onClick={handleResetTutorials}
-                disabled={tutorialsReset}
-                className="w-full font-mono text-[10px] text-[#7a7068] border border-[#2a2a38] px-4 py-2 hover:border-[#3a3a48] hover:text-[#9a9088] transition-all cursor-pointer text-left flex items-center gap-3 disabled:opacity-50"
-              >
-                <span>🔄</span>
-                <span>{tutorialsReset ? 'Tutorials Reset!' : 'Reset Node Tutorials'}</span>
-              </button>
-              <p className="font-mono text-[9px] text-[#4a4848]">
-                Show first-time tutorials again for each node type
-              </p>
+
             </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="px-6 py-3 border-t border-[#1a1a28]">
-          <p className="font-mono text-[9px] text-[#4a4848] text-center">
+          <p className="font-mono text-[12px] text-[#4a4848] text-center">
             Settings are saved automatically
           </p>
         </div>

@@ -1,334 +1,349 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import {
+  DEDUCTIONS, RAY_BEATS, WRONG_THEORY_COST, HINT_COST, SUSPICION_STEPS,
+  wrongCost, pinComplete, pinCorrect,
+} from '../data/caseData'
+
+// Ray's unease is clamped 0–100. Crossing a step makes him leave earlier;
+// the step's text is returned so the caller can surface it.
+function shiftSuspicion(current, delta) {
+  const next = Math.max(0, Math.min(100, current + delta))
+  const crossed = SUSPICION_STEPS.filter(s => current < s.at && next >= s.at)
+  return { next, crossed }
+}
+
+const freshPaths = () => ({
+  A: { started: false, completed: false, unlockedNodes: ['A1'], completedNodes: [] },
+  B: { started: false, completed: false, unlockedNodes: ['B1'], completedNodes: [] },
+  C: { started: false, completed: false, unlockedNodes: ['C1'], completedNodes: [] },
+})
+
+// Everything that makes up one playthrough. Used by reset, save and load.
+const freshRun = () => ({
+  phase: 'story',
+  prevPhase: 'menu',
+  paths: freshPaths(),
+  perfectPaths: { A: true, B: true, C: true },
+  hintsUsed: 0,
+  wrongGuesses: 0,
+  activePath: null,
+  currentNodeId: null,
+  endingChoice: null,
+  evidenceScore: 0,
+  journalistUnlocked: false,
+  systemAlertShown: false,
+  caseSummaries: { A: [], B: [], C: [] },
+  // Time pressure — in-game minutes since Thomas walked into the apartment
+  clock: 0,
+  lastTimeDelta: null,
+  // Ray
+  raySuspicion: 0,
+  rayLog: [],
+  rayBeatPending: null,
+  // Case board
+  clues: [],
+  lastClue: null,
+  theory: {},       // tentative pins { dedId: clueId }
+  deductions: {},   // confirmed pins
+  theoryTests: 0,
+  finalCase: { suspect: null, slots: {} },
+  seenBoardTutorial: false,
+  rayGoneSeen: false,
+  // the moment a record first puts a surname to the handle
+  nameRevealSeen: false,
+  namePending: false,
+  // Half-finished work inside leads: { [nodeId]: { tagged: [...], ... } }
+  nodeProgress: {},
+})
+
+const RUN_KEYS = Object.keys(freshRun())
 
 export const useGameStore = create(
   persist(
     (set, get) => ({
-  // phases: 'menu' | 'osint-guide' | 'story' | 'apartment' | 'investigation' | 'convergence' | 'ending'
-  phase: 'menu',
-  prevPhase: null,
+      ...freshRun(),
+      phase: 'menu',
+      notifications: [],
+      saveSlots: [null, null, null],
+      lastSaved: null,
 
-  paths: {
-    A: { started: false, completed: false, unlockedNodes: ['A1'], completedNodes: [], taggedClues: [] },
-    B: { started: false, completed: false, unlockedNodes: ['B1'], completedNodes: [], taggedClues: [] },
-    C: { started: false, completed: false, unlockedNodes: ['C1'], completedNodes: [], taggedClues: [] },
-  },
+      setPhase: (phase) => set((state) => ({ phase, prevPhase: state.phase })),
+      goBack: () => set((state) => ({ phase: state.prevPhase || 'menu' })),
+      // Stepping out to the menu used to strand a run: Continue only appeared
+      // if you had written an explicit slot save, so a whole night's work was
+      // reachable only by the browser's back button. The live state is
+      // persisted anyway — this is what resumes it.
+      resumeGame: () => set((state) => {
+        const playable = ['story', 'apartment', 'investigation', 'convergence', 'ending']
+        const to = playable.includes(state.prevPhase) ? state.prevPhase
+          : Object.values(state.paths ?? {}).some(p => p?.started) ? 'investigation' : 'apartment'
+        return { phase: to, prevPhase: 'menu' }
+      }),
 
-  // Perfect investigation tracking (no wrong guesses)
-  perfectPaths: { A: true, B: true, C: true },
-  hintsUsed: 0,
-  lastCompletedPath: null,
+      // Enter the case board, optionally focused on one thread
+      beginInvestigation: (pathKey) => set((state) => ({
+        phase: 'investigation',
+        prevPhase: state.phase,
+        activePath: pathKey ?? state.activePath,
+        currentNodeId: null,
+        paths: pathKey
+          ? { ...state.paths, [pathKey]: { ...state.paths[pathKey], started: true } }
+          : state.paths,
+      })),
 
-  evidence: [],
-  activePath: null,
-  endingChoice: null,
-  notifications: [],
+      openNode: (pathKey, nodeId) => set((state) => ({
+        activePath: pathKey,
+        currentNodeId: nodeId,
+        paths: { ...state.paths, [pathKey]: { ...state.paths[pathKey], started: true } },
+      })),
+      closeNode: () => set({ currentNodeId: null }),
 
-  // Investigation progress
-  evidenceScore: 0,
-  journalistUnlocked: false,
-  systemAlertShown: false,
-  currentNodeId: null, // Null means viewing the Desktop / Folder
-  nodeProgress: {}, // Store specific inner-node progress like answers/tags
+      setLeadProgress: (nodeId, key, value) => set((state) => ({
+        nodeProgress: {
+          ...state.nodeProgress,
+          [nodeId]: { ...state.nodeProgress[nodeId], [key]: value },
+        },
+      })),
 
-  // Case notes summaries - auto-updated after each node
-  caseSummaries: {
-    A: [],
-    B: [],
-    C: [],
-  },
-
-  setPhase: (phase) => set((state) => ({ phase, prevPhase: state.phase })),
-
-  goBack: () => set((state) => ({ phase: state.prevPhase || 'menu' })),
-
-  startPath: (pathKey) => set((state) => ({
-    activePath: pathKey,
-    currentNodeId: null,
-    paths: {
-      ...state.paths,
-      [pathKey]: { ...state.paths[pathKey], started: true }
-    }
-  })),
-
-  beginInvestigation: (pathKey) => set((state) => ({
-    phase: 'investigation',
-    prevPhase: state.phase,
-    activePath: pathKey,
-    currentNodeId: null,
-    paths: {
-      ...state.paths,
-      [pathKey]: { ...state.paths[pathKey], started: true }
-    }
-  })),
-
-  openNode: (nodeId) => set({ currentNodeId: nodeId }),
-  closeNode: () => set({ currentNodeId: null }),
-
-  completeNode: (pathKey, nodeId, unlocks = []) => set((state) => {
-    const path = state.paths[pathKey]
-    if (path.completedNodes.includes(nodeId)) return state
-    
-    // Auto-unlock newly discovered nodes
-    const newUnlocked = unlocks.filter(id => 
-      !path.unlockedNodes.includes(id) && !path.completedNodes.includes(id)
-    )
-    
-    return {
-      paths: {
-        ...state.paths,
-        [pathKey]: {
-          ...path,
-          completedNodes: [...path.completedNodes, nodeId],
-          unlockedNodes: [...path.unlockedNodes, ...newUnlocked]
+      completeNode: (pathKey, nodeId, unlocks = []) => set((state) => {
+        const path = state.paths[pathKey]
+        if (path.completedNodes.includes(nodeId)) return state
+        const newUnlocked = unlocks.filter(id =>
+          !path.unlockedNodes.includes(id) && !path.completedNodes.includes(id)
+        )
+        return {
+          paths: {
+            ...state.paths,
+            [pathKey]: {
+              ...path,
+              completedNodes: [...path.completedNodes, nodeId],
+              unlockedNodes: [...path.unlockedNodes, ...newUnlocked],
+            },
+          },
         }
-      }
-    }
-  }),
+      }),
 
-  tagClue: (pathKey, clueId) => set((state) => {
-    const path = state.paths[pathKey]
-    if (path.taggedClues.includes(clueId)) return state
-    return {
-      paths: {
-        ...state.paths,
-        [pathKey]: { ...path, taggedClues: [...path.taggedClues, clueId] }
-      }
-    }
-  }),
+      // ── Time ─────────────────────────────────────────────────────
+      addTime: (minutes, reason = null) => set((state) => ({
+        clock: state.clock + minutes,
+        lastTimeDelta: { amount: minutes, reason, at: Date.now() },
+      })),
 
-  completePath: (pathKey) => set((state) => {
-    const updatedPaths = {
-      ...state.paths,
-      [pathKey]: { ...state.paths[pathKey], completed: true }
-    }
-    const score = Object.values(updatedPaths).filter(p => p.completed).length
-    return { paths: updatedPaths, evidenceScore: score, lastCompletedPath: pathKey }
-  }),
+      // Wrong flags cost 15 minutes the first time, 30 every time after.
+      // A flat cost made clicking every item cheaper than reading them.
+      markWrongGuess: (pathKey, nth = 1) => set((state) => {
+        const cost = wrongCost(nth)
+        return {
+          wrongGuesses: state.wrongGuesses + 1,
+          perfectPaths: pathKey ? { ...state.perfectPaths, [pathKey]: false } : state.perfectPaths,
+          clock: state.clock + cost,
+          lastTimeDelta: { amount: cost, reason: 'wrong', at: Date.now() },
+        }
+      }),
 
-  // Add evidence item
-  addEvidence: (item) => set((state) => {
-    if (state.evidence.find(e => e.id === item.id)) return state
-    return { evidence: [...state.evidence, item] }
-  }),
+      buyHint: (pathKey) => set((state) => ({
+        hintsUsed: state.hintsUsed + 1,
+        perfectPaths: pathKey ? { ...state.perfectPaths, [pathKey]: false } : state.perfectPaths,
+        clock: state.clock + HINT_COST,
+        lastTimeDelta: { amount: HINT_COST, reason: 'hint', at: Date.now() },
+      })),
 
-  // Add case summary for a path (called after completing each node)
-  addCaseSummary: (pathKey, summary) => set((state) => {
-    const newItem = {
-      ...summary,
-      path: pathKey,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      x: Math.random() * 600 + 50,
-      y: Math.random() * 400 + 50
-    }
-    
-    // De-duplicate evidence by id
-    const existing = state.evidence.find(e => e.id === summary.id)
-    const newEvidence = existing ? state.evidence : [...state.evidence, newItem]
+      // ── Clues & deductions ───────────────────────────────────────
+      addClue: (clueId) => set((state) => {
+        if (!clueId || state.clues.includes(clueId)) return state
+        return { clues: [...state.clues, clueId], lastClue: { id: clueId, at: Date.now() } }
+      }),
 
-    return {
-      caseSummaries: {
-        ...state.caseSummaries,
-        [pathKey]: [...state.caseSummaries[pathKey], summary]
+      // Tentative pin — no feedback. clueId null clears the slot.
+      // Paired questions hold two pins; pinning a third pushes the oldest out.
+      pinTheory: (dedId, clueId) => set((state) => {
+        if (state.deductions[dedId]) return state
+        const ded = Object.values(DEDUCTIONS).flat().find(d => d.id === dedId)
+        if (!ded) return state
+        const theory = { ...state.theory }
+        if (!clueId) { delete theory[dedId]; return { theory } }
+
+        if (ded.pairAnswer) {
+          const current = Array.isArray(theory[dedId]) ? theory[dedId] : theory[dedId] ? [theory[dedId]] : []
+          const next = current.includes(clueId)
+            ? current.filter(c => c !== clueId)
+            : [...current, clueId].slice(-2)
+          if (next.length) theory[dedId] = next
+          else delete theory[dedId]
+        } else {
+          theory[dedId] = clueId
+        }
+        return { theory }
+      }),
+
+      // Test all three pins of a thread at once. Only the count is revealed.
+      // Returns { ok, correct, total }
+      testTheory: (pathKey) => {
+        const state = get()
+        const deds = DEDUCTIONS[pathKey]
+        const pinned = deds.filter(d => pinComplete(d, state.theory[d.id]))
+        if (pinned.length < deds.length) return { ok: false, correct: 0, total: deds.length, incomplete: true }
+        const correct = deds.filter(d => pinCorrect(d, state.theory[d.id])).length
+        if (correct < deds.length) {
+          set({
+            theoryTests: state.theoryTests + 1,
+            wrongGuesses: state.wrongGuesses + 1,
+            clock: state.clock + WRONG_THEORY_COST,
+            lastTimeDelta: { amount: WRONG_THEORY_COST, reason: 'theory', at: Date.now() },
+          })
+          return { ok: false, correct, total: deds.length }
+        }
+        const deductions = { ...state.deductions }
+        deds.forEach(d => { deductions[d.id] = state.theory[d.id] })
+        const paths = { ...state.paths, [pathKey]: { ...state.paths[pathKey], completed: true } }
+        set({
+          deductions, paths, theoryTests: state.theoryTests + 1,
+          evidenceScore: Object.values(paths).filter(p => p.completed).length,
+        })
+        return { ok: true, correct, total: deds.length }
       },
-      evidence: newEvidence
-    }
-  }),
 
-  updateEvidencePosition: (id, x, y) => set((state) => ({
-    evidence: state.evidence.map(e => e.id === id ? { ...e, x, y } : e)
-  })),
+      setFinalSuspect: (suspect) => set((state) => ({
+        finalCase: { ...state.finalCase, suspect },
+      })),
+      setFinalSlot: (slotId, clueId) => set((state) => {
+        // A clue can only sit in one slot at a time
+        const slots = Object.fromEntries(
+          Object.entries(state.finalCase.slots).filter(([, v]) => v !== clueId)
+        )
+        if (clueId) slots[slotId] = clueId
+        else delete slots[slotId]
+        return { finalCase: { ...state.finalCase, slots } }
+      }),
 
-  addNotification: (msg, type = 'info') => {
-    const id = Date.now()
-    set((state) => ({ notifications: [...state.notifications, { id, msg, type }] }))
-    setTimeout(() => {
-      set((state) => ({ notifications: state.notifications.filter(n => n.id !== id) }))
-    }, 5000)
-  },
+      // ── Ray ──────────────────────────────────────────────────────
+      addSuspicion: (amount) => {
+        const { next, crossed } = shiftSuspicion(get().raySuspicion, amount)
+        set({ raySuspicion: next })
+        crossed.forEach((s, i) => setTimeout(() => get().addNotification(s.text, 'warning'), 1200 + i * 1500))
+      },
 
-  getCompletedPathCount: () => {
-    const { paths } = get()
-    return Object.values(paths).filter(p => p.completed).length
-  },
+      // Called after a lead completes — queues the next message if due
+      checkRayBeat: () => {
+        const state = get()
+        if (state.rayBeatPending) return
+        const done = Object.values(state.paths).reduce((n, p) => n + p.completedNodes.length, 0)
+        // Sort by threshold, not declaration order: Ray has to escalate in
+        // sequence. A beat whose `after` was lowered below the one before it
+        // used to fire first, so he threatened to come over and then went
+        // back to asking polite questions.
+        const next = [...RAY_BEATS]
+          .sort((a, b) => a.after - b.after)
+          .find(b => done >= b.after && !state.rayLog.some(l => l.id === b.id))
+        if (next) set({ rayBeatPending: next.id })
+      },
 
-  setCurrentNodeIdOnly: (id) => set({ currentNodeId: id }),
+      answerRayBeat: (beatId, optionIndex) => {
+        const state = get()
+        const beat = RAY_BEATS.find(b => b.id === beatId)
+        const option = beat?.options[optionIndex]
+        if (!option) { set({ rayBeatPending: null }); return }
+        const { next, crossed } = shiftSuspicion(state.raySuspicion, option.suspicion)
+        set({
+          rayBeatPending: null,
+          rayLog: [...state.rayLog, { id: beatId, choice: optionIndex }],
+          raySuspicion: next,
+        })
+        crossed.forEach((s, i) => setTimeout(() => get().addNotification(s.text, 'warning'), 1200 + i * 1500))
+      },
 
-  setNodeProgress: (nodeId, progress) => set((state) => ({
-    nodeProgress: {
-      ...state.nodeProgress,
-      [nodeId]: { ...state.nodeProgress[nodeId], ...progress }
-    }
-  })),
+      // ── Journal ──────────────────────────────────────────────────
+      addCaseSummary: (pathKey, summary) => set((state) => {
+        if (state.caseSummaries[pathKey].some(s => s.id === summary.id)) return state
+        return {
+          caseSummaries: {
+            ...state.caseSummaries,
+            [pathKey]: [...state.caseSummaries[pathKey], summary],
+          },
+        }
+      }),
 
-  markNodeComplete: (nodeId) => set((state) => ({
-    nodeProgress: {
-      ...state.nodeProgress,
-      [nodeId]: { ...state.nodeProgress[nodeId], complete: true }
-    }
-  })),
+      addNotification: (msg, type = 'info') => {
+        const id = Date.now() + Math.random()
+        set((state) => ({ notifications: [...state.notifications, { id, msg, type }] }))
+        setTimeout(() => {
+          set((state) => ({ notifications: state.notifications.filter(n => n.id !== id) }))
+        }, 5000)
+      },
 
-  unlockJournalist: () => set({ journalistUnlocked: true }),
+      getCompletedPathCount: () => Object.values(get().paths).filter(p => p.completed).length,
 
-  setEndingChoice: (choice) => set({ endingChoice: choice }),
+      unlockJournalist: () => set({ journalistUnlocked: true }),
+      setEndingChoice: (choice) => set({ endingChoice: choice }),
+      markSystemAlert: () => set({ systemAlertShown: true }),
+      markBoardTutorialSeen: () => set({ seenBoardTutorial: true }),
+      markRayGoneSeen: () => set({ rayGoneSeen: true }),
+      markNameRevealSeen: () => set({ nameRevealSeen: true, namePending: false }),
+      flagNameSeen: () => set((st) => (st.nameRevealSeen ? {} : { namePending: true })),
 
-  markSystemAlert: () => set({ systemAlertShown: true }),
+      isPerfectInvestigation: () => {
+        const { perfectPaths, paths } = get()
+        return Object.keys(paths).every(key => !paths[key].completed || perfectPaths[key])
+      },
 
-  // Perfect investigation tracking
-  markWrongGuess: (pathKey) => set((state) => ({
-    perfectPaths: { ...state.perfectPaths, [pathKey]: false }
-  })),
+      // ── Save / load ──────────────────────────────────────────────
+      saveGame: (slotIndex) => {
+        const state = get()
+        const saveData = Object.fromEntries(RUN_KEYS.map(k => [k, state[k]]))
+        saveData.currentNodeId = null
+        saveData.savedAt = Date.now()
+        const newSlots = [...state.saveSlots]
+        newSlots[slotIndex] = saveData
+        set({ saveSlots: newSlots, lastSaved: Date.now() })
+      },
 
-  incrementHintsUsed: () => set((state) => ({
-    hintsUsed: state.hintsUsed + 1,
-    perfectPaths: state.activePath
-      ? { ...state.perfectPaths, [state.activePath]: false }
-      : state.perfectPaths
-  })),
+      loadGame: (slotIndex) => {
+        const saveData = get().saveSlots[slotIndex]
+        if (!saveData) return false
+        const base = freshRun()
+        // Older saves predate most of these fields — fall back to fresh values
+        const restored = Object.fromEntries(RUN_KEYS.map(k => [k, saveData[k] ?? base[k]]))
+        if (!saveData.clues) restored.phase = saveData.phase === 'story' ? 'story' : 'apartment'
+        set({ ...restored, currentNodeId: null })
+        return true
+      },
 
-  setLastCompletedPath: (pathKey) => set({ lastCompletedPath: pathKey }),
+      deleteSave: (slotIndex) => {
+        const newSlots = [...get().saveSlots]
+        newSlots[slotIndex] = null
+        set({ saveSlots: newSlots })
+      },
 
-  clearLastCompletedPath: () => set({ lastCompletedPath: null }),
+      getMostRecentSave: () => {
+        let mostRecentIndex = -1
+        let mostRecentTime = 0
+        get().saveSlots.forEach((slot, i) => {
+          if (slot && slot.savedAt > mostRecentTime) {
+            mostRecentTime = slot.savedAt
+            mostRecentIndex = i
+          }
+        })
+        return mostRecentIndex
+      },
 
-  isPerfectInvestigation: () => {
-    const { perfectPaths, paths } = get()
-    return Object.keys(paths).every(key =>
-      !paths[key].completed || perfectPaths[key]
-    )
-  },
+      continueGame: () => {
+        const i = get().getMostRecentSave()
+        return i >= 0 ? get().loadGame(i) : false
+      },
 
-  // ─── SAVE/LOAD SYSTEM ────────────────────────────────────
-  saveSlots: [null, null, null],
-  lastSaved: null,
+      hasSavedGame: () => get().saveSlots.some(slot => slot !== null),
 
-  saveGame: (slotIndex) => {
-    const state = get()
-    const saveData = {
-      phase: state.phase,
-      paths: state.paths,
-      activePath: state.activePath,
-      evidenceScore: state.evidenceScore,
-      journalistUnlocked: state.journalistUnlocked,
-      systemAlertShown: state.systemAlertShown,
-      nodeProgress: state.nodeProgress,
-      currentNodeId: state.currentNodeId,
-      evidence: state.evidence,
-      caseSummaries: state.caseSummaries,
-      perfectPaths: state.perfectPaths,
-      hintsUsed: state.hintsUsed,
-      savedAt: Date.now(),
-    }
-    const newSlots = [...state.saveSlots]
-    newSlots[slotIndex] = saveData
-    set({ saveSlots: newSlots, lastSaved: Date.now() })
-  },
-
-  loadGame: (slotIndex) => {
-    const { saveSlots } = get()
-    const saveData = saveSlots[slotIndex]
-    if (!saveData) return false
-    set({
-      phase: saveData.phase,
-      paths: saveData.paths,
-      activePath: saveData.activePath,
-      evidenceScore: saveData.evidenceScore,
-      journalistUnlocked: saveData.journalistUnlocked,
-      systemAlertShown: saveData.systemAlertShown,
-      nodeProgress: saveData.nodeProgress,
-      currentNodeId: saveData.currentNodeId,
-      evidence: saveData.evidence ?? [],
-      caseSummaries: saveData.caseSummaries ?? { A: [], B: [], C: [] },
-      perfectPaths: saveData.perfectPaths ?? { A: true, B: true, C: true },
-      hintsUsed: saveData.hintsUsed ?? 0,
-    })
-    return true
-  },
-
-  deleteSave: (slotIndex) => {
-    const newSlots = [...get().saveSlots]
-    newSlots[slotIndex] = null
-    set({ saveSlots: newSlots })
-  },
-
-  getMostRecentSave: () => {
-    const { saveSlots } = get()
-    let mostRecent = null
-    let mostRecentIndex = -1
-    saveSlots.forEach((slot, i) => {
-      if (slot && (!mostRecent || slot.savedAt > mostRecent.savedAt)) {
-        mostRecent = slot
-        mostRecentIndex = i
-      }
-    })
-    return mostRecentIndex
-  },
-
-  // Continue from most recent save
-  continueGame: () => {
-    const { saveSlots, loadGame } = get()
-    let mostRecentIndex = -1
-    let mostRecentTime = 0
-    saveSlots.forEach((slot, i) => {
-      if (slot && slot.savedAt > mostRecentTime) {
-        mostRecentTime = slot.savedAt
-        mostRecentIndex = i
-      }
-    })
-    if (mostRecentIndex >= 0) {
-      return loadGame(mostRecentIndex)
-    }
-    return false
-  },
-
-  // Check if there's a save to continue from
-  hasSavedGame: () => {
-    const { saveSlots } = get()
-    return saveSlots.some(slot => slot !== null)
-  },
-
-  // Reset game state for new game
-  resetGame: () => set({
-    phase: 'story',
-    prevPhase: 'menu',
-    paths: {
-      A: { started: false, completed: false, unlockedNodes: ['A1'], completedNodes: [], taggedClues: [] },
-      B: { started: false, completed: false, unlockedNodes: ['B1'], completedNodes: [], taggedClues: [] },
-      C: { started: false, completed: false, unlockedNodes: ['C1'], completedNodes: [], taggedClues: [] },
-    },
-    evidence: [],
-    activePath: null,
-    endingChoice: null,
-    evidenceScore: 0,
-    journalistUnlocked: false,
-    systemAlertShown: false,
-    nodeProgress: {},
-    currentNodeId: null,
-    currentNodeIndex: 0,
-    perfectPaths: { A: true, B: true, C: true },
-    hintsUsed: 0,
-    lastCompletedPath: null,
-    caseSummaries: { A: [], B: [], C: [] },
-  }),
+      resetGame: () => set({ ...freshRun() }),
     }),
     {
-      name: 'maya-game-v2-storage',
-      // Persist everything important for save/load
+      name: 'maya-game-v3-storage',
       partialize: (state) => ({
         saveSlots: state.saveSlots,
         lastSaved: state.lastSaved,
-        // Also persist current game state so continue works after refresh
-        phase: state.phase,
-        paths: state.paths,
-        activePath: state.activePath,
-        evidenceScore: state.evidenceScore,
-        journalistUnlocked: state.journalistUnlocked,
-        systemAlertShown: state.systemAlertShown,
-        nodeProgress: state.nodeProgress,
-        currentNodeId: state.currentNodeId,
-        evidence: state.evidence,
-        caseSummaries: state.caseSummaries,
-        perfectPaths: state.perfectPaths,
-        hintsUsed: state.hintsUsed,
+        ...Object.fromEntries(RUN_KEYS.map(k => [k, state[k]])),
+        currentNodeId: null,
+        rayBeatPending: state.rayBeatPending,
       }),
     }
   )

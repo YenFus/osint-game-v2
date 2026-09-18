@@ -1,9 +1,184 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow+Condensed:wght@400;700;900&display=swap');
 @import "tailwindcss";
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Self-hosted so the type identity survives a blocked or slow CDN.
+   Latin subsets only. Regenerate with the snippet in scripts/. */
 
-/* NEW FEATURE: Mobile app-like behavior */
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/47d39588.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/343e6c73.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/e05ecec0.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/eb4f3727.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/6b226757.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/4230ff7b.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/6b226757.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/4230ff7b.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/b72eb73f.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/dca0611b.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./fonts/f9ebadeb.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./fonts/80c5415b.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/f9ebadeb.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/80c5415b.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/f9ebadeb.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+
+@font-face {
+  font-family: 'Crimson Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/80c5415b.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+@font-face {
+  font-family: 'Share Tech Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/d5a92a95.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+/* Layered so Tailwind utilities (p-*, m-*, mx-auto…) can override it */
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+}
+
+/* Mobile app-like behavior */
 html, body {
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
@@ -246,7 +421,6 @@ body {
   from { opacity: 0; clip-path: inset(0 100% 0 0); }
   to   { opacity: 1; clip-path: inset(0 0% 0 0); }
 }
-.narration-box-in { animation: narrationBoxIn 0.45s ease forwards; }
 
 /* DANGER EDGE — red bleeds in at panel edges on reveal */
 @keyframes dangerEdge {
@@ -267,7 +441,6 @@ body {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0; }
 }
-.narration-cursor { animation: cursorBlink 0.9s step-end infinite; }
 
 /* ─────────────────────────────────────────────
    ACCESSIBILITY — REDUCED MOTION
@@ -277,18 +450,6 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  .grain-shift, .vignette-pulse, .breath, .breath-slow, .breath-held,
-  .flicker, .kb-out, .kb-in, .kb-left, .kb-right, .pulse-red,
-  .fade-in, .fade-up, .slide-in, .blink, .comic-reveal,
-  .ink-wipe, .panel-slide-in, .panel-drift-in, .memory-bleed,
-  .chrom-ab, .panel-shake, .narration-box-in, .danger-edge,
-  .chapter-reveal, .narration-cursor {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    clip-path: none !important;
   }
 }
 
@@ -303,7 +464,7 @@ body {
    ACCESSIBILITY — FOCUS STATES
 ───────────────────────────────────────────── */
 *:focus-visible {
-  outline: 2px solid #4a90d9;
+  outline: 2px solid #d4a84b;
   outline-offset: 2px;
 }
 
@@ -512,14 +673,14 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
 }
 .feedback-info::before {
   content: 'ℹ ';
-  color: #4a90d9;
+  color: #a08a6a;
 }
 
 /* ─────────────────────────────────────────────
    MOBILE — COMPREHENSIVE RESPONSIVE LAYOUT
 ───────────────────────────────────────────── */
 
-/* NEW FEATURE: Mobile-friendly layout */
+/* Mobile-friendly layout */
 
 /* Mobile Investigation Page */
 @media (max-width: 768px) {
@@ -596,28 +757,7 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
     font-size: 12px !important;
   }
 
-  /* Evidence board - bottom sheet on mobile */
-  .evidence-board-trigger {
-    position: fixed !important;
-    left: 50% !important;
-    bottom: 60px !important;
-    top: auto !important;
-    transform: translateX(-50%) !important;
-    writing-mode: horizontal-tb !important;
-    border-radius: 20px;
-    padding: 10px 20px !important;
-    font-size: 11px !important;
-    z-index: 70;
-    border: 1px solid #3a2820 !important;
-  }
-
-  .evidence-board-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-right: none !important;
-    border-radius: 16px 16px 0 0;
-    max-height: 80vh;
-  }
+  
 
   /* Gmail sidebar - stack vertically on mobile */
   .gmail-layout {
@@ -698,128 +838,15 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
   }
 }
 
-/* ─────────────────────────────────────────────
-   NODE TUTORIAL OVERLAY
-───────────────────────────────────────────── */
-.node-tutorial-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(8, 8, 14, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 60;
-  padding: 24px;
-  animation: fadeIn 0.3s ease forwards;
-}
-
-.node-tutorial-content {
-  max-width: 400px;
-  text-align: center;
-}
-
-.node-tutorial-icon {
-  font-size: 48px;
-  margin-bottom: 20px;
-  color: #4a90d9;
-}
-
-.node-tutorial-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f0e8d8;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
-}
-
-.node-tutorial-desc {
-  font-family: 'Crimson Pro', serif;
-  font-size: 16px;
-  color: #c0b8a8;
-  line-height: 1.8;
-  margin-bottom: 28px;
-}
-
-.node-tutorial-dismiss {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 14px;
-  color: #a0a0b0;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  background: rgba(74, 144, 217, 0.1);
-  border: 1px solid #4a90d9;
-  padding: 14px 32px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.node-tutorial-dismiss:hover {
-  border-color: #4a90d9;
-  color: #4a90d9;
-}
 
 /* ─────────────────────────────────────────────
    EVIDENCE BOARD
 ───────────────────────────────────────────── */
-/* NEW FEATURE: Mobile-friendly evidence board */
-.evidence-board-trigger {
-  position: fixed;
-  top: 120px;
-  left: 0;
-  background: #08060c;
-  border: 1px solid #5a4030;
-  border-left: none;
-  border-radius: 0 8px 8px 0;
-  padding: 14px 8px;
-  cursor: pointer;
-  z-index: 70;
-  writing-mode: vertical-rl;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
-  color: #c09060;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  min-height: 44px;
-}
 
-.evidence-board-trigger:hover {
-  background: #100c08;
-  border-color: #8a6040;
-  color: #e0b080;
-  padding-right: 12px;
-}
-
-.evidence-board-panel {
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 340px;
-  background: #06060c;
-  border-right: 1px solid #3a2820;
-  z-index: 100;
-  overflow-y: auto;
-  animation: slideInFromLeft 0.3s ease forwards;
-}
 
 @keyframes slideInFromLeft {
   from { transform: translateX(-100%); }
   to { transform: translateX(0); }
-}
-
-.evidence-board-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid #2a1a14;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background: #06060c;
 }
 
 .evidence-item {
@@ -834,7 +861,7 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
 
 .evidence-item-path {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   margin-bottom: 4px;
@@ -846,7 +873,7 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
 
 .evidence-item-text {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
+  font-size: 12px;
   color: #9a9088;
   line-height: 1.6;
 }
@@ -914,7 +941,7 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
 ───────────────────────────────────────────── */
 .why-wrong-link {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
+  font-size: 12px;
   color: #5a4050;
   text-decoration: underline;
   cursor: pointer;
@@ -933,7 +960,7 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
   background: #0c0608;
   border-left: 2px solid #3a2028;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
   color: #6a5058;
   line-height: 1.6;
   animation: fadeIn 0.2s ease forwards;
@@ -1041,3 +1068,119 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   border: 2px solid #08080e;
 }
+
+/* ── Accessibility preferences ─────────────────────────────────────
+   Stamped on <html> by App.
+
+   Font size: the root percentage only moves type sized in rem, and
+   almost every string in a lead is an inline px value in a React style
+   object, so on its own it moved nothing a player actually reads — the
+   median lead text stayed at 15px at every setting. `zoom` scales the
+   rendered box including inline px, and unlike transform it reflows,
+   so the layout stays honest at 125%. */
+html[data-font-size="large"]  { font-size: 112.5%; }
+html[data-font-size="larger"] { font-size: 125%; }
+html[data-font-size="large"]  body { zoom: 1.125; }
+html[data-font-size="larger"] body { zoom: 1.25; }
+
+html[data-contrast="high"] {
+  --hc-ink: #ffffff;
+  --hc-dim: #e0dccf;
+}
+html[data-contrast="high"] body { background: #000; }
+html[data-contrast="high"] .type,
+html[data-contrast="high"] .hand,
+html[data-contrast="high"] .font-mono { color: var(--hc-ink) !important; }
+html[data-contrast="high"] .lead-ghost,
+html[data-contrast="high"] .ded-empty { color: var(--hc-dim) !important; }
+html[data-contrast="high"] button { outline: 1px solid #6a6250; }
+
+/* The lead overlay is where all the reading happens, and every colour in
+   it is an inline style. An author !important still outranks a plain
+   inline declaration, which is the only lever that reaches this text. */
+html[data-contrast="high"] .lo-root p,
+html[data-contrast="high"] .lo-root li,
+html[data-contrast="high"] .lo-root h2,
+html[data-contrast="high"] .lo-root h3,
+html[data-contrast="high"] .lo-root span,
+html[data-contrast="high"] .lo-root div { color: var(--hc-ink) !important; }
+html[data-contrast="high"] .lo-root button { color: var(--hc-ink) !important; border-color: #8a8270 !important; }
+html[data-contrast="high"] .lo-panel { background: #000 !important; }
+/* keep the correct/wrong signal legible instead of flattening it to white */
+html[data-contrast="high"] .lo-root [data-tone="good"] { color: #7bf7a8 !important; }
+html[data-contrast="high"] .lo-root [data-tone="bad"]  { color: #ff9d9d !important; }
+
+/* Not every surface inside a lead is dark. ConnectNode's evidence cards
+   and TagNode's zoom card are cream paper, and the blanket white above
+   painted white ink onto them — High Contrast was the *least* readable
+   setting on those screens. Selectors are deliberately one class deeper
+   than the blanket rule so they win the !important tie. */
+html[data-contrast="high"] .lo-root .cx-card,
+html[data-contrast="high"] .lo-root .cx-card *,
+html[data-contrast="high"] .lo-root .zoomcard,
+html[data-contrast="high"] .lo-root .zoomcard * { color: #100b05 !important; }
+html[data-contrast="high"] .lo-root .cx-card { background: #fbf4e2 !important; border-color: #2e2512 !important; }
+html[data-contrast="high"] .lo-root .zoomcard { background: #fbf4e2 !important; }
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+/* the grain and CRT filters are the expensive part on a weak GPU */
+html[data-graphics="low"] .crt::before,
+html[data-graphics="low"] .crt::after { display: none !important; }
+html[data-graphics="low"] .plate-svg rect[filter] { display: none !important; }
+
+/* A paper clip, drawn, rather than a colour emoji dropped into a set of
+   five hand-picked typefaces. Used wherever a clue is attached. */
+.clip {
+  display: inline-block; width: 9px; height: 13px; vertical-align: -1px;
+  border: 1.5px solid currentColor; border-radius: 5px 5px 3px 3px;
+  border-bottom-color: transparent; opacity: 0.75;
+}
+.lo-hint-k {
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: #e8c870; border: 1px solid #6a5220;
+  padding: 1px 6px; margin-right: 8px;
+}
+
+/* ── Main menu, on the board's cork ───────────────────────────────── */
+.menu-root { background: #0b0806; }
+.menu-root::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: var(--cork); background-size: cover; background-position: center;
+  opacity: 0.30; filter: saturate(0.55) brightness(0.55);
+}
+.menu-root::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(90% 75% at 50% 40%, transparent 30%, rgba(0,0,0,0.78) 100%);
+}
+.menu-card {
+  position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
+  padding: 15px 22px 14px; border: 1px solid #c4b795;
+  background: #e6dcc6; color: #1c1710;
+  transform: rotate(var(--tilt, 0deg));
+  box-shadow: 0 8px 18px rgba(0,0,0,0.55);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.menu-card .pin {
+  position: absolute; top: 8px; left: 50%; width: 11px; height: 11px; margin-left: -5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e8665a, #8e1f18); box-shadow: 1px 2px 2px rgba(0,0,0,0.5);
+}
+.menu-label {
+  display: block; font-family: 'Crimson Pro', Georgia, serif; font-size: 19px;
+  letter-spacing: 0.04em; color: #1c1710; margin-top: 6px;
+}
+.menu-desc {
+  display: block; font-family: 'Crimson Pro', serif; font-style: italic; font-size: 15px;
+  color: #5a4e3c; margin-top: 3px;
+}
+.menu-card:hover, .menu-card.on {
+  background: #f2e9d4; transform: rotate(0deg) translateY(-2px);
+  box-shadow: 0 14px 26px rgba(0,0,0,0.6), inset 3px 0 0 #8a1410;
+}
+.menu-card:focus-visible { outline: 3px solid #ffd58a; outline-offset: 3px; }
+.menu-card + .menu-card { margin-top: 6px; }

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { BUTTON_PRIMARY, HEADER_BAR } from '../../styles/nodeStyles'
+import { useLeadProgress } from '../../hooks/useLeadProgress'
 
 // Check if sliders are close enough to target values
 // Increased tolerance to 40 to make it more forgiving
@@ -10,18 +11,30 @@ function isReadable(brightness, contrast, page) {
   )
 }
 
-// Calculate how close we are to readability (0 = far, 1 = readable)
+// The slider ranges the two controls actually travel over.
+const BRIGHT_RANGE = 200
+const CONTRAST_RANGE = 300
+
+// How close we are to readability (0 = far, 1 = readable).
+//
+// This used to divide the miss by twice the tolerance, so anything more
+// than ~60 units out clamped to zero — which is the entire useful range
+// of the puzzle. The bar sat visibly empty while you worked and only
+// twitched once you had effectively already solved it, so it read as a
+// broken element rather than as guidance. Measure the miss against the
+// distance each slider can actually travel instead.
 function getReadabilityProgress(brightness, contrast, page) {
-  const tolerance = page.tolerance ?? 40
-  const brightDiff = Math.abs(brightness - page.targetBrightness)
-  const contrastDiff = Math.abs(contrast - page.targetContrast)
-  const maxDiff = Math.max(brightDiff, contrastDiff)
-  // Return 0-1 progress where 1 is fully readable
-  return Math.max(0, 1 - (maxDiff / (tolerance * 2)))
+  if (isReadable(brightness, contrast, page)) return 1
+  const brightMiss = Math.abs(brightness - page.targetBrightness) / BRIGHT_RANGE
+  const contrastMiss = Math.abs(contrast - page.targetContrast) / CONTRAST_RANGE
+  // the worse axis governs: both have to be right before the ink lifts
+  const miss = Math.max(brightMiss, contrastMiss)
+  // leave a sliver showing so the bar never looks dead
+  return Math.min(0.97, Math.max(0.04, 1 - miss * 1.6))
 }
 
-export function SliderNode({ content, onComplete }) {
-  const [pageIndex, setPageIndex] = useState(0)
+export function SliderNode({ content, onComplete, nodeId = null }) {
+  const [pageIndex, setPageIndex] = useLeadProgress(nodeId, 'page', 0)
   const [brightness, setBrightness] = useState(15)
   const [contrast, setContrast] = useState(80)
   const [pagesRead, setPagesRead] = useState([])
@@ -118,9 +131,12 @@ export function SliderNode({ content, onComplete }) {
             margin: 0,
             transition: 'color 0.4s ease',
             position: 'relative', zIndex: 1,
-          }}>
+            userSelect: readable ? 'text' : 'none',
+          }} aria-hidden={!readable}>
             {page.text}
           </p>
+          {/* until the ink lifts, a screen reader gets no more than the eye does */}
+          {!readable && <p className="sr-only">The ink is still too faint to read. Adjust brightness and contrast.</p>}
 
           {/* Burn vignette */}
           <div style={{
@@ -137,7 +153,7 @@ export function SliderNode({ content, onComplete }) {
           }} />
         </div>
 
-        {/* Controls - NEW FEATURE: Mobile-friendly sliders */}
+        {/* Controls - Mobile-friendly sliders */}
         <div style={{
           display: 'flex', flexDirection: 'column', gap: 18,
           padding: '20px 0',
@@ -151,6 +167,7 @@ export function SliderNode({ content, onComplete }) {
               Brightness
             </span>
             <input
+              className="rec-slider"
               type="range" min={0} max={200} value={brightness}
               onChange={e => setBrightness(Number(e.target.value))}
               style={{ flex: 1, accentColor: '#6a90b8', height: 44, minWidth: 120 }}
@@ -175,6 +192,7 @@ export function SliderNode({ content, onComplete }) {
               Contrast
             </span>
             <input
+              className="rec-slider"
               type="range" min={0} max={300} value={contrast}
               onChange={e => setContrast(Number(e.target.value))}
               style={{ flex: 1, accentColor: '#6a90b8', height: 44, minWidth: 120 }}
@@ -195,7 +213,7 @@ export function SliderNode({ content, onComplete }) {
         {/* Progress indicator */}
         <div style={{ marginBottom: 12 }}>
           <div style={{
-            fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
+            fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
             color: '#5a5a68', letterSpacing: '0.1em', marginBottom: 6,
             textTransform: 'uppercase',
           }}>

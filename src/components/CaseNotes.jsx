@@ -5,36 +5,44 @@
 // Auto-updates with summaries after completing each node.
 // ─────────────────────────────────────────────────────────────────
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
+import { knownCast } from '../data/castData'
 
+// Thread accents, pulled into the board's warm range. The originals were
+// Tailwind-bright — a #4a90d9 edge on the drawer read as a different app
+// sitting on top of the corkboard.
 const PATH_INFO = {
   A: {
-    border: '#4a90d9',
-    bg: 'rgba(74, 144, 217, 0.08)',
+    border: '#5d7fa8',
+    bg: 'rgba(93, 127, 168, 0.08)',
     label: 'Thread A — Digital Trail',
-    icon: '💻',
+    icon: 'A',
     description: "Following Maya's digital footprints through her laptop",
   },
   B: {
-    border: '#c0392b',
-    bg: 'rgba(192, 57, 43, 0.08)',
+    border: '#a0503f',
+    bg: 'rgba(160, 80, 63, 0.08)',
     label: 'Thread B — Private Notes',
-    icon: '📓',
+    icon: 'B',
     description: 'Recovering what someone tried to destroy',
   },
   C: {
-    border: '#d4a017',
-    bg: 'rgba(212, 160, 23, 0.08)',
+    border: '#b08a3a',
+    bg: 'rgba(176, 138, 58, 0.08)',
     label: 'Thread C — Public Record',
-    icon: '📌',
+    icon: 'C',
     description: 'Connecting the dots through public information',
   },
 }
 
 export function CaseNotes({ onClose }) {
-  const { paths, caseSummaries, evidence, activePath } = useGameStore()
+  const { paths, caseSummaries, activePath, clues } = useGameStore()
   const modalRef = useRef(null)
+  // Everyone in this case arrives inside a document. This is the page
+  // that stops the player guessing who is who.
+  const [tab, setTab] = useState('leads')
+  const cast = knownCast(paths, clues)
 
   // Close on escape
   useEffect(() => {
@@ -46,7 +54,7 @@ export function CaseNotes({ onClose }) {
   }, [onClose])
 
   // Count total discoveries
-  const totalDiscoveries = Object.values(caseSummaries).flat().length + evidence.length
+  const totalDiscoveries = Object.values(caseSummaries).flat().length
 
   return (
     <div
@@ -59,15 +67,15 @@ export function CaseNotes({ onClose }) {
       {/* Panel */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg h-full bg-[#0a0a10] border-r-2 flex flex-col"
+        className="relative w-full max-w-lg h-full bg-[#0d0906] border-r-2 flex flex-col"
         style={{
-          borderColor: activePath ? PATH_INFO[activePath]?.border : '#3a3a48',
+          borderColor: activePath ? PATH_INFO[activePath]?.border : '#3a2c20',
           animation: 'slideInFromLeft 0.25s ease forwards',
           boxShadow: '4px 0 30px rgba(0,0,0,0.6)',
         }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 bg-[#0a0a10] border-b border-[#2a2a38] px-6 py-5 flex items-center justify-between z-10">
+        <div className="flex-shrink-0 bg-[#0d0906] border-b border-[#3a2c20] px-6 py-5 flex items-center justify-between z-10">
           <div>
             <div className="font-mono text-xs text-[#6a6a78] tracking-[0.2em] uppercase mb-1">
               Investigation
@@ -79,12 +87,28 @@ export function CaseNotes({ onClose }) {
               Case Notes
             </h2>
             <div className="font-mono text-xs text-[#5a5a68] mt-1">
-              {totalDiscoveries} discoveries recorded
+              {tab === 'cast'
+                ? `${cast.length} ${cast.length === 1 ? 'person' : 'people'} named so far`
+                : `${totalDiscoveries} discoveries recorded`}
+            </div>
+            <div className="flex gap-2 mt-3">
+              {[['leads', 'What I found'], ['cast', "Who's who"]].map(([k, label]) => (
+                <button key={k} onClick={() => setTab(k)}
+                  aria-pressed={tab === k}
+                  className="font-mono text-[12px] tracking-[0.12em] uppercase px-3 py-2 border cursor-pointer"
+                  style={{
+                    color: tab === k ? '#1a1408' : '#b9a67d',
+                    background: tab === k ? '#d8c79a' : 'transparent',
+                    borderColor: tab === k ? '#d8c79a' : '#4a3f2c',
+                  }}>
+                  {label}{k === 'cast' ? ` \u00b7 ${cast.length}` : ''}
+                </button>
+              ))}
             </div>
           </div>
           <button
             onClick={onClose}
-            className="font-mono text-lg text-[#6a6a78] hover:text-[#b0b0a8] cursor-pointer p-3 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center opacity-60 hover:opacity-100"
+            className="font-mono text-lg text-[#b8a88a] hover:text-[#f0e0c0] cursor-pointer p-3 border border-[#3a2c20] hover:border-[#7a5a3a] transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center"
             aria-label="Close case notes"
           >
             ✕
@@ -93,12 +117,30 @@ export function CaseNotes({ onClose }) {
 
         {/* Content — flex-1 so it fills remaining space, overflow-y-scroll for iOS touch scroll */}
         <div className="flex-1 overflow-y-scroll px-6 py-5" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {Object.keys(PATH_INFO).map(pathKey => {
+          {tab === 'cast' && (
+            <div className="space-y-4">
+              {cast.map(person => (
+                <div key={person.id} className="border-l-2 pl-4 py-1"
+                  style={{ borderColor: person.id === 'ray' ? '#8a1410' : '#4a3f2c' }}>
+                  <div className="text-[#ecdfc4] text-lg leading-tight"
+                    style={{ fontFamily: "'Crimson Pro', Georgia, serif" }}>{person.name}</div>
+                  <div className="font-mono text-[12px] tracking-[0.1em] uppercase text-[#b9a67d] mt-1">
+                    {person.relation}
+                  </div>
+                  <p className="text-[#a8a294] text-[15px] leading-relaxed mt-2"
+                    style={{ fontFamily: "'Crimson Pro', serif" }}>{person.line}</p>
+                </div>
+              ))}
+              <p className="font-mono text-[12px] text-[#5a5a68] pt-2">
+                Names are added here as the case turns them up.
+              </p>
+            </div>
+          )}
+          {tab === 'leads' && Object.keys(PATH_INFO).map(pathKey => {
             const info = PATH_INFO[pathKey]
             const path = paths[pathKey]
             const summaries = caseSummaries[pathKey] || []
-            const pathEvidence = evidence.filter(e => e.path === pathKey)
-            const allItems = [...summaries, ...pathEvidence]
+            const allItems = summaries
 
             if (!path.started && allItems.length === 0) return null
 
@@ -171,7 +213,7 @@ export function CaseNotes({ onClose }) {
                           {item.text || item.content || item.summary || 'Evidence collected'}
                         </div>
                         {item.source && (
-                          <div className="font-mono text-[10px] text-[#6a6a68] mt-2">
+                          <div className="font-mono text-[12px] text-[#6a6a68] mt-2">
                             Source: {item.source}
                           </div>
                         )}
@@ -186,7 +228,7 @@ export function CaseNotes({ onClose }) {
           {/* Empty state */}
           {totalDiscoveries === 0 && (
             <div className="text-center py-16">
-              <div className="text-4xl mb-4">🔍</div>
+              
               <div className="font-mono text-sm text-[#5a5a58] mb-2">
                 No evidence collected yet
               </div>
@@ -194,14 +236,14 @@ export function CaseNotes({ onClose }) {
                 className="text-sm text-[#4a4a48]"
                 style={{ fontFamily: "'Crimson Pro', serif" }}
               >
-                Begin an investigation thread from the apartment to start collecting evidence.
+                Open a lead on the case board to start collecting evidence.
               </div>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-6 py-4 bg-[#0a0a10] border-t border-[#1a1a28]">
+        <div className="flex-shrink-0 px-6 py-4 bg-[#0d0906] border-t border-[#2a2018]">
           <div className="font-mono text-xs text-[#4a4a48] text-center">
             Press <span className="text-[#6a6a68]">ESC</span> or click outside to close
           </div>

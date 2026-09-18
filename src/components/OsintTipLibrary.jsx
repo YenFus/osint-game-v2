@@ -75,7 +75,7 @@ export function OsintTipLibrary({ onClose }) {
             </h2>
             <div style={{
               fontFamily: 'Share Tech Mono, monospace',
-              fontSize: 10,
+              fontSize: 12,
               color: '#4a6a8a',
               marginTop: 4,
             }}>
@@ -110,7 +110,7 @@ export function OsintTipLibrary({ onClose }) {
                   <div style={{
                     padding: '10px 14px',
                     fontFamily: 'Share Tech Mono, monospace',
-                    fontSize: 9,
+                    fontSize: 12,
                     color: '#3a5070',
                     letterSpacing: '0.2em',
                     textTransform: 'uppercase',
@@ -136,7 +136,7 @@ export function OsintTipLibrary({ onClose }) {
                         borderBottom: '1px solid #0a1018',
                         background: selectedTip?.id === tip.id ? '#0c1420' : 'transparent',
                         fontFamily: 'Share Tech Mono, monospace',
-                        fontSize: 10,
+                        fontSize: 12,
                         color: tip.unlocked ? '#8a9aaa' : '#2a3040',
                         cursor: tip.unlocked ? 'pointer' : 'default',
                         transition: 'all 0.2s',
@@ -167,7 +167,7 @@ export function OsintTipLibrary({ onClose }) {
                 </h3>
                 <p style={{
                   fontFamily: 'Share Tech Mono, monospace',
-                  fontSize: 11,
+                  fontSize: 12,
                   color: '#7a7a8a',
                   lineHeight: 1.8,
                 }}>
@@ -188,11 +188,10 @@ export function OsintTipLibrary({ onClose }) {
                     marginBottom: 16,
                     opacity: 0.3,
                   }}>
-                    🔍
                   </div>
                   <p style={{
                     fontFamily: 'Share Tech Mono, monospace',
-                    fontSize: 11,
+                    fontSize: 12,
                     color: '#4a5a6a',
                     lineHeight: 1.7,
                     maxWidth: 280,

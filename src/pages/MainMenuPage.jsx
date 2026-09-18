@@ -4,11 +4,12 @@ import OSINTGuide from '../components/OSINTGuide'
 import { SaveLoadModal } from '../components/SaveLoadModal'
 import { SettingsPanel } from '../components/SettingsPanel'
 
-function getMenuItems(hasSaves) {
+function getMenuItems(hasSaves, hasRun) {
   const items = []
 
-  if (hasSaves) {
-    items.push({ id: 'continue', label: 'Continue', desc: 'Resume your investigation' })
+  // A run in progress counts even if the player never wrote a save slot.
+  if (hasRun || hasSaves) {
+    items.push({ id: 'continue', label: 'Continue', desc: hasRun ? 'Pick the night back up' : 'Load your most recent save' })
   }
 
   items.push(
@@ -29,7 +30,7 @@ function getMenuItems(hasSaves) {
 }
 
 export default function MainMenuPage() {
-  const { setPhase, saveSlots, loadGame, getMostRecentSave, resetGame } = useGameStore()
+  const { saveSlots, loadGame, getMostRecentSave, resetGame, resumeGame, paths, clock } = useGameStore()
   const [selected, setSelected] = useState(0)
   const [showGuide, setShowGuide] = useState(false)
   const [showAbout, setShowAbout] = useState(false)
@@ -38,18 +39,20 @@ export default function MainMenuPage() {
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false)
 
   const hasSaves = useMemo(() => saveSlots.some(s => s !== null), [saveSlots])
-  const MENU_ITEMS = useMemo(() => getMenuItems(hasSaves), [hasSaves])
+  const hasRun = useMemo(
+    () => clock > 0 || Object.values(paths ?? {}).some(p => p?.started || p?.completedNodes?.length),
+    [paths, clock])
+  const MENU_ITEMS = useMemo(() => getMenuItems(hasSaves, hasRun), [hasSaves, hasRun])
 
   const handleSelect = (id) => {
     if (id === 'continue') {
+      if (hasRun) { resumeGame(); return }
       const recentIndex = getMostRecentSave()
-      if (recentIndex >= 0) {
-        loadGame(recentIndex)
-      }
+      if (recentIndex >= 0) loadGame(recentIndex)
     }
     if (id === 'new') {
       // Show confirmation if there are saves
-      if (hasSaves) {
+      if (hasSaves || hasRun) {
         setShowNewGameConfirm(true)
       } else {
         resetGame()
@@ -67,7 +70,8 @@ export default function MainMenuPage() {
   }
 
   return (
-    <div className="crt h-screen bg-[#08080e] flex flex-col overflow-hidden relative">
+    <div className="crt menu-root h-screen flex flex-col overflow-hidden relative"
+      style={{ '--cork': `url(${import.meta.env.BASE_URL}art/cork-surface.jpg)` }}>
 
       {/* Atmospheric background noise */}
       <div className="absolute inset-0 opacity-[0.03]"
@@ -87,7 +91,7 @@ export default function MainMenuPage() {
         {/* Case file stamp */}
         <div className="fade-in mb-2 md:mb-6" style={{ animationDelay: '0.2s', opacity: 0 }}>
           <div className="font-mono text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] text-[#8a8078] uppercase text-center">
-            Unofficial Investigation · Case No. 2026-0310
+            Unofficial Investigation · Case No. 2025-0310
           </div>
         </div>
 
@@ -125,30 +129,14 @@ export default function MainMenuPage() {
             <button
               key={item.id}
               onMouseEnter={() => setSelected(i)}
+              onFocus={() => setSelected(i)}
               onClick={() => handleSelect(item.id)}
-              className={`
-                group text-left px-6 py-4 border-2 transition-all duration-200 cursor-pointer
-                ${selected === i
-                  ? 'border-red-700 bg-red-950 bg-opacity-30'
-                  : 'border-[#2a2a38] hover:border-[#4a4a58] bg-[#0c0c14] bg-opacity-50'
-                }
-              `}
+              className={`menu-card ${selected === i ? 'on' : ''}`}
+              style={{ '--tilt': `${[-1.2, 0.9, -0.6, 1.1][i % 4]}deg` }}
             >
-              <div className="flex items-center gap-4">
-                <span className={`font-mono text-lg transition-colors ${selected === i ? 'text-red-500' : 'text-[#4a4a58]'}`}>
-                  {selected === i ? '▶' : '○'}
-                </span>
-                <div>
-                  <div className={`font-mono text-base tracking-wider uppercase transition-colors font-medium ${selected === i ? 'text-[#f0e8d8]' : 'text-[#a0a090]'}`}>
-                    {item.label}
-                  </div>
-                  {selected === i && (
-                    <div className="text-sm text-[#a09888] mt-1 slide-in" style={{ fontFamily: 'Crimson Pro, serif' }}>
-                      {item.desc}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <span className="pin" aria-hidden="true" />
+              <span className="menu-label">{item.label}</span>
+              {selected === i && item.desc && <span className="menu-desc">{item.desc}</span>}
             </button>
           ))}
         </div>
@@ -165,7 +153,7 @@ export default function MainMenuPage() {
       {showGuide && (
         <OSINTGuide
           onClose={() => setShowGuide(false)}
-          onStart={() => { setShowGuide(false); setPhase('story') }}
+          onStart={() => { setShowGuide(false); resetGame() }}
         />
       )}
 
@@ -184,7 +172,7 @@ export default function MainMenuPage() {
               <p>
                 You play as Thomas Reyes, a father searching for his missing daughter Maya — and uncovering the secret investigation she left behind.
               </p>
-              <p className="font-mono text-[11px] text-[#5a4848] border-l-2 border-red-900 pl-3">
+              <p className="font-mono text-[12px] text-[#5a4848] border-l-2 border-red-900 pl-3">
                 Content warnings: Missing persons, stalking, online predators, emotional distress. This game is fictional but grounded in real OSINT techniques.
               </p>
               <p>

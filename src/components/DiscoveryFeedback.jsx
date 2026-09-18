@@ -1,8 +1,8 @@
-import { useState, useCallback, createContext, useContext } from 'react'
+import {useState, useCallback } from 'react'
+import { DiscoveryContext } from './discoveryContext'
 import { useAudio } from '../hooks/useAudio'
 import { useAccessibilityStore } from '../store/accessibilityStore'
 
-const DiscoveryContext = createContext(null)
 
 // Configuration for different discovery intensities
 const DISCOVERY_CONFIG = {
@@ -107,13 +107,4 @@ export function DiscoveryFeedbackProvider({ children }) {
       <Particles count={particles.count} active={particles.active} />
     </DiscoveryContext.Provider>
   )
-}
-
-export function useDiscoveryFeedback() {
-  const context = useContext(DiscoveryContext)
-  if (!context) {
-    // Fallback when used outside provider
-    return { triggerDiscovery: () => {} }
-  }
-  return context
 }

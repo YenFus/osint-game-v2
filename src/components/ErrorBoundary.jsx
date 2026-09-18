@@ -45,23 +45,38 @@ export class ErrorBoundary extends Component {
             </h2>
 
             <p className="text-[#7a7268] text-sm mb-6 font-mono">
-              An unexpected error occurred. Your progress has been saved.
+              The case file wouldn&apos;t open. Your saved investigation is usually
+              still there — try returning to the menu first.
             </p>
 
             {/* Error details (dev only) */}
             {import.meta.env.DEV && this.state.error && (
-              <pre className="text-left text-[10px] text-red-800 bg-[#0a0608] p-3 mb-6 overflow-auto max-h-32 border border-red-900/30">
+              <pre className="text-left text-[12px] text-red-800 bg-[#0a0608] p-3 mb-6 overflow-auto max-h-32 border border-red-900/30">
                 {this.state.error.toString()}
               </pre>
             )}
 
             {/* Reset button */}
-            <button
-              onClick={this.handleReset}
-              className="font-mono text-sm text-[#c0392b] border border-[#c0392b] px-6 py-3 hover:bg-[#c0392b] hover:text-white transition-colors cursor-pointer tracking-widest uppercase"
-            >
-              Return to Menu
-            </button>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <button
+                onClick={this.handleReset}
+                className="font-mono text-sm text-[#c0392b] border border-[#c0392b] px-6 py-3 hover:bg-[#c0392b] hover:text-white transition-colors cursor-pointer tracking-widest uppercase"
+              >
+                Return to Menu
+              </button>
+              {/* if the save itself is what broke, the menu can't fix it */}
+              <button
+                onClick={() => {
+                  try {
+                    localStorage.removeItem('maya-game-v3-storage')
+                  } catch { /* private mode — nothing to clear */ }
+                  window.location.reload()
+                }}
+                className="font-mono text-sm text-[#7a7268] border border-[#3a3a48] px-6 py-3 hover:text-[#c8c0b0] hover:border-[#5a5a68] transition-colors cursor-pointer tracking-widest uppercase"
+              >
+                Clear saved data
+              </button>
+            </div>
           </div>
         </div>
       )

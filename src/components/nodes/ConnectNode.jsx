@@ -1,12 +1,69 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
 import { HEADER_BAR } from '../../styles/nodeStyles'
+import { useGameStore } from '../../store/gameStore'
+import { useLeadProgress } from '../../hooks/useLeadProgress'
+import { wrongCost } from '../../data/caseData'
+import { useDiscoveryFeedback } from '../discoveryContext'
 
-export function ConnectNode({ content, onComplete }) {
+export function ConnectNode({ content, onComplete, nodeId = null }) {
+  const markWrongGuess = useGameStore(s => s.markWrongGuess)
+  const activePath = useGameStore(s => s.activePath)
+  const { triggerDiscovery } = useDiscoveryFeedback()
   const [selected, setSelected] = useState(null)
   const [connections, setConnections] = useState([])
   const [feedback, setFeedback] = useState(null)
   const [finishing, setFinishing] = useState(false)
+  // Wrong pairings escalate like wrong flags do. Persisted per lead:
+  // as plain useState, stepping back to the board and reopening reset the
+  // ladder, so every wrong link cost the first-offence 15 minutes forever.
+  const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
   const feedbackRef = useRef(null)
+
+  // ── The yarn ────────────────────────────────────────────────────
+  // This lead is called "draw a connection" in a game whose whole visual
+  // language is pins and red string, and it used to draw nothing at all:
+  // five flat boxes and four hundred pixels of black under them. Cards are
+  // pinned to cork now, and every established link is a real length of
+  // yarn between the two pins.
+  const boardRef = useRef(null)
+  const cardRefs = useRef(new Map())
+  const [yarn, setYarn] = useState([])
+
+  const measureYarn = useCallback(() => {
+    const board = boardRef.current
+    if (!board) return
+    const b = board.getBoundingClientRect()
+    const pinOf = (id) => {
+      const el = cardRefs.current.get(id)
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      return { x: r.x - b.x + r.width / 2, y: r.y - b.y + 2 }
+    }
+    setYarn(connections.map(c => {
+      const a = pinOf(c.from), z = pinOf(c.to)
+      if (!a || !z) return null
+      const dx = z.x - a.x
+      let mx = (a.x + z.x) / 2, my = (a.y + z.y) / 2
+      if (Math.abs(dx) < 60) {
+        // stacked (one column, or the same column on a phone): bow the
+        // string out past the card edge instead of ruling a line down
+        // through the text of whatever sits between them
+        mx -= Math.max(70, b.width * 0.32)
+      } else {
+        // a real string sags; the mid-point drops with the span
+        my += Math.min(26, Math.abs(dx) * 0.07 + 8)
+      }
+      return { d: `M${a.x} ${a.y} Q${mx} ${my} ${z.x} ${z.y}`, key: `${c.from}-${c.to}` }
+    }).filter(Boolean))
+  }, [connections])
+
+  useLayoutEffect(() => { measureYarn() }, [measureYarn])
+  useEffect(() => {
+    const ro = new ResizeObserver(() => measureYarn())
+    if (boardRef.current) ro.observe(boardRef.current)
+    window.addEventListener('resize', measureYarn)
+    return () => { ro.disconnect(); window.removeEventListener('resize', measureYarn) }
+  }, [measureYarn])
 
   // Announce feedback to screen readers
   useEffect(() => {
@@ -49,14 +106,17 @@ export function ConnectNode({ content, onComplete }) {
       setConnections(newConns)
       setFeedback({ type: 'correct', text: match.label })
       setSelected(null)
+      triggerDiscovery(newConns.length >= required.length ? 'major' : 'minor')
 
       if (newConns.length >= required.length) {
         setFinishing(true)
         setTimeout(onComplete, 1400)
       }
     } else {
-      setFeedback({ type: 'wrong', text: content.wrongFeedback ?? 'No direct connection between these two. Try a different pair.' })
+      setFeedback({ type: 'wrong', text: `${content.wrongFeedback ?? 'No direct connection between these two. Try a different pair.'} (+${wrongCost(wrongCount + 1)} min)` })
       setSelected(null)
+      setWrongCount(wrongCount + 1)
+      markWrongGuess(activePath, wrongCount + 1)
     }
 
     setTimeout(() => setFeedback(null), 3000)
@@ -80,146 +140,74 @@ export function ConnectNode({ content, onComplete }) {
         <span>{connectedCount} / {total} links established</span>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="cb-cork cx-cork" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+        <div style={{ position: 'relative', zIndex: 3, display: 'flex', flexDirection: 'column', gap: 18 }}>
 
         {/* Instruction */}
-        <p style={{
-          fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-          color: '#5a5248', letterSpacing: '0.1em', lineHeight: 1.6,
-          margin: 0,
-        }}>
-          Click two cards to draw a connection between them. Read each card carefully — not all pairs connect directly.
+        <p className="hand" style={{ fontSize: 22, color: '#fbeed4', textShadow: '0 2px 4px #000', margin: 0, lineHeight: 1.35 }}>
+          Two of these say the same thing twice. Pin a card, pin its pair, and see what holds.
         </p>
 
-        {/* Cards grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${Math.min(content.cards.length, 3)}, 1fr)`,
-          gap: 12,
-        }}>
+        {/* Cards pinned to the cork, yarn strung between the pins */}
+        <div ref={boardRef} className="cx-board">
+          <svg className="cb-yarn" aria-hidden="true" style={{ zIndex: 4 }}>
+            {yarn.map(y => <path key={y.key} className="yarn yarn-closed" d={y.d} />)}
+          </svg>
           {content.cards.map(card => {
             const isSelected = selected === card.id
             const isLinked = isInAnyConnection(card.id)
 
             return (
-              <div
+              <button
+                type="button"
                 key={card.id}
+                ref={el => { if (el) cardRefs.current.set(card.id, el); else cardRefs.current.delete(card.id) }}
                 onClick={() => handleCardClick(card.id)}
-                style={{
-                  border: isSelected
-                    ? '1px solid #4a90d9'
-                    : isLinked
-                    ? '1px solid #2a5040'
-                    : '1px solid #1e1e2a',
-                  background: isSelected
-                    ? '#08101a'
-                    : isLinked
-                    ? '#08100c'
-                    : '#0a0a12',
-                  padding: '14px 16px',
-                  cursor: finishing ? 'default' : 'pointer',
-                  transition: 'all 0.2s',
-                  outline: isSelected ? '1px solid rgba(74,144,217,0.3)' : 'none',
-                  outlineOffset: 2,
-                }}
-                onMouseEnter={e => {
-                  if (!isSelected && !finishing) {
-                    e.currentTarget.style.borderColor = '#3a4060'
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!isSelected) {
-                    e.currentTarget.style.borderColor = isLinked ? '#2a5040' : '#1e1e2a'
-                  }
-                }}
+                disabled={finishing}
+                aria-pressed={isSelected}
+                aria-label={`${card.label} — ${card.details}${isLinked ? ' (already linked)' : ''}`}
+                className={`cx-card ${isSelected ? 'sel' : ''} ${isLinked ? 'linked' : ''}`}
+                style={{ '--tilt': `${((card.id.charCodeAt(0) + card.id.length * 7) % 9) - 4}deg` }}
               >
-                <div style={{
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-                  color: isSelected ? '#6a9ad9' : isLinked ? '#5a9060' : '#8a8890',
-                  marginBottom: 6, transition: 'color 0.2s',
-                }}>
-                  {card.label}
-                </div>
-                <div style={{
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: 9,
-                  color: '#4a4a58', lineHeight: 1.6,
-                }}>
-                  {card.details}
-                </div>
-                {isSelected && (
-                  <div style={{
-                    marginTop: 8,
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 8,
-                    color: '#4a70a0', letterSpacing: '0.2em',
-                  }}>
-                    ▸ selected — click another card
-                  </div>
-                )}
-              </div>
+                <span className={`pin ${isLinked ? '' : 'gold'}`} />
+                <div className="cx-label">{card.label}</div>
+                <div className="cx-detail">{card.details}</div>
+                {isSelected && <div className="cx-sel">▸ selected — now pick its pair</div>}
+              </button>
             )
           })}
         </div>
 
         {/* Established connections */}
         {connections.length > 0 && (
-          <div>
-            <div style={{
-              fontFamily: 'Share Tech Mono, monospace', fontSize: 9,
-              color: '#3a5040', letterSpacing: '0.2em', textTransform: 'uppercase',
-              marginBottom: 10,
-            }}>
-              Links established:
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {connections.map((c, i) => {
-                const fromCard = content.cards.find(card => card.id === c.from)
-                const toCard = content.cards.find(card => card.id === c.to)
-                return (
-                  <div key={i} style={{
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: 9,
-                    color: '#4a6a50', lineHeight: 1.6,
-                    paddingLeft: 12, borderLeft: '1px solid #1a3028',
-                  }}>
-                    {fromCard?.label} ↔ {toCard?.label}
-                    <span style={{ color: '#2a4a38', marginLeft: 8 }}>— {c.label}</span>
-                  </div>
-                )
-              })}
-            </div>
+          <div className="cx-links">
+            <div className="cx-links-h">What the string says</div>
+            {connections.map((c, i) => {
+              const fromCard = content.cards.find(card => card.id === c.from)
+              const toCard = content.cards.find(card => card.id === c.to)
+              return (
+                <div key={i} className="cx-link">
+                  <span className="cx-link-pair">{fromCard?.label} ↔ {toCard?.label}</span>
+                  <span className="cx-link-say">{c.label}</span>
+                </div>
+              )
+            })}
           </div>
         )}
 
-        {/* Feedback */}
-        {feedback && (
-          <div
-            role="alert"
-            style={{
-              padding: '10px 16px',
-              background: feedback.type === 'correct' ? '#0a120c' : feedback.type === 'wrong' ? '#120a0c' : '#0c0c14',
-              border: `1px solid ${feedback.type === 'correct' ? '#2a5040' : feedback.type === 'wrong' ? '#4a2030' : '#2a2a40'}`,
-              fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-              color: feedback.type === 'correct' ? '#6a9070' : feedback.type === 'wrong' ? '#8a4050' : '#5a5a7a',
-              letterSpacing: '0.1em',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-            }}
-          >
-            <span aria-hidden="true">
-              {feedback.type === 'correct' ? '✓' : feedback.type === 'wrong' ? '✗' : 'ℹ'}
-            </span>
+        {/* Feedback. A correct link already says itself twice — as yarn
+            and as the index card under it — so only misses speak here. */}
+        {feedback && feedback.type !== 'correct' && (
+          <div role="alert" className={`cx-fb cx-fb-${feedback.type}`}>
+            <span aria-hidden="true">{feedback.type === 'correct' ? '✓' : feedback.type === 'wrong' ? '✗' : '·'}</span>
             <span>{feedback.text}</span>
           </div>
         )}
 
         {finishing && content.completionNote && (
-          <div style={{
-            fontFamily: 'Crimson Pro, serif', fontStyle: 'italic',
-            fontSize: 13, color: '#7a7268', lineHeight: 1.7,
-          }}>
-            {content.completionNote}
-          </div>
+          <p className="cx-done">{content.completionNote}</p>
         )}
+        </div>
       </div>
     </div>
   )

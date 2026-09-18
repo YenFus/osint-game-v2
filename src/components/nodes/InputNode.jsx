@@ -1,28 +1,66 @@
 import { useState, useRef, useEffect } from 'react'
-import { useDiscoveryFeedback } from '../DiscoveryFeedback'
+import { useDiscoveryFeedback } from '../discoveryContext'
 import { useGameStore } from '../../store/gameStore'
+import { useLeadProgress } from '../../hooks/useLeadProgress'
 import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
+import { wrongCost, CLUES } from '../../data/caseData'
 
-// Strict answer validation - requires exact match (case insensitive)
-// Only accepts answers that match exactly, not partial/vague matches
+// Forgiving answer matching: ignores case, punctuation and filler words,
+// accepts an answer phrase anywhere in the input ("it was the Wayback
+// Machine"), and tolerates a one- or two-letter typo in longer words.
+const FILLER = new Set(['the', 'a', 'an', 'its', 'it', 'was', 'is', 'on', 'at', 'of', 'by', 'from', 'in', 'to', 'i', 'think', 'maybe', 'probably', 'office', 'site', 'website', 'com'])
+
+function normalize(s) {
+  return s.toLowerCase().replace(/'s\b/g, 's').replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/).filter(w => w && !FILLER.has(w))
+}
+
+function editDistance(a, b) {
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)])
+  for (let j = 1; j <= b.length; j++) dp[0][j] = j
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    }
+  }
+  return dp[a.length][b.length]
+}
+
+function wordMatches(w, target) {
+  if (w === target) return true
+  if (target.length >= 5) return editDistance(w, target) <= (target.length >= 8 ? 2 : 1)
+  return false
+}
+
 function isAccepted(input, accepted) {
-  const normalized = input.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '')
+  const words = normalize(input)
+  if (!words.length) return false
   return accepted.some(a => {
-    const normalizedAccepted = a.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '')
-    return normalized === normalizedAccepted
+    const target = normalize(a)
+    if (!target.length) return false
+    // look for the target phrase as a run of consecutive words
+    for (let i = 0; i + target.length <= words.length; i++) {
+      if (target.every((t, k) => wordMatches(words[i + k], t))) return true
+    }
+    // joined forms: "wi fi" vs "wifi", "rcallahan admin" vs "rcallahan_admin"
+    const joined = words.join('')
+    const tJoined = target.join('')
+    return tJoined.length >= 4 && (joined === tJoined || (tJoined.length >= 6 && joined.includes(tJoined)))
   })
 }
 
-export function InputNode({ content, onComplete }) {
+export function InputNode({ content, onComplete, nodeId = null }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
   const { markWrongGuess, activePath } = useGameStore()
-  const [questionIndex, setQuestionIndex] = useState(0)
+  const [answers, setAnswers] = useLeadProgress(nodeId, 'answers', [])
+  const [questionIndex, setQuestionIndex] = useState(() => Math.min(answers.length, content.questions.length - 1))
   const [inputValue, setInputValue] = useState('')
   const [wrongFeedback, setWrongFeedback] = useState(null)
   const [showWhyWrong, setShowWhyWrong] = useState(false)
-  const [answers, setAnswers] = useState([])
-  const [allDone, setAllDone] = useState(false)
-  const [wrongStreak, setWrongStreak] = useState(0)
+  const [allDone, setAllDone] = useState(() => answers.length >= content.questions.length)
+  // Persisted per lead: as plain useState, backing out to the board and
+  // reopening reset the ladder to a first-offence 15 minutes.
+  const [wrongStreak, setWrongStreak] = useLeadProgress(nodeId, 'wrong', 0)
   const inputRef = useRef(null)
   const feedbackRef = useRef(null)
 
@@ -54,13 +92,15 @@ export function InputNode({ content, onComplete }) {
     } else {
       // Mark wrong guess for perfect investigation tracking
       if (activePath) {
-        markWrongGuess(activePath)
+        markWrongGuess(activePath, wrongStreak + 1)
       }
       const newStreak = wrongStreak + 1
       setWrongStreak(newStreak)
       const useHint = newStreak >= 2 && currentQ.hintFeedback
+      // This node charged the escalating penalty without ever naming it.
+      const body = useHint ? currentQ.hintFeedback : (currentQ.wrongFeedback ?? 'That\'s not right. Re-read the data above.')
       setWrongFeedback({
-        text: useHint ? currentQ.hintFeedback : (currentQ.wrongFeedback ?? 'That\'s not right. Re-read the data above.'),
+        text: `${body} (+${wrongCost(newStreak)} min)`,
         whyWrong: currentQ.whyWrongExplanation,
         attemptedAnswer: inputValue,
       })
@@ -69,9 +109,20 @@ export function InputNode({ content, onComplete }) {
     }
   }
 
+  // everything Thomas has written down so far, newest first
+  const clues = useGameStore(st => st.clues)
+  const notes = [...clues].reverse().map(id => CLUES[id]).filter(Boolean)
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0, height: '100%' }}>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+      {/* One question and a text box used to sit at the top of an
+          otherwise black 1090x550 pane — the emptiest screen in the game,
+          and five leads use this renderer. The form is a lit panel on a
+          graded ground now, held in the middle of the pane the way the
+          records drawer holds its jackets. */}
+      <div className="inp-desk">
+       <div className="inp-cols">
+        <div className="inp-stack">
 
         {/* Answered questions */}
         {answers.map((ans, i) => (
@@ -97,7 +148,7 @@ export function InputNode({ content, onComplete }) {
 
         {/* Current question */}
         {!allDone && currentQ && (
-          <div style={{ marginTop: answers.length > 0 ? 16 : 0 }}>
+          <div className="inp-sheet" style={{ marginTop: answers.length > 0 ? 16 : 0 }}>
             <div style={{
               fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
               color: '#7aa0c8', letterSpacing: '0.2em', textTransform: 'uppercase',
@@ -156,7 +207,7 @@ export function InputNode({ content, onComplete }) {
               </button>
             </div>
             <div style={{
-              fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
+              fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
               color: '#5a5a68', marginTop: 10,
             }}>
               Press Enter to submit
@@ -219,6 +270,26 @@ export function InputNode({ content, onComplete }) {
             )}
           </div>
         )}
+        </div>
+
+        {/* What you already have, open beside the question. This renderer used
+            to ask the player to remember a line from another lead with the
+            journal two clicks away behind the board — a memory test rather
+            than an investigation. */}
+        <aside className="inp-notes" aria-label="What you have found so far">
+          <div className="inp-notes-head">Your notes</div>
+          {notes.length === 0 && <p className="inp-notes-empty">Nothing in the drawer yet.</p>}
+          <ul>
+            {notes.map(n => (
+              <li key={n.title}>
+                <span className="t">{n.title}</span>
+                <span className="d">{n.detail}</span>
+                <span className="s">{n.source}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+       </div>
       </div>
 
       {/* Completion */}

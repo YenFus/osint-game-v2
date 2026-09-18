@@ -18,10 +18,15 @@ Explore three non-linear investigation paths. Use simulated OSINT tools — soci
 
 ## How to Play
 
-- Click **New Game** to start
-- Work through the story and apartment scene
-- Choose any of the three investigation paths (A, B, C) in any order
-- Collect evidence and reach the convergence — then make your final decision
+- Click **New Game** to start, read Thomas's diary, then step into Maya's apartment
+- Open the **case board**: leads from Maya's laptop, burned notebook and corkboard are pinned in three columns
+- Work a lead (files, posts, photo metadata, public records…) and it drops a **clue** into your drawer
+- Pin clues to the questions on the board — right answers stick, wrong ones cost time
+- Maya has been missing for 59 hours and the clock keeps running. Hints and mistakes cost time; Ray Callahan will be texting you
+- Pencil a clue under each of a thread's three questions, then test the theory — the board only tells you how many pins hold
+- Close two threads (and find what Maya wrote) to open **The Suspect**: name who took her, choose three clues for the police, and make the call
+- Ray says he leaves town before dawn on Thursday. The more nervous you make him, the sooner he goes
+- Twelve endings, decided by the case you build, the time you take, and what you say to Ray
 
 ---
 

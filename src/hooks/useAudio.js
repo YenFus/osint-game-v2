@@ -22,6 +22,37 @@ function makeNoiseBuffer(ctx, seconds = 2) {
   return buf
 }
 
+// ── The things in the room ────────────────────────────────────────────
+// Every sound the game makes should be something on the desk: paper moving,
+// a pin going into cork, a phone buzzing on a table. Chimes and arpeggios
+// belong to a different game and made this one feel like a quiz show.
+function noiseBurst(ctx, dest, { at, dur, freq, q = 1, type = 'bandpass', gain = 0.2, attack = 0.002 }) {
+  const src = ctx.createBufferSource()
+  src.buffer = makeNoiseBuffer(ctx, Math.max(0.05, dur))
+  const filter = ctx.createBiquadFilter()
+  filter.type = type; filter.frequency.value = freq; filter.Q.value = q
+  const g = ctx.createGain()
+  g.gain.setValueAtTime(0.0001, at)
+  g.gain.linearRampToValueAtTime(gain, at + attack)
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur)
+  src.connect(filter); filter.connect(g); g.connect(dest)
+  src.start(at); src.stop(at + dur + 0.02)
+  return g
+}
+
+// A knock, a footfall, a book set down: pitch falling away to nothing.
+function bodyThud(ctx, dest, { at, from = 150, to = 45, dur = 0.22, gain = 0.3 }) {
+  const osc = ctx.createOscillator()
+  const g = ctx.createGain()
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(from, at)
+  osc.frequency.exponentialRampToValueAtTime(to, at + dur)
+  g.gain.setValueAtTime(gain, at)
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur)
+  osc.connect(g); g.connect(dest)
+  osc.start(at); osc.stop(at + dur + 0.02)
+}
+
 class AudioEngine {
   constructor() {
     this.ctx = null
@@ -299,104 +330,136 @@ class AudioEngine {
       }
 
       case 'notification': {
-        // Two-tone ascending chime — gentle, musical (C5 → E5)
-        ;[523.25, 659.25].forEach((freq, i) => {
-          const osc = this.ctx.createOscillator()
-          const gain = this.ctx.createGain()
-          const wet = this.ctx.createGain()
-          osc.type = 'sine'; osc.frequency.value = freq
-          const t = now + i * 0.13
-          gain.gain.setValueAtTime(0, t)
-          gain.gain.linearRampToValueAtTime(volume * 0.20, t + 0.02)
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45)
-          wet.gain.value = volume * 0.35
-          osc.connect(gain); gain.connect(this.masterGain)
-          osc.connect(wet); wet.connect(this.reverbNode)
-          osc.start(t); osc.stop(t + 0.55)
-        })
+        // A phone face-down on a wooden table.
+        bodyThud(this.ctx, this.masterGain, { at: now, from: 120, to: 55, dur: 0.12, gain: volume * 0.16 })
+        for (let i = 0; i < 3; i++) {
+          const t = now + i * 0.11
+          noiseBurst(this.ctx, this.masterGain, { at: t, dur: 0.075, freq: 160, q: 0.8, gain: volume * 0.2 })
+          bodyThud(this.ctx, this.masterGain, { at: t, from: 78, to: 60, dur: 0.07, gain: volume * 0.22 })
+        }
         break
       }
 
       case 'discovery': {
-        // Eureka: sub thump + rising arpeggio + high shimmer
-        // Sub thump — physical impact
-        const sub = this.ctx.createOscillator()
-        const subGain = this.ctx.createGain()
-        sub.type = 'sine'
-        sub.frequency.setValueAtTime(90, now)
-        sub.frequency.exponentialRampToValueAtTime(38, now + 0.25)
-        subGain.gain.setValueAtTime(volume * 0.45, now)
-        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
-        sub.connect(subGain); subGain.connect(this.masterGain)
-        sub.start(now); sub.stop(now + 0.4)
-
-        // Rising arpeggio (A4 → C#5 → E5 → A5)
-        ;[440, 554, 659, 880].forEach((freq, i) => {
-          const osc = this.ctx.createOscillator()
-          const gain = this.ctx.createGain()
-          const wet = this.ctx.createGain()
-          osc.type = 'sine'; osc.frequency.value = freq
-          const t = now + i * 0.09
-          gain.gain.setValueAtTime(0, t)
-          gain.gain.linearRampToValueAtTime(volume * 0.22, t + 0.02)
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5)
-          wet.gain.value = volume * 0.45
-          osc.connect(gain); gain.connect(this.masterGain)
-          osc.connect(wet); wet.connect(this.reverbNode)
-          osc.start(t); osc.stop(t + 0.6)
-        })
-
-        // Air shimmer — noise burst at top
-        const shimSrc = this.ctx.createBufferSource()
-        shimSrc.buffer = makeNoiseBuffer(this.ctx, 0.12)
-        const shimFilter = this.ctx.createBiquadFilter()
-        shimFilter.type = 'highpass'; shimFilter.frequency.value = 6000
-        const shimGain = this.ctx.createGain()
-        shimGain.gain.setValueAtTime(volume * 0.10, now + 0.08)
-        shimGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28)
-        shimSrc.connect(shimFilter); shimFilter.connect(shimGain); shimGain.connect(this.masterGain)
-        shimSrc.start(now + 0.08)
+        // Paper pulled out of a stack and set down: a rustle, then weight.
+        noiseBurst(this.ctx, this.masterGain, { at: now, dur: 0.26, freq: 3200, q: 0.5, type: 'highpass', gain: volume * 0.16, attack: 0.03 })
+        noiseBurst(this.ctx, this.masterGain, { at: now + 0.1, dur: 0.22, freq: 1800, q: 0.7, gain: volume * 0.12 })
+        bodyThud(this.ctx, this.masterGain, { at: now + 0.16, from: 130, to: 48, dur: 0.3, gain: volume * 0.3 })
+        const wet = this.ctx.createGain()
+        wet.gain.value = volume * 0.25
+        wet.connect(this.reverbNode)
+        noiseBurst(this.ctx, wet, { at: now + 0.16, dur: 0.3, freq: 900, q: 0.6, gain: volume * 0.1 })
         break
       }
 
       case 'nodeComplete': {
-        // Soft two-note confirmation — G4 → B4 (gentle major third)
-        ;[392, 494].forEach((freq, i) => {
-          const osc = this.ctx.createOscillator()
-          const gain = this.ctx.createGain()
-          const wet = this.ctx.createGain()
-          osc.type = 'sine'; osc.frequency.value = freq
-          const t = now + i * 0.16
-          gain.gain.setValueAtTime(0, t)
-          gain.gain.linearRampToValueAtTime(volume * 0.16, t + 0.03)
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55)
-          wet.gain.value = volume * 0.38
-          osc.connect(gain); gain.connect(this.masterGain)
-          osc.connect(wet); wet.connect(this.reverbNode)
-          osc.start(t); osc.stop(t + 0.65)
-        })
+        // A pen laid down on the desk, and the page turned.
+        noiseBurst(this.ctx, this.masterGain, { at: now, dur: 0.05, freq: 2600, q: 2, gain: volume * 0.14 })
+        bodyThud(this.ctx, this.masterGain, { at: now + 0.02, from: 190, to: 70, dur: 0.1, gain: volume * 0.14 })
+        noiseBurst(this.ctx, this.masterGain, { at: now + 0.16, dur: 0.34, freq: 2400, q: 0.4, type: 'highpass', gain: volume * 0.13, attack: 0.05 })
         break
       }
 
       case 'error': {
-        // Harsh descending buzz with distortion
-        const osc = this.ctx.createOscillator()
-        const distortion = this.ctx.createWaveShaper()
+        // Not a buzzer — a drawer shoved shut.
+        noiseBurst(this.ctx, this.masterGain, { at: now, dur: 0.16, freq: 420, q: 0.7, gain: volume * 0.26 })
+        bodyThud(this.ctx, this.masterGain, { at: now + 0.01, from: 105, to: 38, dur: 0.3, gain: volume * 0.32 })
+        noiseBurst(this.ctx, this.masterGain, { at: now + 0.12, dur: 0.1, freq: 900, q: 1.4, gain: volume * 0.12 })
+        break
+      }
+
+      case 'buzz': {
+        // Phone vibrating on a desk — two pulses of low, rattly square wave
+        ;[0, 0.32].forEach(offset => {
+          const osc = this.ctx.createOscillator()
+          const filter = this.ctx.createBiquadFilter()
+          const gain = this.ctx.createGain()
+          osc.type = 'square'; osc.frequency.value = 148
+          filter.type = 'lowpass'; filter.frequency.value = 420
+          const t = now + offset
+          gain.gain.setValueAtTime(0, t)
+          gain.gain.linearRampToValueAtTime(volume * 0.22, t + 0.02)
+          gain.gain.setValueAtTime(volume * 0.22, t + 0.2)
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.26)
+          osc.connect(filter); filter.connect(gain); gain.connect(this.masterGain)
+          osc.start(t); osc.stop(t + 0.3)
+        })
+        break
+      }
+
+      case 'pin': {
+        // Push-pin into cork — dull thock
+        const src = this.ctx.createBufferSource()
+        src.buffer = makeNoiseBuffer(this.ctx, 0.08)
+        const filter = this.ctx.createBiquadFilter()
+        filter.type = 'lowpass'; filter.frequency.value = 900
         const gain = this.ctx.createGain()
-        // Waveshaper curve for soft clipping distortion
-        const curve = new Float32Array(256)
-        for (let i = 0; i < 256; i++) {
-          const x = (i * 2) / 256 - 1
-          curve[i] = (Math.PI + 80) * x / (Math.PI + 80 * Math.abs(x))
-        }
-        distortion.curve = curve
-        osc.type = 'sawtooth'
-        osc.frequency.setValueAtTime(290, now)
-        osc.frequency.exponentialRampToValueAtTime(105, now + 0.28)
-        gain.gain.setValueAtTime(volume * 0.28, now)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
-        osc.connect(distortion); distortion.connect(gain); gain.connect(this.masterGain)
-        osc.start(now); osc.stop(now + 0.4)
+        gain.gain.setValueAtTime(volume * 0.5, now)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+        src.connect(filter); filter.connect(gain); gain.connect(this.masterGain)
+        src.start(now)
+        const thud = this.ctx.createOscillator()
+        const tg = this.ctx.createGain()
+        thud.type = 'sine'
+        thud.frequency.setValueAtTime(180, now)
+        thud.frequency.exponentialRampToValueAtTime(70, now + 0.1)
+        tg.gain.setValueAtTime(volume * 0.35, now)
+        tg.gain.exponentialRampToValueAtTime(0.001, now + 0.14)
+        thud.connect(tg); tg.connect(this.masterGain)
+        thud.start(now); thud.stop(now + 0.16)
+        break
+      }
+
+      case 'deduction': {
+        // Two strokes of a pencil under a line, and the board taking it.
+        noiseBurst(this.ctx, this.masterGain, { at: now, dur: 0.13, freq: 2100, q: 0.9, gain: volume * 0.2, attack: 0.012 })
+        noiseBurst(this.ctx, this.masterGain, { at: now + 0.17, dur: 0.15, freq: 1750, q: 0.9, gain: volume * 0.18, attack: 0.012 })
+        bodyThud(this.ctx, this.masterGain, { at: now + 0.3, from: 140, to: 52, dur: 0.34, gain: volume * 0.26 })
+        const room = this.ctx.createGain()
+        room.gain.value = volume * 0.4
+        room.connect(this.reverbNode)
+        bodyThud(this.ctx, room, { at: now + 0.3, from: 140, to: 52, dur: 0.34, gain: volume * 0.2 })
+        break
+      }
+
+      case 'tick': {
+        // Clock penalty — two dry ticks
+        ;[0, 0.14].forEach(offset => {
+          const osc = this.ctx.createOscillator()
+          const gain = this.ctx.createGain()
+          osc.type = 'square'; osc.frequency.value = offset ? 1900 : 2400
+          const t = now + offset
+          gain.gain.setValueAtTime(volume * 0.08, t)
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03)
+          osc.connect(gain); gain.connect(this.masterGain)
+          osc.start(t); osc.stop(t + 0.04)
+        })
+        break
+      }
+
+      case 'stamp': {
+        noiseBurst(this.ctx, this.masterGain, { at: now, dur: 0.07, freq: 1400, q: 0.6, gain: volume * 0.3 })
+        bodyThud(this.ctx, this.masterGain, { at: now, from: 120, to: 40, dur: 0.3, gain: volume * 0.55 })
+        const wet = this.ctx.createGain()
+        wet.gain.value = volume * 0.4
+        wet.connect(this.reverbNode)
+        bodyThud(this.ctx, wet, { at: now, from: 120, to: 40, dur: 0.34, gain: volume * 0.3 })
+        break
+      }
+
+      case 'heartbeat': {
+        ;[0, 0.22].forEach((offset, i) => {
+          const osc = this.ctx.createOscillator()
+          const gain = this.ctx.createGain()
+          osc.type = 'sine'
+          const t = now + offset
+          osc.frequency.setValueAtTime(i ? 55 : 62, t)
+          osc.frequency.exponentialRampToValueAtTime(30, t + 0.18)
+          gain.gain.setValueAtTime(volume * (i ? 0.4 : 0.55), t)
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22)
+          osc.connect(gain); gain.connect(this.masterGain)
+          osc.start(t); osc.stop(t + 0.25)
+        })
         break
       }
 
@@ -464,10 +527,10 @@ class AudioEngine {
     // Slow fade out, then kill oscillators
     nodes.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.6)
     setTimeout(() => {
-      try {
-        if (nodes.oscillators) nodes.oscillators.forEach(o => { try { o.stop() } catch (_) {} })
-        if (nodes.sources) nodes.sources.forEach(s => { try { s.stop() } catch (_) {} })
-      } catch (_) {}
+      // stop() throws if a node was never started or already stopped — safe to ignore
+      const stopQuietly = (n) => { try { n.stop() } catch { /* already stopped */ } }
+      nodes.oscillators?.forEach(stopQuietly)
+      nodes.sources?.forEach(stopQuietly)
       this.ambientNodes.delete(name)
     }, 2500)
   }

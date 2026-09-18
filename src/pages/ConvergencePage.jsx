@@ -1,283 +1,177 @@
-import { useState } from 'react'
-import { useGameStore } from '../store/gameStore'
+// ─────────────────────────────────────────────────────────────────
+// CONVERGENCE — the call.
+// Review the case you built, then Ray texts: he's downstairs.
+// Choose: call the police, go to Rosa + police, or face him.
+// ─────────────────────────────────────────────────────────────────
 
-const THREAD_PANELS = [
-  {
-    path: 'A',
-    icon: '💻',
-    label: 'Thread A — The Digital Trail',
-    quote: '"I was wrong. Read the notebook."',
-    detail: 'Corey Marsh was a deliberate misdirection. Maya proved it herself — spent three weeks on the obvious suspect while the real one kept watching.',
-    borderColor: 'border-amber-900',
-    textColor: 'text-amber-800',
-    quoteColor: 'text-amber-200',
-  },
-  {
-    path: 'B',
-    icon: '📓',
-    label: 'Thread B — The Private Notes',
-    quote: '"Dad, it\'s Ray."',
-    detail: 'An unsent email. Written at 11:47pm on March 9th. Maya disappeared the following morning. She knew — and she stopped herself from sending it.',
-    borderColor: 'border-red-900',
-    textColor: 'text-red-800',
-    quoteColor: 'text-red-200',
-  },
-  {
-    path: 'C',
-    icon: '📌',
-    label: 'Thread C — The Public Record',
-    quote: '"All three lines connect to the same person."',
-    detail: 'A PO box in Millhaven. A domain registered under his name. A restraining order for harassment. A forum username that knew things Lena never posted publicly.',
-    borderColor: 'border-blue-900',
-    textColor: 'text-blue-800',
-    quoteColor: 'text-blue-200',
-  },
-]
+import { useState, useEffect } from 'react'
+import { useShallow } from 'zustand/react/shallow'
+import { useGameStore } from '../store/gameStore'
+import { CLUES, FINAL_SLOTS, SUSPECTS, clockLabel, missingLabel, rayDeadline, effectiveSuspicion } from '../data/caseData'
+import { PolaroidArt } from '../components/board/PolaroidArt'
+import { RayPhone } from '../components/board/RayPhone'
+import { useAudio } from '../hooks/useAudio'
+import '../styles/board.css'
 
 export default function ConvergencePage() {
-  const { setPhase, paths, evidenceScore, journalistUnlocked, setEndingChoice } = useGameStore()
+  const { finalCase, clock, clues, journalistUnlocked, raySuspicion } = useGameStore(useShallow(s => ({
+    finalCase: s.finalCase, clock: s.clock, clues: s.clues, journalistUnlocked: s.journalistUnlocked, raySuspicion: s.raySuspicion,
+  })))
+  const gone = clock >= rayDeadline(effectiveSuspicion(raySuspicion))
+  const setPhase = useGameStore(s => s.setPhase)
+  const setEndingChoice = useGameStore(s => s.setEndingChoice)
+  const { playSFX } = useAudio()
+  const [stage, setStage] = useState('review') // review → phone → choose → leaving
   const [choice, setChoice] = useState(null)
-  const [blockedChoice, setBlockedChoice] = useState(null)
 
-  const pathBDone = paths.B?.completed
+  const suspect = SUSPECTS.find(s => s.id === finalCase.suspect)
+  const filled = FINAL_SLOTS.filter(slot => finalCase.slots[slot.id]).length
+  const canRosa = journalistUnlocked || clues.includes('rosa')
 
-  const handleChoice = (c) => {
-    // Gate: "Call Ray" requires at least 2 paths completed
-    if (c === 'call' && evidenceScore < 2) {
-      setBlockedChoice('call')
-      setTimeout(() => setBlockedChoice(null), 3500)
-      return
-    }
+  // Heartbeat under the decision
+  useEffect(() => {
+    if (stage !== 'choose') return
+    playSFX('heartbeat')
+    const i = setInterval(() => playSFX('heartbeat'), 1500)
+    return () => clearInterval(i)
+  }, [stage, playSFX])
+
+  const decide = (c) => {
     setChoice(c)
     setEndingChoice(c)
-    setTimeout(() => setPhase('ending'), 700)
+    setStage('leaving')
+    playSFX(c === 'confront' ? 'error' : 'stamp')
+    setTimeout(() => setPhase('ending'), 2600)
+  }
+
+  const OPTIONS = [
+    {
+      id: 'police',
+      label: suspect?.id !== 'ray' && suspect ? `Call Detective Okafor about ${suspect.name}.` : gone ? 'Call Detective Okafor. Now.' : 'Call Detective Okafor. Let the buzzer ring.',
+      sub: 'Maya\'s last written words: go straight to the police.',
+      color: '#6a9a70',
+    },
+    canRosa && {
+      id: 'journalist',
+      label: 'Send everything to Rosa Velasquez — and the police — at the same time.',
+      sub: 'Maya trusted her. A published story is hard to bury.',
+      color: '#6a8ad0',
+    },
+    !gone && {
+      id: 'confront',
+      label: 'Go downstairs. Look him in the eye.',
+      sub: 'Thirty years. You\'d know if he was lying.',
+      color: '#d04a3a',
+    },
+  ].filter(Boolean)
+
+  const leavingText = gone ? {
+    police: 'You dial. Your hand is shaking now.',
+    journalist: 'Two emails. One phone call. Your hand is shaking now.',
+  } : {
+    police: 'You dial. The buzzer goes again. You let it ring.',
+    journalist: 'Two emails. One phone call. The buzzer goes again. You let it ring.',
+    confront: 'You take the stairs two at a time.',
   }
 
   return (
-    <div className="min-h-screen bg-[#08080e] flex flex-col">
-
-      {/* ── HEADER ── */}
-      <div className="shrink-0 border-b border-[#0e0e18] px-4 sm:px-8 py-3 flex items-center justify-between">
-        <button
-          onClick={() => setPhase('apartment')}
-          className="font-mono text-xs text-[#7a7068] hover:text-[#b0a898] tracking-[0.15em] uppercase transition-colors cursor-pointer min-h-[44px] px-3 flex items-center"
-        >
-          ← Apartment
-        </button>
-        <div className="font-mono text-[10px] text-red-800 tracking-[0.25em] uppercase flicker">
-          Convergence
+    <div className="fixed inset-0 overflow-y-auto crt" style={{ background: 'radial-gradient(ellipse at 50% 20%, #2a1a10 0%, #0a0604 60%, #050302 100%)' }}>
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-14">
+        <div className="font-mono text-[12px] tracking-[0.4em] uppercase text-[#a03a2a] text-center">
+          {clockLabel(clock)} · Maya missing {missingLabel(clock)}
         </div>
-      </div>
+        <h1 className="text-center font-black uppercase leading-none mt-3 mb-8" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.4rem, 7vw, 4.5rem)', color: '#f0e2c4' }}>
+          The Call
+        </h1>
 
-      {/* ── BODY ── */}
-      <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-14 flex flex-col gap-8 sm:gap-16">
-
-        {/* ── HERO ── */}
-        <div className="border-b border-[#0e0e18] pb-12 fade-in">
-          <div className="font-mono text-[10px] text-red-900 tracking-[0.4em] uppercase mb-5">
-            Case file — convergence
-          </div>
-          <h1
-            className="text-[#e8dcc8] font-black uppercase leading-none tracking-tight mb-5"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}
-          >
-            Three Threads.<br />One Name.
-          </h1>
-          <p className="text-[#7a7268] text-base italic leading-relaxed max-w-2xl">
-            You started with three separate objects in Maya's apartment. You followed three separate trails. Every one of them ended in the same place.
-          </p>
-        </div>
-
-        {/* ── EVIDENCE CARDS ── */}
-        <div className="fade-in">
-          <div className="font-mono text-[10px] text-[#5a5248] tracking-[0.3em] uppercase mb-6">
-            What each thread revealed
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {THREAD_PANELS.map((t) => {
-              const done = paths[t.path]?.completed
-              return (
-                <div
-                  key={t.path}
-                  className={`border p-5 transition-opacity duration-500 ${t.borderColor} border-opacity-40`}
-                  style={{ opacity: done ? 1 : 0.2 }}
-                >
-                  <div className={`font-mono text-[9px] ${t.textColor} tracking-[0.3em] uppercase mb-3`}>
-                    {t.icon} {t.label}
-                  </div>
-                  {done ? (
-                    <>
-                      <blockquote className={`text-sm italic mb-4 leading-relaxed ${t.quoteColor}`}>
-                        {t.quote}
-                      </blockquote>
-                      <p className="font-mono text-[10px] text-[#6a6058] leading-relaxed">
-                        {t.detail}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="font-mono text-[10px] text-[#3a3830] leading-relaxed italic">
-                      Complete this thread to see what it revealed.
-                    </p>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* ── THE NAME ── */}
-        <div className="bg-[#0c0c14] p-8 fade-in">
-          <div className="font-mono text-[10px] text-[#5a5248] tracking-[0.3em] uppercase mb-8">
-            The person at the centre of every thread
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-
-            {/* Left: Identity */}
-            <div>
-              <h2
-                className="text-[#e8dcc8] font-black uppercase tracking-tight mb-1 leading-none"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2.5rem' }}
-              >
-                Ray Callahan
-              </h2>
-              <div className="font-mono text-[11px] text-[#6a6058] mb-7">
-                Millhaven, OR — your oldest friend
-              </div>
-
-              <div className="space-y-2.5">
-                {[
-                  ['Forum handle',  'stillwater_m'],
-                  ['Online alias',  'nightwatch_rc'],
-                  ['Domain',        'stillwater-media.net'],
-                  ['PO Box',        '#441, Millhaven Post Office'],
-                  ['Prior record',  'Restraining order — harassment (expired)'],
-                ].map(([label, val]) => (
-                  <div key={label} className="flex gap-4 font-mono text-[10px]">
-                    <span className="text-[#4a4848] w-28 shrink-0">{label}</span>
-                    <span className="text-[#9a9088]">{val}</span>
-                  </div>
-                ))}
-              </div>
+        {/* Your case */}
+        <div className="cb-cork" style={{ padding: 22, borderRadius: 2, boxShadow: '0 20px 50px rgba(0,0,0,0.7)' }}>
+          <div className="flex flex-col md:flex-row gap-6 items-center md:items-start relative" style={{ zIndex: 5 }}>
+            <div className="suspect-card" style={{ '--tilt': '-3deg', cursor: 'default', flexShrink: 0 }}>
+              <span className="pin" />
+              <div className="lead-img"><PolaroidArt scene={suspect?.scene ?? 'forum'} /></div>
+              <div className="nm">{suspect?.name ?? '—'}</div>
+              <div className="tg">{suspect?.tag}</div>
             </div>
-
-            {/* Right: Chain of evidence */}
-            <div className="border-l border-[#1e1e28] pl-8">
-              <div className="font-mono text-[10px] text-[#5a5248] tracking-[0.3em] uppercase mb-5">
-                Chain of evidence
+            <div className="flex-1 w-full">
+              <div className="hand text-[26px] leading-none text-[#fbeed4] mb-3" style={{ textShadow: '0 2px 4px #000' }}>
+                What you're handing over:
               </div>
-              <div className="space-y-2 font-mono text-[10px]">
-                {[
-                  { text: 'PO Box #441 → stillwater-media.net', dim: false },
-                  { text: '↓', dim: true },
-                  { text: 'stillwater-media.net → stillwater_m', dim: false },
-                  { text: '↓', dim: true },
-                  { text: 'stillwater_m → missing persons forum', dim: false },
-                  { text: '↓', dim: true },
-                  { text: 'forum → @velvet.echo (Lena)', dim: false },
-                  { text: '↓', dim: true },
-                  { text: 'Lena → Millhaven Arts Night → Ray, in person', dim: false },
-                  { text: '↓', dim: true },
-                  { text: 'Maya investigates → Maya disappears', dim: false, highlight: true },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className={`${item.dim ? 'text-[#2e2e38] pl-4' : item.highlight ? 'text-[#a09088]' : 'text-[#6a6258]'}`}
-                  >
-                    {item.text}
-                  </div>
-                ))}
+              <div className="grid gap-3">
+                {FINAL_SLOTS.map(slot => {
+                  const c = finalCase.slots[slot.id]
+                  return (
+                    <div key={slot.id} className={`final-slot ${c ? 'filled' : ''}`} style={{ minHeight: 0, cursor: 'default' }}>
+                      <span className="lbl" style={{ fontSize: 18 }}>{slot.label}</span>
+                      <span className="val" style={{ marginLeft: 10, color: c ? undefined : '#e0a090' }}>
+                        {c ? CLUES[c].title : 'nothing pinned — go back and pin a clue'}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── WHO IS RAY — emotional beat ── */}
-        <div className="border-l-2 border-[#2a2028] pl-8 fade-in">
-          <p className="text-[#7a7268] text-sm italic leading-loose">
-            Ray Callahan has been in your life for thirty years. He was at your wedding. He sat with you at the hospital the night your wife died. He came to Maya's graduation.
-          </p>
-          <p className="text-[#7a7268] text-sm italic leading-loose mt-3">
-            He has a key to your house. He knows Maya's phone number, her email address, the name of her university. She trusted him because you trusted him.
-          </p>
-          {pathBDone && (
-            <p className="text-[#7a7268] text-sm italic leading-loose mt-3">
-              Maya stopped herself from sending the email because she knew he had access to your devices. She was afraid that telling you would tell him first.
+        {stage === 'review' && (
+          <div className="text-center mt-8 fade-in">
+            <p className="text-lg italic text-[#b0a088] max-w-xl mx-auto" style={{ fontFamily: "'Crimson Pro', serif" }}>
+              Maya wanted three independent sources before she said a word. You're about to say it for her.
             </p>
-          )}
-        </div>
-
-        {/* ── MAYA'S QUOTE — only shown if Path B complete ── */}
-        {pathBDone && (
-          <div className="border-l-4 border-red-900 pl-8 py-4 fade-in">
-            <div className="font-mono text-[10px] text-red-900 tracking-[0.3em] uppercase mb-4">
-              From Maya's unsent email — Mar 9, 11:47pm
+            {/* You can still make the call with an empty file. You should know
+                that is what you are doing before you do it. */}
+            {(!finalCase.suspect || filled === 0) && (
+              <p className="text-base max-w-xl mx-auto mt-4" style={{ fontFamily: "'Crimson Pro', serif", color: '#e0a090' }}>
+                {!finalCase.suspect && filled === 0
+                  ? 'You have circled nobody and pinned nothing. Okafor will have a name-less case and a tired man on the phone. Both are fixed on the board.'
+                  : !finalCase.suspect
+                    ? 'You have not circled anybody. Whatever you read out, he will ask you who you are accusing.'
+                    : 'You have pinned nothing under the three questions. He will ask what you have, and you will have to say nothing.'}
+              </p>
+            )}
+            <div className="flex gap-3 justify-center flex-wrap mt-6">
+              <button className="cb-btn" onClick={() => setPhase('investigation')}>← Not yet. Back to the board.</button>
+              <button className="present-btn" style={{ margin: 0 }} onClick={() => setStage(gone ? 'choose' : 'phone')}>
+                {!finalCase.suspect || filled === 0 ? 'Call anyway' : 'Pick up the phone'}
+              </button>
             </div>
-            <blockquote
-              className="text-[#d5cdb8] text-3xl italic leading-snug"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              "Dad, it's Ray."
-            </blockquote>
-            <p className="font-mono text-[10px] text-[#5a5248] mt-4">
-              She disappeared the following morning. March 10th.
-            </p>
           </div>
         )}
 
-        {/* ── DECISION ── */}
-        <div className="border-t border-[#1a1a24] pt-10 pb-8 fade-in">
-          <div className="font-mono text-[10px] text-[#5a5248] tracking-[0.3em] uppercase mb-4">
-            What do you do
-          </div>
-          <p className="text-[#8a8278] text-sm italic leading-relaxed mb-8 max-w-xl">
-            You have evidence. Not enough for certainty — but enough to act. Maya thought she needed one more source before going to the police. She never got the chance to find it.
-          </p>
-
-          <div className="flex gap-4 flex-wrap">
-            <button
-              onClick={() => handleChoice('police')}
-              disabled={!!choice}
-              className="font-mono text-[11px] tracking-widest uppercase border border-green-900 border-opacity-60 text-green-700 px-8 py-3.5 hover:bg-green-950 hover:bg-opacity-20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-default"
-            >
-              → Take it to the police
-            </button>
-            <button
-              onClick={() => handleChoice('call')}
-              disabled={!!choice}
-              className="font-mono text-[11px] tracking-widest uppercase border border-red-900 border-opacity-60 text-red-700 px-8 py-3.5 hover:bg-red-950 hover:bg-opacity-20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-default"
-            >
-              → Call Ray yourself
-            </button>
-            {journalistUnlocked && evidenceScore >= 3 && (
-              <button
-                onClick={() => handleChoice('journalist')}
-                disabled={!!choice}
-                className="font-mono text-[11px] tracking-widest uppercase border border-blue-900 border-opacity-60 text-blue-700 px-8 py-3.5 hover:bg-blue-950 hover:bg-opacity-20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-default"
-              >
-                → Contact Rosa Velasquez
-              </button>
+        {(stage === 'choose' || stage === 'leaving') && (
+          <div className="mt-10 fade-in">
+            <p className="text-center text-xl italic text-[#e8d8b8]" style={{ fontFamily: "'Crimson Pro', serif" }}>
+              {gone ? 'You try Ray first, without meaning to. Straight to voicemail.' : 'The buzzer goes. Once. Then again.'}
+            </p>
+            <p className="text-center hand text-[26px] text-[#e04a3a] mt-1">{gone ? 'Ray is already gone.' : 'Ray is downstairs.'}</p>
+            <div className="grid gap-3 mt-6 max-w-2xl mx-auto">
+              {OPTIONS.map(o => (
+                <button
+                  key={o.id}
+                  onClick={() => stage === 'choose' && decide(o.id)}
+                  disabled={stage !== 'choose'}
+                  className="text-left px-5 py-4 transition-all"
+                  style={{
+                    border: `2px solid ${o.color}`, background: choice === o.id ? `${o.color}33` : 'rgba(10,6,4,0.7)',
+                    opacity: stage === 'leaving' && choice !== o.id ? 0.25 : 1, cursor: stage === 'choose' ? 'pointer' : 'default',
+                  }}
+                >
+                  <div className="type text-[16px]" style={{ color: '#f4e6c8' }}>→ {o.label}</div>
+                  <div className="text-sm italic mt-1" style={{ fontFamily: "'Crimson Pro', serif", color: '#a89878' }}>{o.sub}</div>
+                </button>
+              ))}
+            </div>
+            {stage === 'leaving' && (
+              <p className="text-center italic text-[#c8b898] mt-6 fade-in" style={{ fontFamily: "'Crimson Pro', serif", fontSize: 18 }}>
+                {leavingText[choice]}
+              </p>
             )}
           </div>
-
-          {blockedChoice === 'call' && (
-            <p className="font-mono text-[10px] text-red-900 mt-5 fade-in italic">
-              You don't have enough yet. Build a more complete case before taking direct action.
-            </p>
-          )}
-
-          {choice && (
-            <p className="font-mono text-[10px] text-[#5a5248] mt-5 fade-in italic">
-              {choice === 'police'
-                ? 'You dial the non-emergency line. Your hands are steady.'
-                : choice === 'call'
-                ? "You find his number. It's still in your contacts, under a photo from two Christmases ago."
-                : 'You find Rosa Velasquez\'s email in Maya\'s sent folder. You forward everything.'}
-            </p>
-          )}
-        </div>
-
+        )}
       </div>
+
+      {stage === 'phone' && <RayPhone mode="final" onDone={() => setStage('choose')} />}
     </div>
   )
 }

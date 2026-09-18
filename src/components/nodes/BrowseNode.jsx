@@ -1,21 +1,33 @@
 import { useState } from 'react'
-import { useDiscoveryFeedback } from '../DiscoveryFeedback'
+import { useDiscoveryFeedback } from '../discoveryContext'
+import { EvidenceMap } from '../board/EvidenceMap'
+import { useLeadProgress } from '../../hooks/useLeadProgress'
 import { useGameStore } from '../../store/gameStore'
-import {
-  BUTTON_PRIMARY, BUTTON_FLAG, BUTTON_FLAG_CORRECT, BUTTON_FLAG_WRONG, BUTTON_BACK,
-  HEADER_BAR, FEEDBACK_SUCCESS, FEEDBACK_ERROR, COMPLETION_NOTE, FOOTER
-} from '../../styles/nodeStyles'
+import { wrongCost } from '../../data/caseData'
+import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
+import { plateSrc } from '../../data/photoPlates'
+
+function PhotoThumb({ filename, height }) {
+  const src = plateSrc(filename)
+  return (
+    <div style={{ height, background: '#111', overflow: 'hidden', border: '6px solid #e8e0cc', borderBottomWidth: 14 }}>
+      {src && (
+        <img src={src} alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.85) brightness(0.92)' }} />
+      )}
+    </div>
+  )
+}
 
 // ── Reddit Profile variant ──────────────────────────────────────────────────
-function RedditProfile({ content, onComplete }) {
+function RedditProfile({ content, onComplete, nodeId }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
   const { markWrongGuess, activePath } = useGameStore()
-  const [tagged, setTagged] = useState([])
+  const [tagged, setTagged] = useLeadProgress(nodeId, 'tagged', [])
   const [feedback, setFeedback] = useState(null)
-  const [wrongCount, setWrongCount] = useState(0)
-  const [done, setDone] = useState(false)
-
+  const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
   const required = new Set(content.requiredTagIds ?? [])
+  const [done, setDone] = useState(() => [...required].every(t => tagged.includes(t)))
 
   const handleTag = (post) => {
     if (tagged.includes(post.id)) return
@@ -32,9 +44,10 @@ function RedditProfile({ content, onComplete }) {
       const newWrongCount = wrongCount + 1
       setWrongCount(newWrongCount)
       setTagged(prev => [...prev, post.id])
-      if (activePath) markWrongGuess(activePath)
+      if (activePath) markWrongGuess(activePath, newWrongCount)
       const hint = newWrongCount >= 2 && post.hintFeedback
-      setFeedback({ type: 'wrong', text: hint ? post.hintFeedback : (post.wrongFeedback ?? 'Normal post. Keep reading.') })
+      const body = hint ? post.hintFeedback : (post.wrongFeedback ?? 'Normal post. Keep reading.')
+      setFeedback({ type: 'wrong', text: `${body} (+${wrongCost(newWrongCount)} min)` })
     }
     setTimeout(() => setFeedback(null), 3000)
   }
@@ -59,11 +72,11 @@ function RedditProfile({ content, onComplete }) {
           <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#9a9890' }}>
             u/{content.username}
           </div>
-          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a4840', marginTop: 3 }}>
+          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4840', marginTop: 3 }}>
             {content.karma?.toLocaleString()} karma · joined {content.joinDate}
           </div>
         </div>
-        <div style={{ marginLeft: 'auto', fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#3a3830' }}>
+        <div style={{ marginLeft: 'auto', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a3830' }}>
           {tagged.filter(t => required.has(t)).length} / {content.requiredTagIds?.length ?? 0} flagged
         </div>
       </div>
@@ -81,12 +94,12 @@ function RedditProfile({ content, onComplete }) {
               display: 'flex', gap: 12, alignItems: 'flex-start',
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a6a88', marginBottom: 4 }}>
+                <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7aa0c8', marginBottom: 5 }}>
                   {post.subreddit} · {post.date}
                 </div>
                 <p style={{
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
-                  color: isTaggedWrong ? '#5a5868' : '#c0b8a8', lineHeight: 1.6, margin: 0,
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: 13.5,
+                  color: isTaggedWrong ? '#6a6878' : '#d8cfbf', lineHeight: 1.65, margin: 0,
                 }}>
                   {post.text}
                 </p>
@@ -96,7 +109,7 @@ function RedditProfile({ content, onComplete }) {
                 disabled={tagged.includes(post.id)}
                 style={{
                   flexShrink: 0,
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: 9, letterSpacing: '0.15em',
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: 12, letterSpacing: '0.15em',
                   border: isTaggedCorrect ? '1px solid #2a5040' : '1px solid #2a2a38',
                   color: isTaggedCorrect ? '#4a9060' : '#5a5858',
                   background: 'none', padding: '3px 8px',
@@ -112,9 +125,9 @@ function RedditProfile({ content, onComplete }) {
       {feedback && (
         <div style={{
           padding: '10px 20px', borderTop: '1px solid #1a1a28',
-          fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-          color: feedback.type === 'correct' ? '#5a9060' : '#7a4050',
-          background: feedback.type === 'correct' ? '#08100c' : '#100808',
+          fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
+          color: feedback.type === 'correct' ? '#7ac090' : feedback.type === 'info' ? '#d0c4a8' : '#e08a90',
+          background: feedback.type === 'correct' ? '#08100c' : feedback.type === 'info' ? '#12121a' : '#160a0c',
         }}>
           {feedback.text}
         </div>
@@ -137,14 +150,14 @@ function RedditProfile({ content, onComplete }) {
 }
 
 // ── Forum Archive variant ───────────────────────────────────────────────────
-function ForumArchive({ content, onComplete }) {
+function ForumArchive({ content, onComplete, nodeId }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
   const { markWrongGuess, activePath } = useGameStore()
-  const [tagged, setTagged] = useState([])
+  const [tagged, setTagged] = useLeadProgress(nodeId, 'tagged', [])
+  const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
   const [feedback, setFeedback] = useState(null)
-  const [done, setDone] = useState(false)
-
   const required = new Set(content.requiredTagIds ?? [])
+  const [done, setDone] = useState(() => [...required].every(t => tagged.includes(t)))
 
   const handleTag = (post) => {
     if (tagged.includes(post.id)) return
@@ -159,8 +172,9 @@ function ForumArchive({ content, onComplete }) {
       }
     } else {
       setTagged(prev => [...prev, post.id])
-      if (activePath) markWrongGuess(activePath)
-      setFeedback({ type: 'wrong', text: post.wrongFeedback ?? 'Nothing unusual here.' })
+      setWrongCount(wrongCount + 1)
+      if (activePath) markWrongGuess(activePath, wrongCount + 1)
+      setFeedback({ type: 'wrong', text: `${post.wrongFeedback ?? 'Nothing unusual here.'} (+${wrongCost(wrongCount + 1)} min)` })
     }
     setTimeout(() => setFeedback(null), 3000)
   }
@@ -170,7 +184,7 @@ function ForumArchive({ content, onComplete }) {
       {/* Forum header */}
       <div style={{
         padding: '10px 20px', borderBottom: '1px solid #1a1a28',
-        fontFamily: 'Share Tech Mono, monospace', fontSize: 9,
+        fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
         color: '#4a4840', letterSpacing: '0.2em', textTransform: 'uppercase',
         display: 'flex', justifyContent: 'space-between',
       }}>
@@ -190,21 +204,21 @@ function ForumArchive({ content, onComplete }) {
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', gap: 10, marginBottom: 5, alignItems: 'baseline' }}>
-                  <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 10, color: '#5a6a78' }}>
+                  <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#5a6a78' }}>
                     {post.username}
                   </span>
                   {post.threadTitle && (
-                    <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#3a4048' }}>
+                    <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a4048' }}>
                       in: {post.threadTitle}
                     </span>
                   )}
-                  <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#2a2a30', marginLeft: 'auto' }}>
+                  <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#2a2a30', marginLeft: 'auto' }}>
                     {post.date}
                   </span>
                 </div>
                 <p style={{
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: 11,
-                  color: isTaggedWrong ? '#5a5868' : '#c0b8a8', lineHeight: 1.65, margin: 0,
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: 13.5,
+                  color: isTaggedWrong ? '#6a6878' : '#d8cfbf', lineHeight: 1.7, margin: 0,
                 }}>
                   {post.text}
                 </p>
@@ -214,7 +228,7 @@ function ForumArchive({ content, onComplete }) {
                 disabled={tagged.includes(post.id)}
                 style={{
                   flexShrink: 0,
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: 9, letterSpacing: '0.15em',
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: 12, letterSpacing: '0.15em',
                   border: isTaggedCorrect ? '1px solid #2a5040' : '1px solid #2a2a38',
                   color: isTaggedCorrect ? '#4a9060' : '#5a5858',
                   background: 'none', padding: '3px 8px',
@@ -230,9 +244,9 @@ function ForumArchive({ content, onComplete }) {
       {feedback && (
         <div style={{
           padding: '10px 20px', borderTop: '1px solid #1a1a28',
-          fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-          color: feedback.type === 'correct' ? '#5a9060' : '#7a4050',
-          background: feedback.type === 'correct' ? '#08100c' : '#100808',
+          fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
+          color: feedback.type === 'correct' ? '#7ac090' : feedback.type === 'info' ? '#d0c4a8' : '#e08a90',
+          background: feedback.type === 'correct' ? '#08100c' : feedback.type === 'info' ? '#12121a' : '#160a0c',
         }}>
           {feedback.text}
         </div>
@@ -255,19 +269,25 @@ function ForumArchive({ content, onComplete }) {
 }
 
 // ── Flickr Albums variant ───────────────────────────────────────────────────
-function FlickrAlbums({ content, onComplete }) {
+function FlickrAlbums({ content, onComplete, nodeId }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
   const { markWrongGuess, activePath } = useGameStore()
   const [activeAlbum, setActiveAlbum] = useState(null)
   const [activePhoto, setActivePhoto] = useState(null)
-  const [tagged, setTagged] = useState([])
-  const [done, setDone] = useState(false)
-  const [feedback, setFeedback] = useState(null)
-
+  const [tagged, setTagged] = useLeadProgress(nodeId, 'tagged', [])
+  const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
   const required = new Set(content.requiredPhotoIds ?? [])
+  const [done, setDone] = useState(() => [...required].every(t => tagged.includes(t)))
+  const [feedback, setFeedback] = useState(null)
 
   const handleTagPhoto = (photo) => {
     if (tagged.includes(photo.id)) return
+    if (photo.neutral) {
+      setTagged(prev => prev.includes(photo.id) ? prev : [...prev, photo.id])
+      setFeedback({ type: 'info', text: photo.wrongFeedback ?? 'Noted. No time lost.' })
+      setTimeout(() => setFeedback(null), 3200)
+      return
+    }
     if (required.has(photo.id)) {
       const newTagged = [...tagged, photo.id]
       setTagged(newTagged)
@@ -279,8 +299,9 @@ function FlickrAlbums({ content, onComplete }) {
       }
     } else {
       setTagged(prev => [...prev, photo.id])
-      if (activePath) markWrongGuess(activePath)
-      setFeedback({ type: 'wrong', text: photo.wrongFeedback ?? 'No unusual metadata here.' })
+      setWrongCount(wrongCount + 1)
+      if (activePath) markWrongGuess(activePath, wrongCount + 1)
+      setFeedback({ type: 'wrong', text: `${photo.wrongFeedback ?? 'No unusual metadata here.'} (+${wrongCost(wrongCount + 1)} min)` })
     }
     setTimeout(() => setFeedback(null), 3000)
   }
@@ -292,33 +313,43 @@ function FlickrAlbums({ content, onComplete }) {
           padding: '8px 20px', borderBottom: '1px solid #1a1a28',
           display: 'flex', gap: 12, alignItems: 'center',
         }}>
-          <button onClick={() => setActivePhoto(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>
+          <button onClick={() => { setFeedback(null); setActivePhoto(null) }} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>
             ← Back
           </button>
-          <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#3a3a48', letterSpacing: '0.15em' }}>
+          <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a3a48', letterSpacing: '0.15em' }}>
             {activePhoto.filename}
           </span>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Photo preview area — displays filename as simulated image */}
-          <div style={{
-            minHeight: 120, background: '#0c0c16', border: '1px solid #1a1a28',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#2a2a38',
-          }}>
-            [{activePhoto.filename}]
-          </div>
-          {/* EXIF data */}
-          {activePhoto.exif && (
-            <div>
-              <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a6a88', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
-                Metadata
+          {/* the photo, and where its metadata says it was taken */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'stretch' }}>
+            <div style={{ flex: '1 1 300px', maxWidth: 420 }}>
+              <PhotoThumb filename={activePhoto.filename} height={220} />
+            </div>
+            {activePhoto.place && (
+              <div style={{ flex: '1 1 300px', minWidth: 260 }}>
+                <EvidenceMap
+                  place={activePhoto.place}
+                  /* only confirmed flags drop a pin — a wrong flag shouldn't
+                     draw the map's conclusion for you */
+                  flagged={content.albums.flatMap(a => a.photos)
+                    .filter(p => tagged.includes(p.id) && required.has(p.id)).map(p => p.place)}
+                  height={220}
+                />
               </div>
+            )}
+          </div>
+          {/* metadata, as chips you scan rather than a list you read */}
+          {activePhoto.exif && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {Object.entries(activePhoto.exif).map(([k, v]) => (
-                <div key={k} style={{ display: 'flex', gap: 12, fontFamily: 'Share Tech Mono, monospace', fontSize: 10, marginBottom: 5 }}>
-                  <span style={{ color: '#4a4848', width: 120, flexShrink: 0 }}>{k}</span>
-                  <span style={{ color: '#9a9088' }}>{v}</span>
-                </div>
+                <span key={k} style={{
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: 12, lineHeight: 1.35,
+                  border: '1px solid #2a3a4a', background: '#0c1219', padding: '5px 10px', color: '#e4dac8',
+                }}>
+                  <span style={{ color: '#7aa0c8' }}>{k}:</span> {v}
+                </span>
               ))}
             </div>
           )}
@@ -332,7 +363,7 @@ function FlickrAlbums({ content, onComplete }) {
             disabled={tagged.includes(activePhoto.id)}
             style={{
               alignSelf: 'flex-start',
-              fontFamily: 'Share Tech Mono, monospace', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase',
+              fontFamily: 'Share Tech Mono, monospace', fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase',
               border: tagged.includes(activePhoto.id) && required.has(activePhoto.id) ? '1px solid #2a5040' : '1px solid #2a2a38',
               color: tagged.includes(activePhoto.id) && required.has(activePhoto.id) ? '#4a9060' : '#5a5858',
               background: 'none', padding: '6px 14px', cursor: tagged.includes(activePhoto.id) ? 'default' : 'pointer',
@@ -342,10 +373,10 @@ function FlickrAlbums({ content, onComplete }) {
           </button>
           {feedback && (
             <div style={{
-              padding: '10px 14px', fontFamily: 'Share Tech Mono, monospace', fontSize: 10,
-              color: feedback.type === 'correct' ? '#5a9060' : '#7a4050',
-              background: feedback.type === 'correct' ? '#08100c' : '#100808',
-              border: `1px solid ${feedback.type === 'correct' ? '#1a3028' : '#3a1a1a'}`,
+              padding: '10px 14px', fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
+              color: feedback.type === 'correct' ? '#7ac090' : feedback.type === 'info' ? '#d0c4a8' : '#e08a90',
+              background: feedback.type === 'correct' ? '#08100c' : feedback.type === 'info' ? '#12121a' : '#160a0c',
+              border: `1px solid ${feedback.type === 'correct' ? '#2a5040' : feedback.type === 'info' ? '#3a3a48' : '#5a2a2a'}`,
             }}>
               {feedback.text}
             </div>
@@ -358,7 +389,7 @@ function FlickrAlbums({ content, onComplete }) {
                 {content.completionNote}
               </p>
             )}
-            <button onClick={onComplete} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', border: '1px solid #2a4060', color: '#4a90d9', background: 'none', padding: '8px 18px', cursor: 'pointer' }}>
+            <button onClick={onComplete} style={BUTTON_PRIMARY}>
               Continue →
             </button>
           </div>
@@ -372,30 +403,29 @@ function FlickrAlbums({ content, onComplete }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ padding: '8px 20px', borderBottom: '1px solid #1a1a28', display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button onClick={() => setActiveAlbum(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>← Albums</button>
-          <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#3a3a48', letterSpacing: '0.15em' }}>{album.name}</span>
-          <span style={{ marginLeft: 'auto', fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#2a2a38' }}>{tagged.filter(t => required.has(t)).length}/{content.requiredPhotoIds?.length} flagged</span>
+          <button onClick={() => setActiveAlbum(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>← Albums</button>
+          <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a3a48', letterSpacing: '0.15em' }}>{album.name}</span>
+          <span style={{ marginLeft: 'auto', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#2a2a38' }}>{tagged.filter(t => required.has(t)).length}/{content.requiredPhotoIds?.length} flagged</span>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
             {album.photos.map(photo => {
               const isTaggedCorrect = tagged.includes(photo.id) && required.has(photo.id)
               return (
-                <div
+                <button
                   key={photo.id}
-                  onClick={() => setActivePhoto(photo)}
+                  onClick={() => { setFeedback(null); setActivePhoto(photo) }}
                   style={{
-                    minHeight: 80, background: '#0c0c16', border: `1px solid ${isTaggedCorrect ? '#2a5040' : '#1a1a28'}`,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexDirection: 'column', gap: 4,
-                    position: 'relative',
+                    background: 'transparent', border: `2px solid ${isTaggedCorrect ? '#d4a84b' : 'transparent'}`, padding: 0,
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 8, color: '#2a2a38' }}>{photo.filename}</span>
+                  <PhotoThumb filename={photo.filename} height={110} />
+                  <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#8a8a98', padding: '0 4px 4px' }}>{photo.filename}</span>
                   {isTaggedCorrect && (
-                    <div style={{ position: 'absolute', top: 4, right: 4, fontFamily: 'Share Tech Mono, monospace', fontSize: 8, color: '#4a9060' }}>✓</div>
+                    <div style={{ position: 'absolute', top: 8, right: 10, fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#f0c860', background: '#1a1408', padding: '1px 6px' }}>✓ flagged</div>
                   )}
-                </div>
+                </button>
               )
             })}
           </div>
@@ -412,21 +442,60 @@ function FlickrAlbums({ content, onComplete }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ padding: '10px 20px', borderBottom: '1px solid #1a1a28', fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a6a88', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-        Flickr — {content.username}
+      <div style={{ padding: '10px 20px', borderBottom: '1px solid #1a1a28', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#6a8aa8', letterSpacing: '0.2em', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
+        <span>Flickr — {content.username}</span>
+        <span>{tagged.filter(t => required.has(t)).length}/{content.requiredPhotoIds?.length} flagged</span>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {/* A photo archive should look like one: every album opens as a
+          contact sheet, not as a row of text above 500px of black. */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px 20px' }}>
         {content.albums.map(album => (
-          <div key={album.id} onClick={() => setActiveAlbum(album.id)} style={{
-            padding: '12px 16px', border: '1px solid #1a1a28', cursor: 'pointer',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            fontFamily: 'Share Tech Mono, monospace',
-          }}>
-            <span style={{ fontSize: 11, color: '#8a8890' }}>{album.name}</span>
-            <span style={{ fontSize: 9, color: '#3a3830' }}>{album.photos.length} photos →</span>
-          </div>
+          <section key={album.id} style={{ marginBottom: 22 }}>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+              fontFamily: 'Share Tech Mono, monospace', padding: '0 0 8px',
+              borderBottom: '1px solid #1a1a28', marginBottom: 12,
+            }}>
+              <span style={{ fontSize: 13, color: '#b0b0c0', letterSpacing: '0.06em' }}>{album.name}</span>
+              <span style={{ fontSize: 12, color: '#6a6a78' }}>{album.photos.length} photos</span>
+            </div>
+            <div style={{
+              display: 'grid', gap: 12,
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 268px), 1fr))',
+            }}>
+              {album.photos.map(photo => {
+                const ok = tagged.includes(photo.id) && required.has(photo.id)
+                const no = tagged.includes(photo.id) && !required.has(photo.id)
+                return (
+                  <button key={photo.id}
+                    onClick={() => { setActiveAlbum(album.id); setActivePhoto(photo) }}
+                    aria-label={`Open ${photo.filename}`}
+                    style={{
+                      padding: 0, cursor: 'pointer', background: 'transparent',
+                      border: ok ? '2px solid #d0201a' : '2px solid transparent',
+                      opacity: no ? 0.5 : 1, textAlign: 'left', minHeight: 44,
+                    }}>
+                    <PhotoThumb filename={photo.filename} height={182} />
+                    <div style={{
+                      fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
+                      color: ok ? '#e8c870' : '#8a94a4', padding: '6px 2px 0',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {ok ? '✓ ' : ''}{photo.filename}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
         ))}
       </div>
+      {done && (
+        <div style={{ padding: '14px 20px 24px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
+          {content.completionNote && (<p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 15, color: '#a09888', lineHeight: 1.7, margin: '0 0 12px' }}>{content.completionNote}</p>)}
+          <button onClick={onComplete} style={BUTTON_PRIMARY}>Continue →</button>
+        </div>
+      )}
     </div>
   )
 }
@@ -466,14 +535,14 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ padding: '8px 20px', borderBottom: '1px solid #1a1a28', display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button onClick={() => setActiveEmail(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>← {activeFolder}</button>
+          <button onClick={() => setActiveEmail(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>← {activeFolder}</button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#c0b8a8', marginBottom: 8 }}>{activeEmail.subject}</div>
-            {activeEmail.from && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a4840', marginBottom: 4 }}>From: {activeEmail.from}</div>}
-            {activeEmail.to && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a4840', marginBottom: 4 }}>To: {activeEmail.to}</div>}
-            {activeEmail.date && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#3a3830', marginBottom: 12 }}>{activeEmail.date}</div>}
+            {activeEmail.from && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4840', marginBottom: 4 }}>From: {activeEmail.from}</div>}
+            {activeEmail.to && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4840', marginBottom: 4 }}>To: {activeEmail.to}</div>}
+            {activeEmail.date && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a3830', marginBottom: 12 }}>{activeEmail.date}</div>}
           </div>
           <pre style={{
             fontFamily: activeEmail.handwritten ? 'Crimson Pro, serif' : 'Share Tech Mono, monospace',
@@ -494,7 +563,7 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
     )
   }
 
-  // NEW FEATURE: Mobile-friendly Gmail layout
+  // Mobile-friendly Gmail layout
   return (
     <div className="gmail-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Folder tabs - horizontal on mobile */}
@@ -549,7 +618,7 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
                 <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 13, color: isRead ? '#5a5868' : '#a0a0b8' }}>
                   {email.from ?? email.to ?? '(draft)'}
                 </span>
-                <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 11, color: '#4a4a58' }}>
+                <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4a58' }}>
                   {email.date}
                 </span>
               </div>
@@ -568,15 +637,17 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
 }
 
 // ── Generic Records/Search variant ─────────────────────────────────────────
-function RecordsViewer({ content, onComplete }) {
+function RecordsViewer({ content, onComplete, nodeId }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
   const { markWrongGuess, activePath } = useGameStore()
-  const [activeRecord, setActiveRecord] = useState(null)
-  const [tagged, setTagged] = useState([])
-  const [done, setDone] = useState(false)
-  const [feedback, setFeedback] = useState(null)
-
+  // A single result is not a search — it is the document. Skip the list.
+  const [activeRecord, setActiveRecord] = useState(
+    () => (content.records?.length === 1 ? content.records[0] : null))
+  const [tagged, setTagged] = useLeadProgress(nodeId, 'tagged', [])
+  const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
   const required = new Set(content.requiredTagIds ?? [])
+  const [done, setDone] = useState(() => [...required].every(t => tagged.includes(t)))
+  const [feedback, setFeedback] = useState(null)
 
   const handleTag = (item) => {
     if (tagged.includes(item.id)) return
@@ -584,6 +655,8 @@ function RecordsViewer({ content, onComplete }) {
       const newTagged = [...tagged, item.id]
       setTagged(newTagged)
       setFeedback({ type: 'correct', text: item.correctFeedback ?? 'Noted.' })
+      // the line that puts a surname to the handle stops everything
+      if (item.revealsName) useGameStore.getState().flagNameSeen()
       const remaining = required.size - newTagged.filter(t => required.has(t)).length
       triggerDiscovery(remaining === 0 ? 'major' : 'minor')
       if (remaining === 0) {
@@ -591,8 +664,9 @@ function RecordsViewer({ content, onComplete }) {
       }
     } else {
       setTagged(prev => [...prev, item.id])
-      if (activePath) markWrongGuess(activePath)
-      setFeedback({ type: 'wrong', text: item.wrongFeedback ?? 'Not relevant to the investigation.' })
+      setWrongCount(wrongCount + 1)
+      if (activePath) markWrongGuess(activePath, wrongCount + 1)
+      setFeedback({ type: 'wrong', text: `${item.wrongFeedback ?? 'Not relevant to the investigation.'} (+${wrongCost(wrongCount + 1)} min)` })
     }
     setTimeout(() => setFeedback(null), 3000)
   }
@@ -600,49 +674,47 @@ function RecordsViewer({ content, onComplete }) {
   if (activeRecord) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div style={{ padding: '8px 20px', borderBottom: '1px solid #1a1a28', display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button onClick={() => setActiveRecord(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em' }}>← Results</button>
-          <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#3a3a48', letterSpacing: '0.15em' }}>{activeRecord.title}</span>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* With one record there is nothing to go back to, and the sheet
+            below already carries this title — the bar was a third copy of
+            the same line (lead heading, breadcrumb, document head), which
+            costs 40px on desktop and a tenth of the screen on a phone. */}
+        {content.records?.length > 1 && (
+          <div style={{ padding: '8px 20px', borderBottom: '1px solid #1a1a28', display: 'flex', gap: 12, alignItems: 'center' }}>
+            <button onClick={() => setActiveRecord(null)} style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#5a5858', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.15em', minHeight: 32 }}>← Results</button>
+            <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a3a48', letterSpacing: '0.15em' }}>{activeRecord.title}</span>
+          </div>
+        )}
+        <div className="doc-scroll" style={{ flex: 1, overflowY: 'auto', padding: '22px 20px 28px' }}>
+         <div className="doc-sheet">
+          <div className="doc-head">
+            <span className="doc-seal" aria-hidden="true" />
+            <div>
+              <div className="doc-court">{content.systemName ?? 'Public Record'}</div>
+              <div className="doc-title">{activeRecord.title}</div>
+            </div>
+          </div>
           {activeRecord.fields && Object.entries(activeRecord.fields).map(([k, v]) => (
-            <div key={k} style={{ display: 'flex', gap: 16, fontFamily: 'Share Tech Mono, monospace' }}>
-              <span style={{ fontSize: 9, color: '#4a4848', width: 140, flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{k}</span>
-              <span style={{ fontSize: 11, color: '#9a9088', lineHeight: 1.6 }}>{v}</span>
+            <div key={k} className="doc-field">
+              <span className="k">{k}</span>
+              <span className="v">{v}</span>
             </div>
           ))}
           {activeRecord.body && (
-            <pre style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 11, color: '#9a9088', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}>
-              {activeRecord.body}
-            </pre>
+            <pre className="doc-body">{activeRecord.body}</pre>
           )}
           {activeRecord.taggable && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-              <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a6a88', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-                Tag relevant facts:
-              </div>
+              <div className="doc-tagcue">Flag what matters</div>
               {activeRecord.taggable.map(item => {
                 const isTaggedCorrect = tagged.includes(item.id) && required.has(item.id)
                 const isTaggedWrong = tagged.includes(item.id) && !required.has(item.id)
                 return (
-                  <div key={item.id} style={{
-                    display: 'flex', gap: 12, alignItems: 'flex-start',
-                    padding: '10px 12px', border: isTaggedCorrect ? '1px solid #2a5040' : '1px solid #1a1a28',
-                    background: isTaggedCorrect ? '#08100c' : 'transparent',
-                  }}>
-                    <p style={{ flex: 1, fontFamily: 'Share Tech Mono, monospace', fontSize: 11, color: isTaggedWrong ? '#3a3848' : '#9a9288', lineHeight: 1.6, margin: 0 }}>
-                      {item.text}
-                    </p>
+                  <div key={item.id} className={`doc-tag ${isTaggedCorrect ? 'ok' : ''} ${isTaggedWrong ? 'no' : ''}`}>
+                    <p>{item.text}</p>
                     <button
                       onClick={() => handleTag(item)}
                       disabled={tagged.includes(item.id)}
-                      style={{
-                        flexShrink: 0, fontFamily: 'Share Tech Mono, monospace', fontSize: 9, letterSpacing: '0.15em',
-                        border: isTaggedCorrect ? '1px solid #2a5040' : '1px solid #2a2a38',
-                        color: isTaggedCorrect ? '#4a9060' : '#5a5858',
-                        background: 'none', padding: '3px 8px',
-                        cursor: tagged.includes(item.id) ? 'default' : 'pointer',
-                      }}
+                      className="doc-flag"
                     >
                       {isTaggedCorrect ? '✓' : 'Flag'}
                     </button>
@@ -651,8 +723,9 @@ function RecordsViewer({ content, onComplete }) {
               })}
             </div>
           )}
+         </div>
           {feedback && (
-            <div style={{ padding: '10px 14px', fontFamily: 'Share Tech Mono, monospace', fontSize: 10, color: feedback.type === 'correct' ? '#5a9060' : '#7a4050', background: feedback.type === 'correct' ? '#08100c' : '#100808', border: `1px solid ${feedback.type === 'correct' ? '#1a3028' : '#3a1a1a'}` }}>
+            <div style={{ padding: '10px 14px', marginTop: 14, fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: feedback.type === 'correct' ? '#7ac090' : feedback.type === 'info' ? '#d0c4a8' : '#e08a90', background: feedback.type === 'correct' ? '#08100c' : feedback.type === 'info' ? '#12121a' : '#160a0c', border: `1px solid ${feedback.type === 'correct' ? '#2a5040' : feedback.type === 'info' ? '#3a3a48' : '#5a2a2a'}` }}>
               {feedback.text}
             </div>
           )}
@@ -667,22 +740,67 @@ function RecordsViewer({ content, onComplete }) {
     )
   }
 
+  // A multi-record search is the drawer the document came out of. It used
+  // to be two rows of terminal text above ~570px of black — the same void
+  // the single-record case was fixed for. Each hit is now a physical
+  // jacket on the same cream stock as the sheet it opens, so opening one
+  // is a continuous move rather than a change of medium.
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ padding: '10px 20px', borderBottom: '1px solid #1a1a28', fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a6a88', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-        {content.systemName ?? 'Records Search'} · {content.records?.length ?? 0} results
+      <div className="rec-head">
+        <span>{content.systemName ?? 'Records Search'}</span>
+        <span>
+          {required.size > 0
+            ? `${tagged.filter(t => required.has(t)).length} / ${required.size} flagged`
+            : `${content.records?.length ?? 0} results`}
+        </span>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        {content.records?.map((record, i) => (
-          <div key={i} onClick={() => setActiveRecord(record)} style={{
-            padding: '12px 20px', borderBottom: '1px solid #0e0e18',
-            cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4,
-          }}>
-            <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 11, color: '#8a90a8' }}>{record.title}</span>
-            {record.summary && <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 9, color: '#4a4a58' }}>{record.summary}</span>}
-          </div>
-        ))}
+      <div className="rec-drawer">
+        <div className="rec-grid">
+          {content.records?.map((record, i) => {
+            // The jacket, not its contents. This used to print five fields on
+            // the card, which meant the registry handed over the name it took
+            // ten leads to earn before the player had opened anything.
+            const fields = record.fields ? Object.entries(record.fields).slice(0, 2) : []
+            return (
+              <button key={i} onClick={() => { setFeedback(null); setActiveRecord(record) }}
+                className="rec-card" aria-label={`Open ${record.title}`}>
+                <span className="rec-tab" aria-hidden="true" />
+                <span className="rec-seal" aria-hidden="true" />
+                <span className="rec-no">{String(i + 1).padStart(2, '0')}</span>
+                <span className="rec-title">{record.title}</span>
+                {record.summary && <span className="rec-sum">{record.summary}</span>}
+                {fields.map(([k, v]) => (
+                  <span key={k} className="rec-field"><i>{k}</i>{v}</span>
+                ))}
+                {/* what you have already taken out of this jacket */}
+                {(() => {
+                  const need = (record.taggable ?? []).map(t => t.id).filter(id => required.has(id))
+                  if (!need.length) return null
+                  const got = need.filter(id => tagged.includes(id)).length
+                  return (
+                    <span className={`rec-flagged ${got === need.length ? 'all' : ''}`}>
+                      {got === need.length ? '✓ nothing left in here' : `${got} / ${need.length} flagged`}
+                    </span>
+                  )
+                })()}
+                <span className="rec-open">Open the file →</span>
+              </button>
+            )
+          })}
+        </div>
+        <p className="rec-foot">
+          {content.records?.length === 1 ? 'One record on file.' : `${content.records?.length ?? 0} records on file. Nothing else matched.`}
+        </p>
       </div>
+      {/* Finishing a lead inside a record and then stepping back to the list
+          used to look exactly like never having started it. */}
+      {done && (
+        <div style={{ padding: '14px 20px 24px', borderTop: '1px solid #1a1a28', background: '#08080c', flexShrink: 0 }}>
+          {content.completionNote && (<p style={{ fontFamily: 'Crimson Pro, serif', fontStyle: 'italic', fontSize: 13, color: '#7a7268', lineHeight: 1.7, margin: '0 0 12px' }}>{content.completionNote}</p>)}
+          <button onClick={onComplete} style={BUTTON_PRIMARY}>Continue →</button>
+        </div>
+      )}
     </div>
   )
 }
@@ -699,11 +817,12 @@ const VARIANTS = {
   'search': RecordsViewer,
 }
 
-export function BrowseNode({ content, onComplete, onJournalistUnlock, onCinematicTrigger }) {
+export function BrowseNode({ content, onComplete, onJournalistUnlock, onCinematicTrigger, nodeId = null }) {
   const Variant = VARIANTS[content.variant] ?? RecordsViewer
   return (
     <Variant
       content={content}
+      nodeId={nodeId}
       onComplete={onComplete}
       onJournalistUnlock={onJournalistUnlock}
       onCinematicTrigger={onCinematicTrigger}

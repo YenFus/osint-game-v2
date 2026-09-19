@@ -275,7 +275,7 @@ export const GAME_DATA = {
         },
         content: {
           prompt: 'Four things are different. Mark them',
-          hint: 'Three things are gone from the later capture, and one is new.',
+          hint: 'Two posts are gone. Two lines say something different than they did.',
           before: {
             id: 'before', label: '@stillwater_m', when: 'Captured 2 September',
             lines: [
@@ -284,7 +284,7 @@ export const GAME_DATA = {
               { id: 'b-2', meta: 'Jan 7', text: 'Happy new year. Quiet one. Me and the cat.' },
               { id: 'b-3', meta: 'Dec 12', text: 'Seven months on the PDXmissing forum. Good people.' },
               { id: 'b-4', meta: 'Nov 3', text: 'stillwater-media.net is finally live. Portfolio for now.', change: 'domain' },
-              { id: 'b-5', meta: 'May 3', text: 'Good morning from Millhaven. Coffee, hills, not bad.' },
+              { id: 'b-5', meta: 'May 3', text: 'Good morning from Millhaven. Coffee, hills, not bad.', change: 'town' },
               { id: 'b-6', meta: 'Apr 30', text: 'Nice Oregonian piece on the Millhaven Arts Collective. Proud of that lot.' },
               { id: 'b-7', meta: 'Apr 13', text: 'Arts night tonight. Working it — come and say hello.', change: 'artsnight' },
             ],
@@ -293,11 +293,10 @@ export const GAME_DATA = {
             id: 'after', label: '@stillwater_m', when: 'Captured 14 November',
             lines: [
               { id: 'a-bio', meta: 'bio', text: 'Photographer · Pacific Northwest', change: 'bio' },
-              { id: 'a-new', meta: 'Oct 20', text: 'Website work is slow going.', change: 'new' },
-              { id: 'a-1', meta: 'Feb 16', text: 'If anyone asks why I follow that forum — I just care. That\'s allowed.' },
+                            { id: 'a-1', meta: 'Feb 16', text: 'If anyone asks why I follow that forum — I just care. That\'s allowed.' },
               { id: 'a-2', meta: 'Jan 7', text: 'Happy new year. Quiet one. Me and the cat.' },
               { id: 'a-3', meta: 'Dec 12', text: 'Seven months on the PDXmissing forum. Good people.' },
-              { id: 'a-5', meta: 'May 3', text: 'Good morning from Millhaven. Coffee, hills, not bad.' },
+              { id: 'a-5', meta: 'May 3', text: 'Good morning. Coffee, hills, not bad.', change: 'town' },
               { id: 'a-6', meta: 'Apr 30', text: 'Nice Oregonian piece on the Millhaven Arts Collective. Proud of that lot.' },
             ],
           },
@@ -305,9 +304,9 @@ export const GAME_DATA = {
             { id: 'artsnight', feedback: "Gone. In September he was telling people he worked the arts night; by November that sentence had been taken off the internet. It is the one post that put him in the building." },
             { id: 'domain', feedback: "Gone too — the post where he announced the website. He kept the site and deleted the line that tied this account to it." },
             { id: 'bio', feedback: "The bio lost a town and a company: Millhaven and Stillwater Media, both removed. What is left could be anybody with a camera." },
-            { id: 'new', feedback: "New since September, and it says nothing. It is the three things missing that matter, not the one thing added." },
+            { id: 'town', feedback: "Read it twice. In September he woke up in Millhaven; in November he just woke up. He went back into a two-year-old post about coffee to take the town out of it." },
           ],
-          completionNote: "Three deletions and a shrug. He took down the arts night, the website and his own town — in the weeks my daughter started asking questions on that forum.",
+          completionNote: "Two posts deleted, two lines quietly rewritten. The arts night, the website, and the name of his own town taken out of a bio and out of a post about coffee — all in the weeks my daughter started asking questions on that forum.",
         },
         unlocks: ['A7', 'A9'],
       },

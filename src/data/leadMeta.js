@@ -31,8 +31,8 @@ export const LEAD_META = {
   },
   A6: {
     clue: 'domain_tweet', card: { kind: 'index', scene: 'phone' },
-    hint: 'Flag the tweets that put him at the arts night, show him digging through records, sound defensive for no reason, or announce something he owns.',
-    summary: 'He put himself at the arts night in writing. He talked about digging through county records. And he announced the domain he owns.',
+    hint: 'Read the September column against the November one. Three posts and one detail of the bio did not survive; one post is new.',
+    summary: 'Between September and November he deleted the post that put him at the arts night, the post announcing his website, and his own town from his bio.',
   },
   A7: {
     clue: 'shield', card: { kind: 'index', scene: 'shielded' },

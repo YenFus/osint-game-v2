@@ -346,13 +346,48 @@ const SCENES = {
   ),
 }
 
+// Some of these cards stand for things the player has actually looked at —
+// the hall, the body shop, the room with the clock in it. Those use the
+// photograph rather than a drawing of one: a flat vector car pinned beside
+// a photographic case board read as clip-art, which is what it was.
+// zoom/cx/cy crop into the frame the way the magnifier does.
+const PHOTO_SCENES = {
+  building: { file: 'ph-venue.jpg' },
+  car: { file: 'ph-shop.jpg' },
+  photo: { file: 'gallery-room.jpg' },
+  clock: { file: 'gallery-room.jpg', zoom: 3.4, cx: 41.5, cy: 41 },
+  corkboard: { file: 'cork-surface.jpg' },
+  notebook: { file: 'apartment-room.jpg', zoom: 2.2, cx: 12, cy: 70 },
+}
+
+function PhotoScene({ id, shot }) {
+  const zoom = shot.zoom ?? 1
+  const cx = shot.cx ?? 50
+  const cy = shot.cy ?? 50
+  // keep the crop inside the frame, as the loupe does
+  const half = 50 / zoom
+  const clamp = (v) => Math.min(100 - half, Math.max(half, v))
+  const x = (50 - clamp(cx)) * 1.6 * zoom
+  const y = (50 - clamp(cy)) * 1.2 * zoom
+  return (
+    <>
+      <g transform={`translate(${x} ${y}) scale(${zoom})`}>
+        <image href={`${import.meta.env.BASE_URL}art/${shot.file}`} x="0" y="0" width="160" height="120"
+          preserveAspectRatio="xMidYMid slice" />
+      </g>
+      <rect width="160" height="120" fill="#120d08" opacity="0.14" />
+      <Grain id={id} />
+    </>
+  )
+}
+
 export function PolaroidArt({ scene = 'document', className, style }) {
   const id = `${scene}-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+  const shot = PHOTO_SCENES[scene]
   const draw = SCENES[scene] ?? SCENES.document
   return (
     <svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" className={className} style={{ display: 'block', width: '100%', height: '100%', ...style }} aria-hidden="true">
-      {draw(id)}
-      <Grain id={id} />
+      {shot ? <PhotoScene id={id} shot={shot} /> : <>{draw(id)}<Grain id={id} /></>}
     </svg>
   )
 }

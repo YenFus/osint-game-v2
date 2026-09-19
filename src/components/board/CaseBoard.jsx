@@ -742,6 +742,26 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
         <button className="cb-btn" onClick={onSave} title="Save (Ctrl/Cmd+S)">Save</button>
       </div>
 
+      {/* On a phone the three threads stack into one very long scroll with
+          no way back to the top of another one. These are that way back. */}
+      <nav className="cb-jump" aria-label="Jump to a thread">
+        {THREAD_KEYS.map(k => {
+          const st = s.paths[k]
+          const total = GAME_DATA[k].nodes.length
+          return (
+            <button key={k} type="button"
+              className={s.activePath === k ? 'on' : ''}
+              onClick={() => document.getElementById(`thread-${k}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+              {k}<span className="n">{st.completedNodes.length}/{total}</span>
+            </button>
+          )
+        })}
+        <button type="button"
+          onClick={() => document.querySelector('.cb-suspect')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+          Suspect
+        </button>
+      </nav>
+
       <div className="cb-body">
         <div className="cb-viewport" ref={viewportRef}>
           <div className="cb-frame">

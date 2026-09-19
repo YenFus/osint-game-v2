@@ -1357,3 +1357,58 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   /* the magnified pane does not need to be as tall as the photo itself */
   .zoomwin, .zoomwin.empty { max-height: 40vh; }
 }
+
+/* ── Diff lead: two captures of one page, side by side ───────────── */
+.df-root { flex: 1; min-height: 0; display: flex; flex-direction: column; background: #0c0b0e; color: #d8d0bc; }
+.df-body {
+  flex: 1; min-height: 0; overflow-y: auto; display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; padding: 14px 16px; align-content: start;
+}
+.df-col { min-width: 0; background: #101016; border: 1px solid #22222c; }
+.df-head {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 12px;
+  border-bottom: 1px solid #22222c; background: #14141c; position: sticky; top: 0; z-index: 2;
+}
+.df-when { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #8ab0d0; }
+.df-label { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; letter-spacing: 0.04em; color: #e8e0cc; }
+.df-list { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.df-line {
+  position: relative; width: 100%; text-align: left; cursor: pointer; min-height: 44px;
+  display: flex; flex-direction: column; gap: 3px; padding: 9px 30px 9px 11px;
+  background: #0e0e14; border: 1px solid #23232e; border-radius: 2px; color: #cfc8b6;
+  font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.4;
+}
+.df-line:hover:not(:disabled) { border-color: #5a6a8a; background: #12131c; }
+.df-line:focus-visible { outline: 2px solid #d4a84b; outline-offset: 1px; }
+.df-line.got { border-color: #3f7a4c; background: #0d150f; }
+.df-line:disabled { cursor: default; }
+.df-meta { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #7a7868; text-transform: uppercase; }
+.df-text { color: inherit; }
+.df-tick { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: #4caf6a; font-weight: 700; }
+@media (max-width: 760px) {
+  .df-body { grid-template-columns: 1fr; gap: 14px; padding: 10px; }
+  .df-head { position: static; }
+}
+
+/* The thread jump bar is a phone affordance: on a wide screen the three
+   columns are already side by side and this would be noise. */
+.cb-jump { display: none; }
+@media (max-width: 820px) {
+  .cb-jump {
+    display: flex; gap: 6px; padding: 6px 8px; position: sticky; top: 0; z-index: 6;
+    background: #0d0a07; border-bottom: 1px solid #2a2018; overflow-x: auto;
+  }
+  .cb-jump button {
+    flex: 1 0 auto; min-height: 40px; padding: 4px 12px; cursor: pointer;
+    background: #17120c; border: 1px solid #3a2c1c; color: #d8c8a8; border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .cb-jump button.on { border-color: #8a6a38; color: #f4e6c8; background: #241a10; }
+  .cb-jump .n { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #9a8a6a; }
+  /* the header was taking better than a third of the screen before a
+     single lead was visible */
+  .cb-title .type { display: none; }
+  .cb-title .hand { font-size: 19px; }
+  .cb-cork { padding: 12px 8px 110px; }
+}

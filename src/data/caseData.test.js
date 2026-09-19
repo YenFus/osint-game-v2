@@ -336,3 +336,37 @@ describe("the cast page keeps up with the script", () => {
     }
   })
 })
+
+describe('diff leads', () => {
+  const diffs = allLeads().filter(n => n.type === 'diff')
+
+  it('every marked line points at a real change, and every change is markable', () => {
+    for (const node of diffs) {
+      const { before, after, changes } = node.content
+      const lines = [...before.lines, ...after.lines]
+      const ids = new Set(changes.map(c => c.id))
+      for (const line of lines) {
+        if (line.change) expect(ids, `${node.id}: line ${line.id} names an unknown change`).toContain(line.change)
+      }
+      for (const change of changes) {
+        expect(lines.some(l => l.change === change.id), `${node.id}: change ${change.id} is on no line`).toBe(true)
+      }
+    }
+  })
+
+  it('leaves unchanged lines to mark wrongly, or there is no reading to do', () => {
+    for (const node of diffs) {
+      const lines = [...node.content.before.lines, ...node.content.after.lines]
+      expect(lines.filter(l => !l.change).length, `${node.id} has no unchanged lines`).toBeGreaterThan(3)
+    }
+  })
+
+  it('keeps the two captures honest: an unchanged line reads the same in both', () => {
+    for (const node of diffs) {
+      const after = new Map(node.content.after.lines.filter(l => !l.change).map(l => [l.text, l]))
+      for (const line of node.content.before.lines.filter(l => !l.change)) {
+        expect(after.has(line.text), `${node.id}: "${line.text.slice(0, 40)}" is only in one capture but is not marked as a change`).toBe(true)
+      }
+    }
+  })
+})

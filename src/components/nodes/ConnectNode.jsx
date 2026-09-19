@@ -145,7 +145,7 @@ export function ConnectNode({ content, onComplete, nodeId = null }) {
 
         {/* Instruction */}
         <p className="hand" style={{ fontSize: 22, color: '#fbeed4', textShadow: '0 2px 4px #000', margin: 0, lineHeight: 1.35 }}>
-          Two of these say the same thing twice. Pin a card, pin its pair, and see what holds.
+          {content.boardHint ?? 'Two of these say the same thing twice. Pin a card, pin its pair, and see what holds.'}
         </p>
 
         {/* Cards pinned to the cork, yarn strung between the pins */}

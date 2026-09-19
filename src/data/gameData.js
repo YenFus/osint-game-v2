@@ -690,6 +690,8 @@ export const GAME_DATA = {
         // from: you are asked to source each claim, and two of them have no
         // source that is not her.
         content: {
+          prompt: 'Where could he have got that?',
+          boardHint: 'Four of his posts, four places a detail could come from. Pin a post, then the source it came from.',
           cards: [
             { id: 'q-route', label: 'Jan 4 — stillwater_m', details: '"Someone told me she had a Tuesday routine — coffee on Burnside before class. Worth checking?"' },
             { id: 'q-corey', label: 'Dec 8 — stillwater_m', details: '"The ex deserves more attention. Corey Marsh. I\'ve seen things online."' },
@@ -1109,6 +1111,8 @@ export const GAME_DATA = {
         // pieces mean nothing apart and everything together, which is what
         // the lead now asks for: join each cutting to the thing it confirms.
         content: {
+          prompt: 'Three cuttings against three things you already have',
+          boardHint: 'On their own these are trivia. Pin a cutting, then what it confirms.',
           cards: [
             { id: 'cut-credit', label: 'Apr 15 — Spring Exhibition', details: '"Event photography provided by Stillwater Media." 400 attended. Director Owen Pryce declined to release the guest list' },
             { id: 'cut-lena', label: 'Apr 15 — same piece', details: '"Lena Vasquez, who has not been seen since the event, is noted as having attended"' },

@@ -715,10 +715,15 @@
   /* The cards used to cluster in the top-left of a tall cork, leaving
      ~400px empty and giving the yarn nowhere to run. Spread them over
      the whole surface so the string geometry has some distance. */
-  position: relative; display: grid; gap: 26px 22px;
+  /* space-between over a 560px floor pushed two rows of cards to the top and
+     bottom and left a ~260px dead band across the middle of the cork, and
+     pushed the last row off the bottom of the panel. The rows are spread
+     evenly now and the cards in a row share a height, which reads as a board
+     somebody pinned rather than two shelves. */
+  position: relative; display: grid; gap: 22px;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-  align-content: space-between; align-items: start;
-  padding-top: 6px; min-height: min(560px, 62vh);
+  align-content: space-evenly; align-items: stretch;
+  padding-top: 6px; min-height: min(430px, 52vh);
 }
 /* stagger alternate cards so the board reads as pinned, not tabulated */
 .cx-board > .cx-card:nth-child(even) { margin-top: 26px; }

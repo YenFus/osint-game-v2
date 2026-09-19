@@ -213,7 +213,7 @@ function buildCall(type, evaluation, choice, gone) {
   ]
   evaluation.perSlot.forEach((p, i) => {
     // `spoken`, not `title` — see caseData's CLUES
-    you(p.clueId ? `"${LEAD_IN[p.slot.id]}${CLUES[p.clueId].spoken ?? CLUES[p.clueId].title}."` : `"${MISSING[p.slot.id]}"`)
+    you(p.clueId ? `"${LEAD_IN[p.slot.id]}${CLUES[p.clueId]?.spoken ?? CLUES[p.clueId].title}."` : `"${MISSING[p.slot.id]}"`)
     // three identical "You have nothing for this" lines read as a bug
     ok(p.clueId ? `"${p.reaction}"` : EMPTY_LINES[i] ?? `"${p.reaction}"`)
   })
@@ -318,7 +318,7 @@ export default function EndingPage() {
           <div className="font-mono text-sm tracking-[0.2em] uppercase text-[#9a9a98]">
             {totalHours === null ? 'Missing since Monday' : `Missing ${totalHours} hours in total`} · {evaluation.suspect === 'ray' ? 'Ray Callahan' : 'The man who took her'}: <span style={{ color: ending.color }}>{ending.ray}</span>
           </div>
-          <div className="font-mono text-xs text-[#5a5a68] mt-12 animate-pulse">Press any key to continue</div>
+          <div className="end-reveal-cue font-mono text-xs mt-12">Press any key to continue</div>
         </div>
       </div>
     )
@@ -351,12 +351,12 @@ export default function EndingPage() {
               [totalHours === null ? '—' : `+${ending.afterCall < 48 ? `${ending.afterCall}h` : `${Math.round(ending.afterCall / 24)}d`}`, totalHours === null ? 'never found' : 'found', ending.color],
             ].map(([big, small, color], i) => (
               <div key={small} className="flex-1 flex items-center gap-2">
-                {i > 0 && <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#2a2a38,#4a4a58)' }} />}
+                {i > 0 && <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#2a2a38,#7a7a8f)' }} />}
                 <div className="shrink-0">
                   <div className="font-mono text-base" style={{ color }}>{big}</div>
                   <div className="font-mono text-[12px] tracking-[0.2em] uppercase text-[#6a6a78]">{small}</div>
                 </div>
-                {i < 2 && <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#4a4a58,#2a2a38)' }} />}
+                {i < 2 && <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#7a7a8f,#2a2a38)' }} />}
               </div>
             ))}
           </div>
@@ -455,7 +455,7 @@ export default function EndingPage() {
         )}
 
         <div className="border-t border-[#1a1a28] pt-6 pb-4 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div className="font-mono text-xs text-[#5a5a68]">What Maya Knew — thank you for playing</div>
+          <div className="font-mono text-xs text-[#7c7c8e]">What Maya Knew — thank you for playing</div>
           <button onClick={restart} className="font-mono text-sm tracking-[0.15em] uppercase border-2 px-8 py-3 min-h-[48px] hover:bg-[#1a1a28]" style={{ borderColor: '#c0a060', color: '#e0c890' }}>
             ← Play again
           </button>

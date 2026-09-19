@@ -740,7 +740,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
 
       {/* On a phone the three threads stack into one very long scroll with
           no way back to the top of another one. These are that way back. */}
-      <nav className="cb-jump" aria-label="Jump to a thread">
+      <nav id="navigation" className="cb-jump" aria-label="Jump to a thread">
         {THREAD_KEYS.map(k => {
           const st = s.paths[k]
           const total = GAME_DATA[k].nodes.length

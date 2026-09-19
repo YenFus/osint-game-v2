@@ -120,7 +120,11 @@ export default function App() {
         <div className="min-h-screen bg-[#08080e]">
           {/* Skip links for screen reader accessibility */}
           <a href="#main-content" className="skip-link">Skip to main content</a>
-          <a href="#navigation" className="skip-link" style={{ left: 150 }}>Skip to navigation</a>
+          {/* Only the board has a nav landmark to jump to. This link shipped on
+              every screen pointing at an id that has never existed anywhere. */}
+          {phase === 'investigation' && (
+            <a href="#navigation" className="skip-link" style={{ left: 150 }}>Skip to navigation</a>
+          )}
 
           {/* Audio manager - handles ambient sound */}
           <AudioManager />

@@ -176,6 +176,7 @@ export function TagNode({ content, onComplete, nodeId = null }) {
           Flagged: {correctTagged.length} / {content.requiredTags.length}
         </span>
         <div style={{ flex: 1, height: 2, background: '#1a1a28' }} role="progressbar"
+          aria-label={`Flagged ${correctTagged.length} of ${content.requiredTags.length}`}
           aria-valuenow={correctTagged.length} aria-valuemin={0} aria-valuemax={content.requiredTags.length}>
           <div style={{ height: '100%', background: '#b8860b', width: `${(correctTagged.length / content.requiredTags.length) * 100}%`, transition: 'width 0.4s ease' }} />
         </div>

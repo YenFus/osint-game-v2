@@ -15,7 +15,10 @@ pacing, each of the 28 leads, art, audio, mobile, keyboard, screen reader,
 endings, save/load, the tutorial, the name reveal.
 
 **Score history:** 3.5, 3.8, 4.5, 4.8, 5.6, 5.8, 6.2, 6.8, 7.3, 7.6, 7.8, 7.7,
-**8.1** (round 13). Round 14's score: see §7.
+8.1, **8.2** (round 14 — full report in §7, open work list in §7.3).
+
+**Start here:** §7.3 P0 is a hard blocker — the ending screen is a keyboard dead
+end. §7.2 is three claims round 14 proved false; do not repeat them.
 
 Round 13's sub-scores, for reference on where the headroom is:
 writing 9.2, endings 9.0, feedback 9.0, save/load 9.0, fairness 8.8, bugs 8.8,

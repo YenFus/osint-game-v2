@@ -19,6 +19,10 @@ endings, save/load, the tutorial, the name reveal.
 **Round 16 came back 7.9** (down from 8.2 — it went deeper and found worse).
 Round 16's fix pass is shipped and unscored; see §14.
 
+**§15 is the one to read before briefing another critic.** A player found two
+blocking bugs on a phone in ten minutes that sixteen rounds of review never
+saw, because every check in this loop tested the resting state at 390x844.
+
 **Start here:** read §14 — round 16's score, its fix pass, and what is left.
 §13 is round 15. §7.2 is three claims round 14 proved false; do not repeat them, and note
 §13.2 adds a fourth: round 14's own P0 was overstated.
@@ -808,3 +812,90 @@ fallbacks and the difficulty ceiling in one pass — run it after touching
 **`built.cjs` earned its place again**: it is what proves the artifact bundle
 serves, and the mobile work all had to be checked against `dist-artifact`
 because of the wrapper's `overflow:hidden`.
+
+---
+
+## 15. The bug class the loop is blind to
+
+Two bugs, both reported by the user from a real phone, both hit inside ten
+minutes, neither found by sixteen rounds of critics or by any script here:
+
+- **tap a detail on a photo lead → the magnified view is somewhere you cannot
+  see it.** `zoomRef` had been declared in `TagNode` since the node was written
+  and wired to nothing, and the plate and zoom were both sized off a fixed
+  aspect ratio, so at a 600px viewport the pinned plate took 236 of the lead
+  body's 274px and the glass got 38.
+- **the burned notebook spilled its recovered text across the brightness
+  slider.** The page is a flex item with no overflow of its own; flex items
+  shrink below their content, so on a short screen the text ran out of the
+  notebook and over the control.
+
+### 15.1 Why every check missed them
+
+They share one signature, and it is the whole lesson:
+
+> **They need an interaction AND a short viewport at the same time.**
+
+Everything in this loop — `r10`, `boardmob`, `mobsweep`, `dens`, `ink.py`, and
+every critic sweep — measures the **resting state at 390×844**. Neither bug
+exists at rest. Neither exists at 844px. Testing one dimension without the
+other finds nothing, which is exactly what sixteen rounds found.
+
+**390×844 is not a phone.** It is a phone with no browser. Safari and Chrome
+take 150–200px, so a real device gives the page **600–670px**. Half the layout
+budget in this game is spent before the first element renders.
+
+### 15.2 `harness/mobplay.cjs` — in the repo, not the scratchpad
+
+It is in `harness/` deliberately: scratchpad scripts get copied forward and
+quietly dropped, and this one should not be. `harness/README.md` has the full
+account. Run it every round:
+
+```bash
+node harness/mobplay.cjs
+```
+
+28 leads × 3 viewports (390×844, 390×664, 360×600), captured at rest, then
+driven through that lead's own interaction, reporting only what the interaction
+introduced. Four invariants: reachable, not painted over, not clipped without a
+scroll, not zero-size. **Currently clean.**
+
+### 15.3 The four traps — read these before trusting any occlusion result
+
+The first version of this harness reported **737 findings** and almost every
+one was noise. A harness that cries wolf is worse than none, and two of the
+false claims in §7.2 came from exactly this kind of unchecked measurement.
+
+1. **Cross-layer geometry.** Controls behind an open modal are correctly
+   covered and inert. Comparing the dialog's geometry with the board's invents
+   overlaps no player can see.
+2. **`elementFromPoint` returns children.** A hit on a button's own child span
+   is not an obstruction. Check containment both ways.
+3. **A sticky bar always overlaps something mid-scroll.** That is what fixed
+   footers do. It is a defect only if the control cannot be scrolled clear —
+   so scroll it and re-test before reporting.
+4. **Collapsed drawers keep their contents in the DOM.** The mobile clue drawer
+   holds ~24 cards clipped to a zero-height box. Behind a toggle, not
+   unreachable.
+
+**Tap the survivors.** Geometry says a control looks obscured; a tap says
+whether a player can use it. A1, A7, B7 and C8 all measured "covered" and all
+tapped fine.
+
+### 15.4 What to tell the next critic
+
+Put this in the brief verbatim; it is the gap in every previous one:
+
+> Test at **390×664 and 360×600** as well as 390×844 — a real phone loses
+> 150–200px to browser chrome, and bugs exist in that band that do not exist
+> above it. For every lead, **perform the interaction the lead is made of**
+> (tap the hotspots, drag the sliders, type the answer, pin the cards) and
+> re-check the layout afterwards. Resting-state screenshots pass while the
+> game is unplayable. Then **tap** what you suspect, rather than reporting
+> geometry.
+
+### 15.5 Still open
+
+Unchanged from §14.4 — C2's rest-legible sign, thread C's closing beat, the
+beds having no events, seven leads 20%+ empty, A8 over-signposted, P5, and the
+§8 list. Nothing in §15 displaced them; this was a separate class.

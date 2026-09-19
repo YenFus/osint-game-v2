@@ -16,9 +16,11 @@ endings, save/load, the tutorial, the name reveal.
 
 **Score history:** 3.5, 3.8, 4.5, 4.8, 5.6, 5.8, 6.2, 6.8, 7.3, 7.6, 7.8, 7.7,
 8.1, **8.2** (round 14 — full report in §7, open work list in §7.3).
+**Round 15 shipped; not yet scored.** What it did and did not do is §13.
 
-**Start here:** §7.3 P0 is a hard blocker — the ending screen is a keyboard dead
-end. §7.2 is three claims round 14 proved false; do not repeat them.
+**Start here:** read §13 — round 15's changes, and the four P-items it did not
+touch. §7.2 is three claims round 14 proved false; do not repeat them, and note
+§13.2 adds a fourth: round 14's own P0 was overstated.
 
 Round 13's sub-scores, for reference on where the headroom is:
 writing 9.2, endings 9.0, feedback 9.0, save/load 9.0, fairness 8.8, bugs 8.8,
@@ -38,10 +40,10 @@ panels.*
 | | |
 |---|---|
 | Repo | `/Users/mohit/Projects/osint-game-v2`, branch `main` |
-| HEAD | `7d9db54` — "The connect board had a dead band across the middle" |
+| HEAD | `6531f33` — "The cork has never loaded on the artifact, only on the dev server" |
 | Remote | https://github.com/YenFus/osint-game-v2 (pushed, tree clean) |
-| Live artifact | https://claude.ai/artifact/MuuT8ffPzFCtHUonQoDHXv — **Version 26** |
-| Tests | 37 pass (`npm test`) — was 36; round 14 added one to the phrase suite |
+| Live artifact | https://claude.ai/artifact/MuuT8ffPzFCtHUonQoDHXv — **Version 28** |
+| Tests | 37 pass (`npm test`) |
 | Lint | `npx eslint src` clean |
 | Dev server | `http://localhost:5173/osint-game-v2/` — usually already running; **do not start a second**, port 5173 is `--strictPort` |
 
@@ -565,3 +567,126 @@ graph**. That is what made the five conversions safe. Leads that reveal the surn
 call `flagNameSeen()`; `BrowseNode`, `InputNode` and `NavigateNode` do it via a
 `revealsName` flag on an item, and `DiffNode` gained the same via `revealsName` on a
 *change* (needed for A12 and C6).
+
+---
+
+## 13. Round 15 — what shipped, and what did not
+
+HEAD `6531f33`, artifact **Version 28**. 37 tests, `npx eslint src` clean, build
+930ms. Regression (`r10.cjs`) green, endings 11 verdicts on both viewports,
+focus trap 30/30, background inert 56/56, no console or page errors anywhere.
+
+### 13.1 Fixed
+
+| Item | What was done |
+|---|---|
+| **P0** ending | Reveal plate is a real autofocused `<button>` carrying the verdict as its name; any key advances; plate marked `aria-hidden`. **But the finding was overstated — see §13.2.** |
+| **P1** input names | `aria-labelledby` the question, `aria-describedby` the context note, on A3 A8 B5 B8 C3 |
+| **P3** B12 hint leak | Monologue no longer says "never sent it", which was the paid hint's answer |
+| **P3** B2 `src-press` | Press release no longer names the venue, so the decoy stops arguing for itself |
+| **P6** `← Board` | 63×16 → **87×34** on all 28 panels |
+| **P7** clue economy | Four new clues: A11 `postbox`, B1 `burned_page`, B5 `priya_words`, B2 `no_source` (was a duplicate `insider`). **28 leads, 28 distinct clues, no gaps, no duplicates** |
+| **P2** partial | A3 **42%→4%**, A8 **48%→11%** — see §13.3 |
+| **P4** audio | Four produced beds replace the oscillator tracks; `scripts/gen_ambience.py` |
+| 7.4 #1 playhead | 40px out at 0:00 → worst 1.67px across the file |
+| 7.4 #2 save delete | Two-step arm/confirm, self-disarming after 5s |
+| 7.4 #3 / #4 | `src-nowhere` full stop; C6 "Six lines" → "seven lines each" |
+| 7.4 #5 landmarks | Apartment 1 → 4 labelled landmarks ("Points of Interest", "Investigation Threads", "Maya's apartment") |
+| **New** | The cork texture has 404'd on **every published artifact**, including 26 — see §13.4 |
+
+### 13.2 Round 14's P0 was overstated — measured, not argued
+
+> "A keyboard-only or screen-reader player … **cannot reach the epilogue, the
+> phone call or the restart**. This is a hard blocker."
+
+Not so. `EndingPage` has always had a 5.2s timer that advances the reveal
+whether or not anyone clicks. Measured at 1440×950: at t=0.8s the page has 2
+focusables (both skip links); **at t=6.0s it has 4, including the epilogue
+disclosure and "← Play again", with no input at all.** The "2 focusable
+elements" reading is accurate but describes a five-second window, not a trap.
+
+The real defect was narrower and is fixed: a `div` with an `onClick`, no role,
+no key handler, telling people to "click". **Do not score it as a blocker that
+was cleared — score the narrower thing.** §9's rule applies to the critic too.
+
+### 13.3 P2 — the dead-panel numbers, and a measurement trap worth knowing
+
+**`dens.cjs` and any DOM-walk are the wrong instrument.** A row median fails
+because the panel is two columns with different backgrounds, so a blank row
+reads as half-deviating. What works is **local gradient**: a flat fill of any
+colour has none, text and graphics have plenty. `scratchpad/ink.py` does this
+and its B12/B1/B11 numbers landed within 2% of round 14's independent figures.
+
+**The seed matters more than the instrument.** With `clues: []`, B5, B8 and C3
+measured 42–45% empty. With the clue pool a player would actually hold at that
+point, they measure **3%** — the notes column fills. My first three "findings"
+there were artefacts of an unrealistic seed. Use `grab2.cjs`, which walks the
+board order and seeds each lead with its predecessors' clues.
+
+Honest state after the round, gradient-measured, realistic seeds:
+
+```
+C8 419px 47% · B7 394px 44% · B4 332px 37% · B12 313px 35%
+B1/B11 298px 33% · A9 289px 32% · C5 182px 20%
+A8 102px 11% · A3 36px 4%   (both fixed this round)
+```
+
+**Seven leads are still 20%+ empty and were not touched.** C8/B7 are navigate
+leads whose file lists stop after four rows; B4 has genuinely good content that
+simply does not fill; B1/B11 are slider leads with an interior band at y≈198.
+
+### 13.4 The cork bug, and why thirteen rounds missed it
+
+The main menu and the ending have been requesting
+`/assets/art/cork-surface.jpg` and getting a **404 in every published version**.
+`--cork` held a *relative* `url()`; a relative URL in a custom property is
+substituted textually and Chrome resolves it against **the stylesheet that
+reads it**, and `board.css` ships from `/assets/`.
+
+It never reproduced on the dev server because `BASE_URL` there is the absolute
+`/osint-game-v2/`. It only breaks under `--base=./`, which is the artifact.
+
+**Serve `dist-artifact` and boot that, not just the dev server.** One command:
+
+```bash
+cd dist-artifact && python3 -m http.server 8899
+```
+
+Then watch for any response ≥400. That is how this was found, and it is the
+only check in the loop that exercises what players actually get.
+
+### 13.5 Not fixed — declare these
+
+- **P5, C1/C2 verb adjacency — deliberately not done.** I drafted the
+  conversion of C1 (tag) to a connect lead; the corkboard-with-string material
+  invites it. Every version read worse. C1 ends by pointing at the Courier
+  photo credit as "the next lead", which *is* C2, and C1→C2→C3 is a linear
+  `unlocks` chain, so reordering breaks the setup too. **The critic's substance
+  stands** — C2's magnifier is the best interaction in the thread and it is
+  spent as a repeat — but a worse lead is not a fix. Whoever takes this needs a
+  new opening interaction for thread C, not a reshuffle of the existing one.
+- **P2 for the seven leads in §13.3.**
+- **7.4 #6** `src-press` orphan, **7.4 #7** A4 photo rail at 390px, and
+  **convergence still exposes one landmark** while the board exposes eight.
+- Everything still standing in §8: the voicemail is synthesis; the yoke seam and
+  window in `ph-maya.jpg`; `ph-shop.jpg`'s bumper, tail-light and rocker panel
+  at plate size; A13's ~110px/~80px slack.
+- **Audio is produced synthesis, not recordings.** Four beds and one voicemail.
+  There is still no score and no SFX pass — `playSFX` is unchanged oscillators.
+- **The axe-core pass is still owed** (§7.6), and round 14's 14 un-driven leads
+  were not driven this round either.
+
+### 13.6 Harness added this round
+
+Copy these forward with the rest:
+
+| script | what it does |
+|---|---|
+| `ink.py` | gradient-based blank-band measurement — the only slack measure here that has matched an independent one |
+| `grab2.cjs` | captures all 28 panels seeded with each lead's realistic clue pool |
+| `bed.cjs` | instruments Web Audio to prove beds fetch, decode and loop in the running game |
+| `built.cjs` | boots `dist-artifact` off `:8899` and fails on any response ≥400 — **run this every round** |
+| `lm.cjs` | landmark census per screen, with accessible names resolved |
+| `p0.cjs` | the ending-reveal focus probe from §13.2 |
+
+`gate.cjs` is still wrong (§7.2) and was not fixed. `poster.cjs` is still stale.

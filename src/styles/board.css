@@ -115,7 +115,14 @@
 /* Folded threads keep their verdicts but stop holding a whole column of
    board open: the columns that still have leads in them take the room. */
 .cb-threads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; position: relative; z-index: 2; max-width: 1240px; margin: 0 auto; align-items: start; }
-.cb-threads:has(.cb-thread.folded) { grid-template-columns: repeat(3, minmax(0, auto)); justify-content: center; }
+/* Must stay behind a min-width query. `:has()` takes the specificity of its
+   most specific argument, so this selector is (0,3,0) while the responsive
+   override below is (0,1,0) and media queries add none — folding the first
+   thread used to drag the single-column board back to three tracks at every
+   width, overlapping the open threads with nothing scrollable to recover. */
+@media (min-width: 1101px) {
+  .cb-threads:has(.cb-thread.folded) { grid-template-columns: repeat(3, minmax(0, auto)); justify-content: center; }
+}
 .cb-threads .cb-thread.folded { max-width: 300px; }
 .cb-threads .cb-thread:not(.folded) { min-width: 300px; }
 .cb-thread { position: relative; padding: 12px 10px 16px; border: 1px dashed rgba(255,230,190,0.14); background: rgba(20,10,4,0.12); }
@@ -454,7 +461,7 @@
 .photo-hint { font-size: 20px; color: #e8d6b0; margin-top: 10px; }
 .zoomwin { position: relative; width: 100%; padding-top: 66.7%; overflow: hidden; border: 8px solid #0c0c10; background: #0c0c10; box-shadow: inset 0 0 0 1px #3a3a48, 0 10px 22px rgba(0,0,0,0.6); }
 .zoomwin.empty { padding-top: 0; flex: 1; min-height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
-.zoomwin.empty .hand { font-size: 19px; color: #8a7458; text-align: center; padding: 0 16px; }
+.zoomwin.empty .hand { font-size: 19px; color: #8f785b; text-align: center; padding: 0 16px; }
 /* the loupe itself, lying on the desk, so an unused right rail is an
    object in the room rather than an empty box with a caption in it */
 .loupe-glass {
@@ -467,7 +474,7 @@
   content: ''; position: absolute; left: 50%; top: 100%; width: 9px; height: 40px;
   margin-left: -4.5px; border-radius: 0 0 4px 4px; background: linear-gradient(180deg, #3c3323, #241d13);
 }
-.loupe-sub { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: #5a4c36; margin-top: 26px; }
+.loupe-sub { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: #8f7956; margin-top: 26px; }
 .zoominner { position: absolute; inset: 0; }
 .zoomlabel { position: absolute; right: 6px; bottom: 6px; font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #e8c870; background: rgba(0,0,0,0.65); padding: 2px 6px; }
 .zoomcard { margin-top: 12px; background: #efe6d2; color: #1a1410; padding: 14px; transform: rotate(-0.8deg); box-shadow: 0 8px 18px rgba(0,0,0,0.55); }
@@ -829,7 +836,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 }
 .nv-idle-sub {
   font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.22em;
-  text-transform: uppercase; color: #4a4840; margin: 14px 0 0;
+  text-transform: uppercase; color: #7e7a6d; margin: 14px 0 0;
 }
 
 /* What has already been under the loupe, in the rail beside the photo */
@@ -1038,7 +1045,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   display: flex; justify-content: space-between; gap: 12px;
   padding: 11px 22px; border-bottom: 1px solid #241d12;
   font-family: 'Share Tech Mono', monospace; font-size: 12px;
-  letter-spacing: 0.2em; text-transform: uppercase; color: #85744c;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #8b7a50;
   background: #0e0b08;
 }
 .rec-drawer {
@@ -1081,7 +1088,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .rec-no {
   position: absolute; top: 12px; right: 20px;
   font-family: 'Share Tech Mono', monospace; font-size: 11px;
-  letter-spacing: 0.2em; color: #a2906a;
+  letter-spacing: 0.2em; color: #736548;
 }
 .rec-seal {
   width: 30px; height: 30px; border-radius: 50%; border: 2px double #6d5a34;
@@ -1099,7 +1106,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   line-height: 1.5; color: #2a2218; padding-top: 5px; border-top: 1px dotted #c9bb99;
   overflow: hidden; text-overflow: ellipsis;
 }
-.rec-field i { font-style: normal; color: #85744c; text-transform: uppercase; letter-spacing: 0.08em; }
+.rec-field i { font-style: normal; color: #746542; text-transform: uppercase; letter-spacing: 0.08em; }
 .rec-field i::after { content: ' · '; }
 .rec-open {
   margin-top: auto; padding-top: 12px;
@@ -1136,7 +1143,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .doc-field { display: flex; gap: 16px; flex-wrap: wrap; padding: 5px 0; border-bottom: 1px dotted #c9bb99; }
 .doc-field .k {
   font-family: 'Share Tech Mono', monospace; font-size: 12px; width: 168px; flex-shrink: 0;
-  text-transform: uppercase; letter-spacing: 0.1em; color: #85744c;
+  text-transform: uppercase; letter-spacing: 0.1em; color: #746542;
 }
 .doc-field .v { font-family: 'Share Tech Mono', monospace; font-size: 14px; line-height: 1.6; color: #1d1710; }
 .doc-body {
@@ -1180,7 +1187,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .nv-listhead {
   display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px;
   font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.2em;
-  text-transform: uppercase; color: #6a6858; padding: 0 10px 8px; border-bottom: 1px solid #22222c;
+  text-transform: uppercase; color: #807e6a; padding: 0 10px 8px; border-bottom: 1px solid #22222c;
 }
 .nv-rows { list-style: none; margin: 0; padding: 0; }
 .nv-row {
@@ -1190,7 +1197,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   font-family: 'Share Tech Mono', monospace; font-size: 13px;
 }
 .nv-row .nm { color: #d8d0bc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nv-row .wh { color: #7a7868; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.nv-row .wh { color: #838170; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
 .nv-row.read .nm { color: #9a9684; }
 .nv-row:hover, .nv-row:focus-visible { background: #12121a; outline: none; }
 .nv-row:focus-visible { box-shadow: inset 0 0 0 2px #d4a84b; }
@@ -1297,7 +1304,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .tl-photos li { flex: 1 1 auto; display: flex; max-height: 150px; }
 .tl-photos li > .mp-photo { flex: 1; align-items: center; }
 .tl-photos li > .mp-photo .thumb { width: 84px; height: 66px; }
-.mp-photo .up { color: #7a7868; }
+.mp-photo .up { color: #838170; }
 .tl-days { padding: 14px 16px; display: flex; flex-direction: column; gap: 22px; min-height: 100%; }
 .tl-day { display: flex; flex-direction: column; }
 .tl-day .tl-strip { flex: 1; }
@@ -1305,7 +1312,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .tl-strip { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; }
 .tl-slot {
   min-height: 88px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px;
-  padding: 4px 1px; background: #15141b; border: 1px solid #24222c; color: #7a7868; cursor: pointer;
+  padding: 4px 1px; background: #15141b; border: 1px solid #24222c; color: #838170; cursor: pointer;
   font-family: 'Share Tech Mono', monospace; font-size: 11px;
 }
 .tl-slot.win { background: repeating-linear-gradient(135deg, #2a1d0c 0 6px, #22180a 6px 12px); border-color: #5a4220; color: #d4a84b; }
@@ -1385,7 +1392,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
    to the results list is not indistinguishable from never having started. */
 .rec-flagged {
   font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
-  color: #8a7a5c; margin-top: 8px;
+  color: #73654c; margin-top: 8px;
 }
 .rec-flagged.all { color: #4a7a52; }
 
@@ -1404,12 +1411,12 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.2em;
   text-transform: uppercase; color: #8a9a78; margin-bottom: 12px;
 }
-.inp-notes-empty { font-family: 'Crimson Pro', Georgia, serif; font-style: italic; color: #6a6858; font-size: 13px; }
+.inp-notes-empty { font-family: 'Crimson Pro', Georgia, serif; font-style: italic; color: #807e6a; font-size: 13px; }
 .inp-notes ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .inp-notes li { display: flex; flex-direction: column; gap: 3px; border-left: 2px solid #2a3340; padding-left: 10px; }
 .inp-notes .t { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; letter-spacing: 0.04em; color: #d8d0bc; }
 .inp-notes .d { font-family: 'Crimson Pro', Georgia, serif; font-size: 13px; line-height: 1.45; color: #9a9884; }
-.inp-notes .s { font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; color: #6a6858; }
+.inp-notes .s { font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; color: #807e6a; }
 @media (max-width: 860px) {
   .inp-cols { grid-template-columns: 1fr; }
   .inp-notes { max-height: 260px; }
@@ -1454,7 +1461,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .df-line:focus-visible { outline: 2px solid #d4a84b; outline-offset: 1px; }
 .df-line.got { border-color: #3f7a4c; background: #0d150f; }
 .df-line:disabled { cursor: default; }
-.df-meta { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #7a7868; text-transform: uppercase; }
+.df-meta { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #838170; text-transform: uppercase; }
 .df-text { color: inherit; }
 .df-tick { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: #4caf6a; font-weight: 700; }
 @media (max-width: 760px) {
@@ -1496,7 +1503,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 }
 .df-half { display: flex; flex-direction: column; gap: 3px; margin-bottom: 6px; }
 .df-half:last-child { margin-bottom: 0; }
-.df-side { font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; color: #6f6d5f; }
+.df-side { font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; color: #817f6e; }
 .df-absent {
   font-family: 'Crimson Pro', Georgia, serif; font-style: italic; font-size: 13px;
   color: #a06a5a; padding: 6px 2px;
@@ -1579,7 +1586,7 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .ph-post { background: #101018; border: 1px solid #23232e; border-left: 3px solid #3a4a6a; padding: 12px 14px 14px; }
 .ph-meta { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 7px; }
 .ph-who { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8ab0d0; }
-.ph-when { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em; color: #6f6d5f; }
+.ph-when { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em; color: #817f6e; }
 .ph-text { font-family: 'Crimson Pro', Georgia, serif; font-size: 17px; line-height: 1.75; color: #d6cfbd; margin: 0; }
 /* Every word is a target and none of them is labelled. At rest a word looks
    exactly like the prose it is part of — no underline, no box — because the
@@ -1641,9 +1648,29 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   font-size: 0;
   line-height: 0;
 }
+/* The button is autofocused so a screen reader lands on the verdict, and
+   Chrome treats programmatic focus on a button as :focus-visible — which put a
+   1440x950 gold rectangle around the climax for every player, mouse included.
+   The focus indicator is the cue line instead: it is the only control on the
+   plate, so lighting the thing that tells you to press a key is both a real
+   indicator and part of the picture. */
 .end-reveal-skip:focus-visible {
-  outline: 2px solid #c0a060;
-  outline-offset: -10px;
+  outline: none;
+}
+.end-reveal-cue {
+  display: inline-block;   /* so the focus underline hugs the words */
+  color: #5a5a68;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 3px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.end-reveal-skip:focus-visible + .end-reveal-plate .end-reveal-cue {
+  color: #d8c08a;
+  border-bottom-color: #c0a060;
+}
+@media (prefers-reduced-motion: reduce) {
+  .end-reveal-cue { animation: none; }
 }
 
 /* ── the escape hatch out of a lead ──────────────────────────────

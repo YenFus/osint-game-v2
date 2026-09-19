@@ -81,6 +81,11 @@ export function DiffNode({ content, onComplete, nodeId = null }) {
       return
     }
     const change = changes.find(c => c.id === line.change)
+    // A12 is where thread A finally puts a surname on the handle, and the
+    // name-reveal card is armed by the lead that shows it, not by the lead's
+    // type. A browse lead did this through its taggable items; a diff does it
+    // through the change the player just uncovered.
+    if (change?.revealsName) useGameStore.getState().flagNameSeen()
     const next = [...found, line.change]
     setFound(next)
     setFeedback({ type: 'correct', text: change?.feedback ?? 'Changed between the two captures.' })

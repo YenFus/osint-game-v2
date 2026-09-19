@@ -46,8 +46,8 @@ export const LEAD_META = {
   },
   A9: {
     clue: 'nightwatch', card: { kind: 'index', scene: 'phone' },
-    hint: 'Skip news outlets, arts groups and other people. Flag the two accounts that lead back to stillwater_m himself.',
-    summary: 'He follows two accounts that lead back to himself. One of them carries the initials R.C.',
+    hint: 'Pick a detail on either side, then the one on the other side that matches it. A date, an image and a following list all line up exactly; the bio and the hours are supporting, not proof.',
+    summary: 'A silent second account, opened the day he hid his name, wearing a crop of his own photograph and watching Corey Marsh.',
   },
   A11: {
     card: { kind: 'index', scene: 'yarn' },
@@ -56,8 +56,8 @@ export const LEAD_META = {
   },
   A12: {
     clue: 'whois', card: { kind: 'index', scene: 'domain' },
-    hint: 'Open both snapshots. The September one is from before he paid for the shield — flag the name and address it still shows, and the date the shield went up.',
-    summary: 'The registration as it stood in September, before he hid it: R. Callahan, PO Box 441, Millhaven.',
+    hint: 'Read the two captures field against field. Four of the eight say the same thing in September and November. Three do not — the privacy service, the registrant name, and the date the record was last touched.',
+    summary: 'The registration as it stood in September, before he hid it: R. Callahan, PO Box 441, Millhaven. Updated on 9 November.',
   },
   A13: {
     clue: 'corey_alibi', card: { kind: 'polaroid', scene: 'car' },
@@ -73,8 +73,8 @@ export const LEAD_META = {
   },
   B2: {
     clue: 'insider', card: { kind: 'index', scene: 'forum' },
-    hint: 'Only flag stillwater_m\'s posts that push Corey Marsh or reveal private knowledge. There are five.',
-    summary: 'He spent months pointing that forum at Corey Marsh, and giving away things only somebody close would know.',
+    hint: 'For each of his four posts, ask where that detail could have come from and join it to that source. Two have a public source. Two have none — those both go to the same card.',
+    summary: 'He spent months pointing that forum at Corey Marsh, and twice he said things that had no public source at all.',
   },
   B4: {
     clue: 'sealed', card: { kind: 'index', scene: 'forum' },
@@ -125,7 +125,7 @@ export const LEAD_META = {
   },
   C4: {
     clue: 'courier', card: { kind: 'index', scene: 'newspaper' },
-    hint: 'Open the articles and tag the photographer credit, Lena\'s attendance, and the court case number.',
+    hint: 'Three cuttings, three things already on your board. Join the photographer credit to the registration, Lena\'s attendance to her last post, and the case number to the court portal.',
     summary: 'The Courier credits him as the photographer that night, confirms Lena was there, and carries a harassment case number from four years back.',
   },
   C9: {
@@ -140,7 +140,7 @@ export const LEAD_META = {
   },
   C6: {
     clue: 'court', card: { kind: 'index', scene: 'court' }, raySuspicion: 10,
-    hint: 'Tag the respondent\'s name, and the two behaviors that match what stillwater_m did online.',
+    hint: 'The paper and the filing are the same case. Read them line against line: four lines differ, and every one of them is something the Courier chose not to print.',
     summary: 'Case MH-2021-0384. Raymond T. Callahan. Accounts under false names, her email read, her car followed. He did this before.',
   },
   C7: {

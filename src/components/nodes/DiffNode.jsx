@@ -13,12 +13,28 @@
 // Lines are buttons, so it plays with a keyboard and on a phone.
 // ─────────────────────────────────────────────────────────────────
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDiscoveryFeedback } from '../discoveryContext'
 import { useGameStore } from '../../store/gameStore'
 import { useLeadProgress } from '../../hooks/useLeadProgress'
 import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
 import { wrongCost } from '../../data/caseData'
+
+// Two columns side by side is the right shape for a diff on a desk and the
+// wrong one on a phone: stacked, the captures are 700px apart and you are
+// asked to remember a column rather than compare it. Narrow screens get the
+// same information interleaved — each date once, both versions under it.
+function useNarrow(query = '(max-width: 760px)') {
+  const [narrow, setNarrow] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const on = (e) => setNarrow(e.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [query])
+  return narrow
+}
 
 export function DiffNode({ content, onComplete, nodeId = null }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
@@ -27,7 +43,25 @@ export function DiffNode({ content, onComplete, nodeId = null }) {
   const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
   const [feedback, setFeedback] = useState(null)
 
+  const narrow = useNarrow()
   const changes = useMemo(() => content.changes ?? [], [content.changes])
+
+  // one row per entry, in the order the earlier capture had them, with
+  // anything that only exists in the later capture slotted in after
+  const merged = useMemo(() => {
+    const rows = content.before.lines.map(line => ({
+      key: line.meta ?? line.id,
+      meta: line.meta,
+      before: line,
+      after: content.after.lines.find(l => l.meta === line.meta) ?? null,
+    }))
+    for (const line of content.after.lines) {
+      if (!content.before.lines.some(l => l.meta === line.meta)) {
+        rows.unshift({ key: line.meta ?? line.id, meta: line.meta, before: null, after: line })
+      }
+    }
+    return rows
+  }, [content.before.lines, content.after.lines])
   const done = changes.every(c => found.includes(c.id))
 
   const mark = (line) => {
@@ -54,7 +88,7 @@ export function DiffNode({ content, onComplete, nodeId = null }) {
   }
 
   const column = (side) => (
-    <section className={`df-col df-${side.id}`} aria-label={`${side.label}, captured ${side.when}`}>
+    <section className={`df-col df-${side.id}`} aria-label={`${side.label} — ${side.when}`}>
       <header className="df-head">
         <span className="df-when">{side.when}</span>
         <span className="df-label">{side.label}</span>
@@ -86,10 +120,36 @@ export function DiffNode({ content, onComplete, nodeId = null }) {
         <span className="mp-bar-hint">{content.hint ?? 'Mark every line that is not in both captures'}</span>
       </div>
 
-      <div className="df-body">
-        {column(content.before)}
-        {column(content.after)}
-      </div>
+      {narrow ? (
+        <div className="df-body df-merged">
+          {merged.map(row => (
+            <div key={row.key} className="df-row">
+              <div className="df-rowmeta">{row.meta}</div>
+              {[['before', content.before, row.before], ['after', content.after, row.after]].map(([side, col, line]) => (
+                <div key={side} className="df-half">
+                  <span className="df-side">{col.when.replace(/^Captured /, '')}</span>
+                  {line ? (
+                    <button type="button"
+                      className={`df-line ${line.change && found.includes(line.change) ? 'got' : ''}`}
+                      disabled={done}
+                      onClick={() => mark(line)}>
+                      {line.change && found.includes(line.change) && <span className="df-tick" aria-hidden="true">✓</span>}
+                      <span className="df-text">{line.text}</span>
+                    </button>
+                  ) : (
+                    <span className="df-absent">not in this capture</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="df-body">
+          {column(content.before)}
+          {column(content.after)}
+        </div>
+      )}
 
       {feedback && (
         <div className={`mp-feedback ${feedback.type}`} role="status" aria-live="polite">{feedback.text}</div>

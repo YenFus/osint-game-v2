@@ -7,12 +7,20 @@
 // they are reading, so the beat lands where the discovery happens.
 // ─────────────────────────────────────────────────────────────────
 
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useModalFocus } from '../../hooks/useModalFocus'
 
 export function NameRevealCard({ onDone }) {
   const ref = useRef(null)
   useModalFocus(ref)
+  // B8 asks you to type the name and says "press Enter to submit". That same
+  // Enter landed on this card's button the instant it mounted and dismissed
+  // the biggest beat in the game, permanently, without it ever being seen.
+  const [armed, setArmed] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setArmed(true), 350)
+    return () => clearTimeout(t)
+  }, [])
   return (
     <div ref={ref} className="cb-tut name-reveal" role="alertdialog" aria-modal="true" aria-label="A name">
       <div className="card">
@@ -27,7 +35,7 @@ export function NameRevealCard({ onDone }) {
           There will be an explanation. I am going to sit here a minute, and then I am going to
           go and find it, because a name is not a case.
         </p>
-        <div className="row"><span /><span /><button onClick={onDone}>Keep working</button></div>
+        <div className="row"><span /><span /><button disabled={!armed} onClick={onDone}>Keep working</button></div>
       </div>
     </div>
   )

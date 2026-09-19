@@ -59,9 +59,14 @@ const serif = 'Georgia, serif'
 
 // Ruled lines standing in for body text at board scale — they read as
 // paragraphs from across the room and as ruling under the magnifier.
-function Ruled({ x, y, w, rows, gap = 11, color = '#b9b0a0' }) {
-  return Array.from({ length: rows }).map((_, i) => (
-    <rect key={i} x={x} y={y + i * gap} width={w - (i % 3) * (w * 0.14)} height="3.5" rx="1.75" fill={color} />
+//
+// Placeholder ruling is fine for the margins of a page. It is not fine for
+// the documents themselves: a magnifier that enlarges a grey smudge is
+// theatre. MicroText sets real sentences at a size that is a smudge at 1:1
+// and legible at 3.2x, which is the whole point of the loupe.
+function MicroText({ x, y, lines, size = 7.4, gap = 10.5, color = '#2a251d', family }) {
+  return lines.map((line, i) => (
+    <text key={i} x={x} y={y + i * gap} fontFamily={family} fontSize={size} fill={color}>{line}</text>
   ))
 }
 
@@ -105,7 +110,12 @@ export function CorkPlate() {
         <text x={p.x + 56} y={p.y + 60} fontFamily={serif} fontSize="15" fill="#1d1812">@velvet.echo</text>
         <ellipse cx={p.x + 100} cy={p.y + 55} rx="52" ry="16" fill="none" stroke="#5e5850" strokeWidth="1.6" opacity="0.8" />
         <text x={p.x + 56} y={p.y + 80} fontFamily={mono} fontSize="10" fill="#7a7268">412 posts · 1,208 followers</text>
-        <Ruled x={p.x + 14} y={p.y + 108} w={p.w - 30} rows={5} />
+        <MicroText x={p.x + 14} y={p.y + 106} family={mono} color="#4a453c" lines={[
+          'velvet.echo · Millhaven Arts Collective',
+          'Ceramics and print. Shows at Alder Hall.',
+          'Last post: 13 April — "doors at seven"',
+          'Account untouched since that evening.',
+        ]} />
       </>)}</Sheet>
 
       {/* cp-02 — the forum thread */}
@@ -113,7 +123,15 @@ export function CorkPlate() {
         <rect x={p.x} y={p.y} width={p.w} height="22" fill="#3b4a5e" />
         <text x={p.x + 8} y={p.y + 16} fontFamily={mono} fontSize="11" fill="#d6e0ec">PDXmissing · thread</text>
         <text x={p.x + 10} y={p.y + 44} fontFamily={mono} fontSize="12" fill="#1d1812">u/stillwater_m</text>
-        <Ruled x={p.x + 10} y={p.y + 56} w={p.w - 24} rows={9} />
+        <MicroText x={p.x + 10} y={p.y + 56} family={mono} color="#3c3830" lines={[
+          'u/stillwater_m · joined May',
+          '"Police dropped the ball here."',
+          '"The ex deserves more attention."',
+          '"I know that building. Happy to',
+          'help identify faces."',
+          '4,329 karma · 211 comments',
+          'All of it on one missing woman.',
+        ]} />
       </>)}</Sheet>
 
       {/* cp-03 — the arts night photograph, the table ringed in red */}
@@ -177,7 +195,15 @@ export function CorkPlate() {
         <text x={p.x + 10} y={p.y + 26} fontFamily={serif} fontSize="15" fontWeight="bold" fill="#231c14">MILLHAVEN COURIER</text>
         <path d={`M${p.x + 10} ${p.y + 33} H${p.x + p.w - 10}`} stroke="#231c14" strokeWidth="1.2" />
         <rect x={p.x + 10} y={p.y + 42} width={p.w * 0.42} height={p.h * 0.34} fill="#4a4238" />
-        <Ruled x={p.x + p.w * 0.48} y={p.y + 46} w={p.w * 0.44} rows={7} color="#8e8676" />
+        <MicroText x={p.x + p.w * 0.48} y={p.y + 46} size={6.6} gap={9} family={serif} color="#2e2820" lines={[
+          'The Collective\u2019s tenth Spring',
+          'Exhibition drew over 400 people',
+          'to Alder Hall on Saturday.',
+          'Work from 34 local artists.',
+          'Lena Vasquez, who has not been',
+          'seen since the event, is noted',
+          'as having attended.',
+        ]} />
         <rect x={p.x + 10} y={p.y + p.h - 44} width={p.w - 20} height="11" fill="#e8d24a" opacity="0.5" />
         <text x={p.x + 13} y={p.y + p.h - 35} fontFamily={serif} fontSize="6.4" fill="#231c14">Photography: Stillwater Media</text>
       </>)}</Sheet>
@@ -190,7 +216,11 @@ export function CorkPlate() {
         <text x={p.x + 10} y={p.y + 72} fontFamily={mono} fontSize="5.6" fill="#4a453c">Registrant: REDACTED</text>
         <rect x={p.x + 10} y={p.y + 88} width={p.w - 24} height="13" fill="#e8d24a" opacity="0.5" />
         <text x={p.x + 13} y={p.y + 98} fontFamily={mono} fontSize="9" fill="#2a2418">PO Box 441, Millhaven OR</text>
-        <Ruled x={p.x + 10} y={p.y + 112} w={p.w - 24} rows={3} color="#a8a294" />
+        <MicroText x={p.x + 10} y={p.y + 112} size={6.8} gap={9} family={mono} color="#4a453c" lines={[
+          'Created: 28 Oct, five years ago',
+          'Updated: 14 Nov — five days after',
+          'her first message to the forum',
+        ]} />
       </>)}</Sheet>
 
       {/* cp-08 — a sticky note, pushed right out to the edge */}

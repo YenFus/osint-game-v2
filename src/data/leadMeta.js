@@ -110,7 +110,7 @@ export const LEAD_META = {
   // ── THREAD C — the corkboard ──
   C1: {
     clue: 'map_three', card: { kind: 'polaroid', scene: 'corkboard' },
-    hint: 'Only three pieces carry red: the arts night photo (a red ring by the table), the map (red string between pins), and Lena\'s last post (a red ring round the doorway). Pencil and yellow highlighter don\'t count.',
+    hint: 'Look at the colour of each mark under the glass, not at what the paper is. Red is hers. Pencil and yellow highlighter are things she read, not things she concluded.',
     summary: 'Her corkboard. She ringed the table by the door on the arts night photograph, pinned a map with three locations strung together, and hung Lena\'s last post beside a photo of the same brick.',
   },
   C2: {

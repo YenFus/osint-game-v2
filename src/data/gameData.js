@@ -259,7 +259,7 @@ export const GAME_DATA = {
         },
         content: {
           prompt: 'Four things are different. Mark them',
-          hint: 'Read one column against the other. Three things are gone and one is new.',
+          hint: 'Three things are gone from the later capture, and one is new.',
           before: {
             id: 'before', label: '@stillwater_m', when: 'Captured 2 September',
             lines: [
@@ -481,7 +481,7 @@ export const GAME_DATA = {
         monologue: 'The forum spent a year on the ex-boyfriend. His camera kept better time than they did.',
         osintTip: null,
         content: {
-          prompt: 'Put each photograph on the hour it was really taken',
+          prompt: 'Put each photograph in the two-hour block it was really taken',
           note: 'Flickr lists when a photo was uploaded, not when it was taken. The camera wrote its own time into the EXIF, in UTC. Portland in April is seven hours behind UTC.',
           photos: [
             { id: 'cm-001', filename: 'chevelle_primer_01.jpg', where: 'Auto body shop, Tigard', uploaded: 'Apr 13 · 9:12am', exif: '2024:04:13 02:54 UTC', day: 'd12', hour: 19.9, required: true,
@@ -914,13 +914,13 @@ export const GAME_DATA = {
           prompt: 'Move across the board. Flag the three things Maya marked in red',
           plate: 'cork',
           items: [
-            { id: 'cp-01', spot: { x: 3, y: 6, w: 17, h: 27 }, text: 'Lena\'s profile page, printed off. The handle is ringed in pencil: @velvet.echo.', wrongFeedback: 'Pencil, not red. Lena\'s public profile — Maya kept it for reference.' },
+            { id: 'cp-01', spot: { x: 3, y: 6, w: 17, h: 27 }, text: 'Lena\'s profile page, printed off. The handle is ringed: @velvet.echo.', wrongFeedback: 'Pencil, not red. Lena\'s public profile — Maya kept it for reference.' },
             { id: 'cp-02', spot: { x: 23, y: 4, w: 18, h: 23 }, text: 'A forum screenshot. The first post that account ever made.', wrongFeedback: 'The account Maya was investigating. Already covered in the file system.' },
-            { id: 'cp-03', spot: { x: 44, y: 8, w: 30, h: 35 }, text: 'The arts night photograph. She\'s ringed the table by the door in red, hard enough to score the paper. Under it, in her hand: whose is this?', suspicious: true, correctFeedback: "She ringed the table by the door, hard enough to score the paper. She didn't write a name under it. She wrote: whose is this?", tagRequired: true },
-            { id: 'cp-04', spot: { x: 77, y: 6, w: 20, h: 31 }, text: 'A map of Millhaven. Three pins in it, and red string run between them.', suspicious: true, correctFeedback: "Three locations, all connected to one person. Maya drew connecting lines between them.", tagRequired: true },
-            { id: 'cp-05', spot: { x: 5, y: 40, w: 20, h: 31 }, text: 'Lena\'s last post. Brick and a doorway behind her. Maya has ringed the doorway in red and written under it: same building.', suspicious: true, correctFeedback: "Same brick, same door. The last picture Lena ever posted was taken outside the place she walked into and never came out of. Maya pinned the two together so nobody could argue it.", tagRequired: true },
-            { id: 'cp-06', spot: { x: 29, y: 47, w: 23, h: 27 }, text: 'A clipping from the Courier about the arts night. She\'s run a yellow highlighter through the photo credit.', suspicious: false, wrongFeedback: "Yellow highlighter, not red. The credit matters — it's the next lead — but this isn't one of her red marks." },
-            { id: 'cp-07', spot: { x: 56, y: 51, w: 21, h: 27 }, text: 'A printout of the domain\'s registration. One line marked in yellow: the address.', wrongFeedback: 'Yellow highlighter, not red. She printed this from the laptop — it\'s background.' },
+            { id: 'cp-03', spot: { x: 44, y: 8, w: 30, h: 35 }, text: 'The arts night photograph. She has ringed the table by the door, hard enough to score the paper. Under it, in her hand: whose is this?', suspicious: true, correctFeedback: "She ringed the table by the door, hard enough to score the paper. She didn't write a name under it. She wrote: whose is this?", tagRequired: true },
+            { id: 'cp-04', spot: { x: 77, y: 6, w: 20, h: 31 }, text: 'A map of Millhaven. Three pins in it, and string run between them.', suspicious: true, correctFeedback: "Three locations, all connected to one person. Maya drew connecting lines between them.", tagRequired: true },
+            { id: 'cp-05', spot: { x: 5, y: 40, w: 20, h: 31 }, text: 'Lena\'s last post. Brick and a doorway behind her. Maya has ringed the doorway and written under it: same building.', suspicious: true, correctFeedback: "Same brick, same door. The last picture Lena ever posted was taken outside the place she walked into and never came out of. Maya pinned the two together so nobody could argue it.", tagRequired: true },
+            { id: 'cp-06', spot: { x: 29, y: 47, w: 23, h: 27 }, text: 'A clipping from the Courier about the arts night. She has run a highlighter through the photo credit.', suspicious: false, wrongFeedback: "Yellow highlighter, not red. The credit matters — it's the next lead — but this isn't one of her red marks." },
+            { id: 'cp-07', spot: { x: 56, y: 51, w: 21, h: 27 }, text: 'A printout of the domain\'s registration. One line is marked: the address.', wrongFeedback: 'Yellow highlighter, not red. She printed this from the laptop — it\'s background.' },
             { id: 'cp-08', spot: { x: 87, y: 73, w: 11, h: 15 }, text: 'A sticky note, right out on the edge of the board. A journalist\'s name, and an email address.', suspicious: false, wrongFeedback: "No red on it. A journalist's details, pinned at the very edge. Remember the name, though." },
           ],
           requiredTags: ['cp-03', 'cp-04', 'cp-05'],

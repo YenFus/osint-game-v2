@@ -86,9 +86,15 @@ export const CAST = [
 // them, the cast list knows Thomas's friend only as Ray.
 const NAMING_CLUES = ['whois', 'registry', 'html_author', 'court']
 
+// A clue can put a name in the drawer before the lead that introduces the
+// person has been played — the reporter's sticky note is one. If the player
+// is holding the name, the page explains it.
+const CLUE_INTRODUCES = { rosa: 'rosa', corey_flickr: 'corey', corey_alibi: 'corey', sealed: 'priya' }
+
 export function knownCast(paths, clues = []) {
   const done = new Set(Object.values(paths ?? {}).flatMap(p => p?.completedNodes ?? []))
+  const held = new Set((clues ?? []).map(id => CLUE_INTRODUCES[id]).filter(Boolean))
   const named = (clues ?? []).some(id => NAMING_CLUES.includes(id))
-  return CAST.filter(c => c.from === 'prologue' || done.has(c.from))
+  return CAST.filter(c => c.from === 'prologue' || done.has(c.from) || held.has(c.id))
     .map(c => (named && c.namedAs ? { ...c, name: c.namedAs, line: c.namedLine ?? c.line } : c))
 }

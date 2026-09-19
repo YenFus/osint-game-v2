@@ -22,7 +22,6 @@ import {
   NAME_CLUES,
 } from '../../data/caseData'
 import { PolaroidArt } from './PolaroidArt'
-import { NameRevealCard } from './NameRevealCard'
 import { GalleryPlate } from './ScenePlate'
 import { useAudio } from '../../hooks/useAudio'
 import { useModalFocus } from '../../hooks/useModalFocus'
@@ -572,7 +571,6 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
   const setFinalSlot = useGameStore(st => st.setFinalSlot)
   const markBoardTutorialSeen = useGameStore(st => st.markBoardTutorialSeen)
   const markRayGoneSeen = useGameStore(st => st.markRayGoneSeen)
-  const markNameRevealSeen = useGameStore(st => st.markNameRevealSeen)
   const buyHint = useGameStore(st => st.buyHint)
   const { playSFX } = useAudio()
 
@@ -858,7 +856,6 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
       )}
 
       {!s.seenBoardTutorial && <BoardTutorial onDone={markBoardTutorialSeen} />}
-      {s.seenBoardTutorial && named && !s.nameRevealSeen && <NameRevealCard onDone={markNameRevealSeen} />}
       {s.seenBoardTutorial && gone && !s.rayGoneSeen && s.nameRevealSeen && <RayGoneCard onDone={markRayGoneSeen} />}
     </div>
   )

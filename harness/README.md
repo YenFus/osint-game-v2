@@ -74,3 +74,30 @@ version of this one reported 737 findings, almost all of them noise.
   a player can use it. `taptest.cjs` and `bars.cjs` in the scratchpad do this.
 - **Add a viewport, not an assertion,** when a new bug is reported from a real
   device. The height is usually the thing that reproduces it.
+
+
+## shotall.cjs — the whole game, as a player sees it
+
+```bash
+SHOT_DIR=/tmp/shots node harness/shotall.cjs              # everything, both viewports
+SHOT_DIR=/tmp/shots node harness/shotall.cjs mobile leads # one viewport, one section
+```
+
+Sections: `menu prologue apartment board leads reveal converge ending modals`.
+Viewports: desktop 1440x950, and mobile **390x664** — a real phone *after*
+browser chrome, not the 390x844 that fifteen rounds of review used.
+
+Captures every screen and one frame after every interaction that changes
+anything: ~355 images, numbered in the order a player meets them. Then **look
+at them**. That is the whole point — this project has shipped a 1.01:1 climax
+card, placeholder squiggles under a magnifier, a notched phrase highlight and a
+magnified view nobody could see, every one of them with green assertions.
+
+Notes:
+- `.tap()` needs a touch context; the script switches to `.click()` on desktop.
+  The first run of this harness silently produced no interaction frames on
+  desktop because of it.
+- Contact sheets are for scanning only. **Crop and zoom the actual file** before
+  calling anything a defect — a sheet made the A13 timeline look like it
+  overflowed when it was the sheet's own crop, and made a working edge fade look
+  absent when it was painting.

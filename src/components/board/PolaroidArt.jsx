@@ -362,7 +362,11 @@ const PHOTO_SCENES = {
   photo: { file: 'gallery-room.jpg' },
   clock: { file: 'gallery-room.jpg', zoom: 3.4, cx: 41.5, cy: 41 },
   corkboard: { file: 'cork-surface.jpg' },
-  notebook: { file: 'apartment-room.jpg', zoom: 2.2, cx: 12, cy: 70 },
+  // This was a 2.2x crop of the bottom-left corner of the apartment photo,
+  // which is a black patch of floor: the thread-B card on the board — one of
+  // the first three things a player sees — was a near-black rectangle. It is
+  // its own plate now.
+  notebook: { file: 'ph-notebook.jpg' },
 }
 
 function PhotoScene({ id, shot }) {

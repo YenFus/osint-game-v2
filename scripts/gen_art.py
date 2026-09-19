@@ -132,6 +132,16 @@ ASSETS = {
         ),
     ),
     # stillwater_m's Flickr — a man who photographs places, competently.
+    # The board card for thread B. It used to be a crop of the bottom-left
+    # corner of apartment-room.jpg, which is a black patch of floor — a
+    # near-black rectangle on one of the first three cards a player sees.
+    "ph-notebook": dict(seed=64, w=1344, h=896, prompt=(
+        "Amateur phone photo, looking straight down at a scorched spiral notebook lying "
+        "open on a wooden chest of drawers beside a bed. The lower half of both pages is "
+        "burned away to a black crumbling edge; the paper that survives is browned and "
+        "cockled, covered in dense blue ballpoint handwriting too small to read. A loose "
+        "stack of papers under one corner, a pencil. A desk lamp out of frame lights it "
+        "from the left, the rest of the room dark. " + NIGHT + " " + CAMERA)),
     "ph-trail": dict(seed=41, w=1344, h=896, prompt=(
         "Amateur photo of a wet forest trail among tall Douglas firs, early morning light "
         "through the trunks, ferns, no people. " + DAY + " " + CAMERA)),

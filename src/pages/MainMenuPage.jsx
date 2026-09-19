@@ -3,6 +3,7 @@ import { useGameStore } from '../store/gameStore'
 import OSINTGuide from '../components/OSINTGuide'
 import { SaveLoadModal } from '../components/SaveLoadModal'
 import { SettingsPanel } from '../components/SettingsPanel'
+import { assetCssUrl } from '../assetUrl'
 
 function getMenuItems(hasSaves, hasRun) {
   const items = []
@@ -71,7 +72,7 @@ export default function MainMenuPage() {
 
   return (
     <div className="crt menu-root h-screen flex flex-col overflow-hidden relative"
-      style={{ '--cork': `url(${import.meta.env.BASE_URL}art/cork-surface.jpg)` }}>
+      style={{ '--cork': assetCssUrl('art/cork-surface.jpg') }}>
 
       {/* Atmospheric background noise */}
       <div className="absolute inset-0 opacity-[0.03]"

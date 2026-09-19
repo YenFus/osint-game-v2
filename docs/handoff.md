@@ -110,7 +110,7 @@ forward the same way.
 | `diff.cjs` | diff lead |
 | `phrase.cjs` | phrase lead |
 | `reveal2.cjs` | name-reveal card: contrast, single card, no tab escape, Enter dismisses |
-| `gate.cjs` | earliest surname sighting |
+| `gate.cjs` | earliest surname sighting — **reports one traversal path, not the floor.** Round 14 proved the true floor is 9 prerequisite leads / the 10th lead opened, while this script reported 15. Fix it to walk the `requiresCompleted` closure, or do not quote it. |
 | `a11y.cjs` | tab stops inside the lead dialog |
 | `inert.cjs` | background controls inert behind the modal |
 | `endings.cjs` | all ending verdicts render on both viewports |
@@ -216,12 +216,175 @@ briefed with the incorrect claim that no thread had an adjacent repeat.
 
 ---
 
-## 7. Round 14 critic result
+## 7. Round 14 critic result — **8.2 / 10**
 
-> **PENDING** — the round was running when this doc was written. First launch
-> died on an account rate limit having produced nothing; it was relaunched
-> against the same HEAD. Fill this section in with the score, sub-scores,
-> per-claim verdicts, and the prioritised gap list when it reports.
+Up 0.1 from round 13. Run against HEAD `7d9db54`, artifact Version 26.
+Zero code changes were made after this report; §7.3 is the open work list.
+
+| | R13 | R14 | | | R13 | R14 |
+|---|---|---|---|---|---|---|
+| Writing | 9.2 | **8.8** | | Visuals | 8.0 | 8.2 |
+| Story / pacing | 7.8 | 7.8 | | Audio | 5.0 | **5.8** |
+| Puzzle variety | 7.2 | **8.5** | | Mobile | 8.3 | 8.5 |
+| Fairness | 8.8 | **7.5** | | Accessibility | 8.4 | **6.5** |
+| Clue legibility | 8.5 | 8.3 | | Endings | 9.0 | **7.5** |
+| Onboarding | 8.0 | 8.0 | | Save / load | 9.0 | 8.5 |
+| UI / UX | 7.8 | 7.8 | | Feedback | 9.0 | 8.3 |
+| Bugs | 8.8 | **7.8** | | Performance | 8.8 | 9.0 |
+
+**Read the shape, not the total.** The conversions worked — puzzle variety
++1.3, the single biggest sub-score move in the project's history. The score
+barely moved anyway because the critic went deeper than round 13 did and found
+worse things: accessibility −1.9, endings −1.5, fairness −1.3, bugs −1.0. Those
+drops are not regressions this round introduced; they are defects that were
+always there and had never been looked for.
+
+### 7.1 Fix verdicts — nine of ten verified
+
+All ten claims were measured, not taken on trust. Verified: hotspots (1 ✓),
+phrase lead (2 ✓ — 69 words, 6 tab stops, 0 marked at rest), density (3 ✓ —
+it back-solved the A4 map projection from a pixel position to 44.9147 N /
+122.9931 W and confirmed it matched the photo's stated coordinates), art (5 ✓),
+headings and prologue (7 ✓ — zero `[role=button]` on the page, one h1, no level
+jump), space leaks (8 ✓), B1 thumbnail (9 ✓).
+
+**The conversions (4) verified with one false sub-claim** — see §7.2.
+
+**Audio (6) verified mechanically, and the envelope claim held exactly:** it
+decoded the file and computed its own 56-bucket RMS against `VM_WAVE` —
+**correlation 1.000, mean absolute difference 0.003.** Those bars are the file.
+
+**On the mobile word-target question it was asked to judge: ship it.** WCAG
+2.5.8 explicitly exempts targets whose position is determined by the flow of
+text in a sentence, so the 24×24 floor does not apply; word boxes are
+21–59 × 29px against a ~57px line pitch, leaving ~28px of vertical slack per
+tap. The rejected alternative would have been much worse.
+
+### 7.2 Three false claims — the expensive part
+
+Round 13's lesson was "stop shipping unverified claims". Round 14 caught three.
+
+1. **"No two adjacent leads in a thread share a verb" — false.** Thread C opens
+   C1 tag → C2 tag. Self-corrected mid-round, but the critic had already found
+   it independently. On the substance it agreed it is a real pacing problem: the
+   first two things a C-thread player does are both "flag the suspicious item on
+   this board", and **C2's magnifier is the strongest single interaction in the
+   C thread, spent as a repeat.**
+2. **"The name gate moved to the 15th lead" — false, and it was not a small
+   error.** The gate has not moved at all. `C5.requiresCompleted = A7`, and the
+   full prerequisite closure is `{C1,C2,C3,C4,A1,A2,A3,A6,A7}` = **9 leads**.
+   The critic seeded exactly that state, opened C5, clicked through and read
+   "Raymond T. Callahan" on the **10th lead opened** — where it was last round.
+   **`gate.cjs` reports the surname sighting along one traversal path, not the
+   floor.** Fix the harness, or stop quoting it.
+3. **Connect-lead slack understated.** Claimed "~130px of bare cork". Measured:
+   **A11 233px (34% of the cork), C7 234px (34%), B2 187px, C4 186px (28%).**
+   45–80% more than reported, across four leads.
+
+A fourth, smaller one: the counter-claim in §9 that *every* `.ded-slot` carried
+`role="button"` was **not literally true either** — solved slots correctly had
+neither role nor tabindex, and `r10.cjs`'s seed ships three solved deductions,
+which is very likely how round 13 sampled a null role and generalised. Net: the
+round-13 finding was still inaccurate as stated and the point stands, but the
+rebuttal was overstated. Both disputed claims were otherwise upheld (§9).
+
+### 7.3 The work list — prioritised by the critic
+
+**P0 — the ending is a keyboard dead end.** `src/pages/EndingPage.jsx:296`
+
+```jsx
+<div className="fixed inset-0 …" onClick={() => setPhase('details')}>
+```
+
+No role, no tabIndex, no key handler. Measured on the reveal screen: **2
+focusable elements on the whole page, both skip links.** A keyboard-only or
+screen-reader player reaches "MAYA REYES / FOUND ALIVE / Click to continue" and
+**cannot reach the epilogue, the phone call or the restart.** This is the exact
+defect just removed from the prologue, sitting at the climax instead. Worth
+~0.5 on its own, and it is a hard blocker.
+
+**P1 — the answer input on five leads has no accessible name.**
+`src/components/nodes/InputNode.jsx:184–196`. No label, no `aria-label`, no
+`aria-labelledby`, no `id`/`for`. Its only name is `placeholder="Type your
+answer..."` — fails 4.1.2 and 3.3.2 and never says *which* of the two questions
+is being answered. Affects **A3, A8, B5, B8, C3**.
+
+**P2 — dead panel on the leads round 14 did not touch.** Exactly the two it was
+pointed at got fixed. Measured empty area below last content:
+**B12 323px (37%)**; **C5 ~370px combined (~48% empty)**; **B1/B11 190px each**,
+and B1's "notebook page" is a 1070×195 letterbox at 5.5:1, which is not the
+aspect ratio of a notebook page; **the four connect leads 186–234px**.
+
+**P3 — three fairness defects of the same class as the A2 one just fixed.**
+- **B12 prints its own paid hint for free.** Monologue: *"She wrote to me the
+  night before. She never sent it."* Paid hint (+20 min): *"Unsent messages live
+  in Drafts."*
+- **C2 renders `STILLWATER MEDIA / Event Photography` legibly at rest**, ~24pt,
+  before the magnifier is touched — and it is one of the three things the lead
+  asks you to find. The discovery mechanic is spent on something already read.
+- **B2's `src-press` decoy is unfairly punishing.** Its own text says *"…last
+  seen at the arts night…"*, which publicly names the venue, so linking it to
+  *"I know that building"* is a defensible read and costs 15+ minutes. Narrow
+  the press-release text or widen the accepted answer.
+
+**P4 — audio is one file across eleven beats.** 5.8 is what one asset buys. No
+score, no room tone, no ambient bed; `useAudio.js` unchanged. **The largest
+single remaining gap after the a11y blockers.**
+
+**P5 — C1/C2 verb adjacency** (§7.2).
+**P6 — `← BOARD` is 63 × 16px on all 28 lead panels**, below the 24×24 minimum,
+and it is the primary escape hatch from every lead.
+**P7 — clue economy.** `A11`, `B1`, `B5` grant no clue at all (no `clue` key in
+`LEAD_META`); A2 and B2 both grant `insider`. Four of 28 completions can add
+nothing to the pool depending on order.
+
+### 7.4 Seven findings nobody raised in 13 rounds
+
+1. **The voicemail playhead does not line up with its own waveform.**
+   `src/components/board/PrologueArt.jsx:123–131`. Bars are drawn at
+   `x = 556 + i * 8.0` (556 → 1000.6); the playhead and its track at
+   `596 + 408 * prog` (596 → 1004). At 0:00 the red playhead sits **40px — five
+   bars — inside a waveform where nothing is lit**, and mid-playback the
+   disagreement measures 23px. The lit/unlit boundary is correct; only the
+   playhead is wrong. One-line fix: track `596`→`556`, `408`→`444.6`. This is in
+   the game's single most emotionally loaded UI, and it shipped in Version 26.
+2. **Save deletion has no confirmation.** `SaveLoadModal.jsx:148` — one click
+   and the slot is `null`. Verified.
+3. **B2's `src-nowhere` card is missing its full stop**, so it reads as
+   truncated on the rendered card.
+4. **C6's hint miscounts:** *"Six lines"* against seven rows per side.
+5. **Landmark inconsistency:** the apartment page exposes one landmark (`main`);
+   the board exposes five. Inconsistent AT navigation across the two main screens.
+6. **B2's `src-press` is an orphan** — in no `requiredConnections` entry. Fine as
+   a distractor, but combined with P3 it is a distractor that argues for itself.
+7. **The A4 photo rail scrolls horizontally at 390px with no affordance** — no
+   edge fade, no chevron, cards cut mid-card; 52 elements sit right of the viewport.
+
+Also new, at plate size in `ph-shop.jpg`: the rear bumper splits into two
+mismatched chrome halves with a floating strip, the tail-light housing dissolves
+bottom-left, and the rocker panel under the door has a melted wave. Invisible at
+card size.
+
+### 7.5 On the record as healthy
+
+Zero page and console errors across 60+ boots covering all 28 leads, six phases,
+five ending variants, the tutorial, the name reveal and the save modal. 37/37
+tests, build clean in 954ms, FCP 352ms, 60fps on the board, no leak pattern.
+Save → overwrite → load → delete round-trips with zero missing state fields.
+Lead overlay focus trap: 0 escapes in 30 tabs, Escape closes. `lang="en"`, no
+duplicate ids, every `<img>` has alt, every `<svg>` labelled or `aria-hidden`,
+one h1 per screen, no horizontal scroll at 390px on any lead tested. The board
+tab order and focus ring were both called the best in the project.
+
+### 7.6 What round 14's critic did not reach
+
+Opened and inspected but did not drive to completion: **A1, A3, A6, A7, A8, B4,
+B5, B7, B8, B11, C1, C3, C7, C8.** Did not test the Ray beats / `raySuspicion`
+escalation, the journalist unlock path, the convergence page's final-slot
+pinning end to end, or `prefers-contrast`. **A proper axe-core pass is still
+owed** — its compositing contrast probe produced false positives (flagged
+`.lead-new` at 1.2:1 when the true value is 6.06:1), so contrast was spot-checked
+by pixel instead.
 
 ---
 
@@ -246,13 +409,17 @@ Stated to the round-14 critic as not-fixed. Honesty is scored; keep declaring th
   shallow focus. Untouched.
 - **B2 grants the clue `insider`, which A2 also grants.** A player who does A2
   first gets nothing new from finishing B2. Pre-existing. `src/data/leadMeta.js`.
-- **A13 keeps ~60px slack top and ~50px bottom**; connect leads end with ~130px of
-  bare cork under the last row (the feedback panel fills it once you start linking).
+- **A13 keeps ~60px slack top and ~50px bottom** — round 14 measured ~110px left
+  rail / ~80px right column, so this was understated too, though honest in kind.
+- ~~connect leads end with ~130px of bare cork~~ — **understated, corrected by
+  round 14: A11 233px (34%), C7 234px (34%), B2 187px, C4 186px (28%).** See §7.3 P2.
 - **20 leads were not re-audited** in round 14: A1 A3 A6 A7 A8 A11 B1 B4 B5 B7 B8
-  B11 B12 C1 C2 C3 C5 C7 C8 C9 — beyond the regression passing.
-- **The name gate moved** from the 10th lead to the **15th** (`gate.cjs` reports
-  earliest surname sighting: C5 after 15 leads). Unit tests requiring ≥9 prior
-  leads still pass. Open question: does the reveal now land *too late*?
+  B11 B12 C1 C2 C3 C5 C7 C8 C9 — beyond the regression passing. Round 14's critic
+  reached some but not all of them; the residue is in §7.6.
+- ~~The name gate moved from the 10th lead to the 15th~~ — **FALSE, do not repeat
+  this.** The gate has not moved. `C5.requiresCompleted = A7`; the prerequisite
+  closure is 9 leads and the surname appears on the 10th lead opened, exactly
+  where it was. `gate.cjs` reports one traversal path, not the floor. See §7.2.
 
 ---
 
@@ -265,6 +432,13 @@ touching anything.
 
 There *was* a real defect in that area — a `div[role=button]` wrapping a real
 `<button class="unpin">`, i.e. interactive inside interactive — and that was fixed.
+
+**But the rebuttal was overstated too, and round 14 caught that.** Solved slots
+correctly had neither role nor tabindex, and `r10.cjs`'s seed ships three solved
+deductions — very likely how round 13 sampled a null role and generalised. The
+round-13 finding was still inaccurate as stated, so the point stands; but "every
+`.ded-slot` had `role="button"`" was not literally true. **Check the state your
+own measurement was taken in before you call someone else wrong.**
 
 **Verify the critic's claims the same way you verify your own.** Round 13 also
 listed two of the previous round's claimed fixes as false, which is why the brief
@@ -341,6 +515,12 @@ has offered to grant permission if asked. It was **not** used in round 14.
   and then a following `git add <file>` stages the whole thing anyway. One commit
   ended up carrying more than its message described; the message was amended to say
   so rather than rewriting history.
+- **A harness script that answers a slightly different question than you think is
+  worse than no script.** `gate.cjs` reported the surname gate at 15 leads; the real
+  floor is 9. It walks one path; the answer needed is the minimum over the
+  `requiresCompleted` closure. Two of round 14's three false claims came from
+  trusting a measurement without checking what it measured. **Before quoting a
+  number at the critic, re-derive it a second way.**
 - **Brief the critic on budget.** Round 14's first launch died on an account rate
   limit having produced nothing. The brief now tells it to batch Playwright work,
   crop screenshots, prioritise verifying the claimed fixes over the full sweep, and

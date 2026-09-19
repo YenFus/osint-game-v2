@@ -156,13 +156,6 @@ function DedSlot({ ded, confirmed, pencilled, armed, onPin, hintShown, onHint })
     <div
       className={`ded-slot ${solved ? 'solved' : pins.length ? 'pencilled' : ''} ${armed && !full ? 'armed' : ''} ${over ? 'over' : ''}`}
       data-yarn={`ded-${ded.id}`}
-      role={solved ? undefined : 'button'}
-      tabIndex={solved ? undefined : 0}
-      aria-label={solved
-        ? `${ded.question} — confirmed`
-        : `${ded.question}. ${pins.length ? `Pencilled: ${pins.map(p => CLUES[p]?.title).join(' and ')}.` : 'Empty.'}${isPair ? ' Needs two clues.' : ''}`}
-      onClick={() => !solved && onPin(ded)}
-      onKeyDown={(e) => { if (!solved && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onPin(ded) } }}
       onDragOver={(e) => { if (!solved) { e.preventDefault(); setOver(true) } }}
       onDragLeave={() => setOver(false)}
       onDrop={(e) => {
@@ -171,6 +164,11 @@ function DedSlot({ ded, confirmed, pencilled, armed, onPin, hintShown, onHint })
         if (id && !solved) onPin(ded, id)
       }}
     >
+      {!solved && (
+        <button type="button" className="ded-hit"
+          aria-label={`${ded.question}. ${pins.length ? `Pencilled: ${pins.map(p => CLUES[p]?.title).join(' and ')}.` : 'Empty.'}${isPair ? ' Needs two clues.' : ''}`}
+          onClick={() => onPin(ded)} />
+      )}
       {pins.length > 0 && <span className={`pin ${solved ? '' : 'gold'}`} />}
       {!solved && (
         <div className="ded-q hand">
@@ -231,7 +229,7 @@ function ThreadColumn({ pathKey, paths, deductions, theory, selectedClue, shakin
     <section id={`thread-${pathKey}`} className={`cb-thread ${focused ? 'focus' : ''} ${shaking ? 'shake' : ''} ${folded ? 'folded' : ''}`} aria-label={THREADS[pathKey].title}>
       <header className="thread-head" data-yarn={`thread-${pathKey}`}>
         <span className="pin" />
-        <div className="hand">{THREADS[pathKey].title}</div>
+        <h2 className="hand">{THREADS[pathKey].title}</h2>
         <div className="type">{THREADS[pathKey].sub}</div>
         <div className="thread-count">{st.completedNodes.length}/{nodes.length} leads examined</div>
         {!st.completed && (
@@ -305,7 +303,7 @@ function SuspectSection({ closedCount, hasDraft, finalCase, selectedClue, onSusp
   if (closedCount < 2 || !hasDraft) {
     return (
       <section className="cb-suspect locked" data-yarn="suspect">
-        <h3>THE SUSPECT</h3>
+        <h2>THE SUSPECT</h2>
         <div className="hand" style={{ fontSize: 24, color: '#e8d6b0' }}>Who took Maya?</div>
         <p className="type" style={{ fontSize: 12, color: '#b8a888', marginTop: 8 }}>
           {closedCount < 2
@@ -320,7 +318,7 @@ function SuspectSection({ closedCount, hasDraft, finalCase, selectedClue, onSusp
   return (
     <section className="cb-suspect fade-in" data-yarn="suspect">
       <span className="pin" />
-      <h3>THE SUSPECT</h3>
+      <h2>THE SUSPECT</h2>
       <div className="hand" style={{ fontSize: 24, color: '#f4e6c8', textAlign: 'center' }}>
         Circle who took her. Then pick what you'll hand the police — one clue per question.
       </div>

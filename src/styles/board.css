@@ -218,6 +218,20 @@
   border: 2px dashed rgba(255,232,196,0.5); background: rgba(10,5,2,0.35); transition: all .15s;
 }
 .ded-slot:hover { border-color: rgba(255,232,196,0.85); }
+/* The slot used to be a div with role="button" wrapping a real unpin button —
+   one control to a screen reader, two to the browser. The pinning affordance
+   is this: a real button filling the slot, sitting behind the slot's text so
+   the unpin button is a sibling rather than a descendant. */
+.ded-hit {
+  position: absolute; inset: 0; z-index: 0; background: transparent; border: none;
+  padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.ded-hit:focus-visible { outline: 2px solid #f0c060; outline-offset: -4px; }
+.ded-slot > :not(.ded-hit) { position: relative; z-index: 1; pointer-events: none; }
+/* …except the controls, which still need their own clicks */
+.ded-slot .unpin, .ded-slot .ded-hint { pointer-events: auto; }
+.ded-clue { pointer-events: none; }
+.ded-clue .unpin { pointer-events: auto; }
 .ded-slot.armed { border-color: #f0c060; background: rgba(240,192,96,0.12); animation: armedGlow 1.3s ease-in-out infinite; }
 @keyframes armedGlow { 50% { box-shadow: 0 0 18px rgba(240,192,96,0.45); } }
 .ded-slot.over { border-style: solid; border-color: #ffd98a; background: rgba(255,217,138,0.2); }
@@ -235,7 +249,7 @@
 /* ── Suspect section ── */
 .cb-suspect { position: relative; z-index: 2; max-width: 1240px; margin: 34px auto 0; padding: 18px; border: 2px solid rgba(190,30,26,0.55); background: rgba(40,6,4,0.35); }
 .cb-suspect.locked { border-style: dashed; border-color: rgba(255,230,190,0.2); background: rgba(10,5,2,0.3); text-align: center; }
-.cb-suspect h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 30px; letter-spacing: 0.1em; color: #f4e6c8; text-align: center; margin-bottom: 4px; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+.cb-suspect h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 30px; letter-spacing: 0.1em; color: #f4e6c8; text-align: center; margin-bottom: 4px; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
 .suspect-row { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; margin: 18px 0 22px; }
 .suspect-card { position: relative; width: 150px; background: #efe7d6; padding: 8px 8px 10px; cursor: pointer; border: none; color: #1a1410; transform: rotate(var(--tilt)); box-shadow: 0 8px 16px rgba(0,0,0,0.6); transition: transform .15s; }
 .suspect-card:hover { transform: rotate(0) translateY(-4px); }
@@ -524,9 +538,41 @@
 /* matches public/art/apartment-room.jpg exactly, so hotspot percentages
    land on the objects rather than on the letterbox around them */
 .room-inner { position: relative; width: 100%; aspect-ratio: 1024 / 680; max-height: 100%; }
+/* An object nobody can see is not a way in. On a 1440px desktop the three
+   objects used to have a transparent border and no animation, so until the
+   mouse happened to cross one there was nothing to say the picture was
+   clickable at all. Each object now carries an evidence marker at rest:
+   corner brackets, a faint warm wash, and a slow breath so the eye catches
+   it. The three breathe out of step, the way three separate markers would. */
 .room-hot {
-  position: absolute; background: transparent; border: 1px solid transparent; border-radius: 6px;
-  cursor: pointer; transition: background .2s, border-color .2s, box-shadow .2s; padding: 0;
+  position: absolute; border-radius: 6px; padding: 0; cursor: pointer;
+  background: rgba(255, 206, 130, 0.045);
+  border: 1px solid rgba(255, 206, 130, 0.34);
+  box-shadow: inset 0 0 22px rgba(255, 190, 110, 0.07), 0 0 0 1px rgba(6, 4, 10, 0.55);
+  transition: background .2s, border-color .2s, box-shadow .2s;
+  animation: roomBreath 4.2s ease-in-out infinite;
+}
+/* the corner brackets — a marker laid beside a thing, not a box drawn round it */
+.room-hot::before {
+  content: ''; position: absolute; inset: -4px; pointer-events: none;
+  border: 2px solid rgba(255, 206, 130, 0.62);
+  clip-path: polygon(0 0, 34% 0, 34% 2px, 2px 2px, 2px 34%, 0 34%,
+                     0 66%, 2px 66%, 2px calc(100% - 2px), 34% calc(100% - 2px), 34% 100%, 0 100%,
+                     100% 100%, 100% 66%, calc(100% - 2px) 66%, calc(100% - 2px) calc(100% - 2px),
+                     66% calc(100% - 2px), 66% 100%, 100% 100%, 100% 0, 66% 0, 66% 2px,
+                     calc(100% - 2px) 2px, calc(100% - 2px) 34%, 100% 34%);
+  transition: border-color .2s;
+}
+@keyframes roomBreath {
+  0%, 100% { border-color: rgba(255, 206, 130, 0.26); box-shadow: inset 0 0 22px rgba(255, 190, 110, 0.05), 0 0 0 1px rgba(6, 4, 10, 0.55); }
+  50%      { border-color: rgba(255, 206, 130, 0.62); box-shadow: inset 0 0 26px rgba(255, 190, 110, 0.15), 0 0 20px rgba(255, 190, 110, 0.16); }
+}
+.room-hot:nth-of-type(2) { animation-delay: 1.4s; }
+.room-hot:nth-of-type(3) { animation-delay: 2.8s; }
+/* a marker that throbs is an accessibility problem for some players; the
+   affordance stays, only the movement goes */
+@media (prefers-reduced-motion: reduce) {
+  .room-hot { animation: none; border-color: rgba(255, 206, 130, 0.55); }
 }
 .room-hot .tag {
   position: absolute; left: 50%; bottom: -6px; transform: translate(-50%, 100%);
@@ -536,15 +582,22 @@
 }
 .room-hot .nm { font-family: 'Crimson Pro', Georgia, serif; font-size: 14px; color: #f0e2c4; }
 .room-hot .sb { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #b08a5a; }
+/* the breath has to stop on hover/focus, or the keyframes keep overriding
+   the border colour this rule is trying to set */
 .room-hot:hover, .room-hot:focus-visible {
-  border-color: rgba(255,206,130,0.75); background: rgba(255,206,130,0.10);
-  box-shadow: 0 0 28px rgba(255,190,110,0.28); outline: none;
+  animation: none;
+  border-color: rgba(255,226,170,0.95); background: rgba(255,206,130,0.14);
+  box-shadow: 0 0 28px rgba(255,190,110,0.32); outline: none;
 }
+.room-hot:hover::before, .room-hot:focus-visible::before { border-color: rgba(255, 226, 170, 0.95); }
 .room-hot:hover .tag, .room-hot:focus-visible .tag { opacity: 1; }
-.room-hot.done { border-color: rgba(120,180,140,0.45); }
+/* a finished object stops asking for attention; a started one keeps a mark */
+.room-hot.done { animation: none; border-color: rgba(120,180,140,0.5); background: rgba(120,180,140,0.05); box-shadow: none; }
+.room-hot.done::before { border-color: rgba(120,180,140,0.5); }
 .room-hot.done:hover { box-shadow: 0 0 22px rgba(120,180,140,0.3); }
-.room-hot.started { border-color: rgba(212,168,75,0.5); border-style: dashed; }
-@media (hover: none) { .room-hot { border-color: rgba(255,206,130,0.4); } .room-hot .tag { opacity: 1; } }
+.room-hot.started { animation: none; border-color: rgba(212,168,75,0.7); border-style: dashed; }
+.room-hot.started::before { border-color: rgba(212,168,75,0.7); }
+@media (hover: none) { .room-hot { animation: none; border-color: rgba(255,206,130,0.55); } .room-hot .tag { opacity: 1; } }
 
 /* The room is part of the story on a phone too, not a desktop luxury */
 @media (max-width: 820px) {
@@ -1191,10 +1244,14 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 /* map */
 .mp-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
 .mp-strip { list-style: none; margin: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; border-right: 1px solid #1c1a22; overflow-y: auto; }
-.mp-sheets { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; padding: 14px; align-content: center; min-height: 100%; }
-.mp-sheet { margin: 0; background: #e9e1cc; padding: 8px 8px 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+.mp-sheets { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; padding: 14px; align-content: stretch; min-height: 100%; }
+.mp-sheet { margin: 0; background: #e9e1cc; padding: 8px 8px 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; min-height: 0; }
 .mp-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2a2418; font-size: 15px; padding: 0 2px 6px; }
-.mp-surface { position: relative; aspect-ratio: 1 / 1; background: #f3ecda; border: 1px solid #b8a984; overflow: hidden; }
+/* The sheet was a fixed square, so it could not use the height it was given.
+   Both grids are percentage projections of their own lat/long box, so a taller
+   sheet simply draws the same box larger — the rulings and the coordinates you
+   read against them stay exactly in step. */
+.mp-surface { position: relative; flex: 1; min-height: 300px; background: #f3ecda; border: 1px solid #b8a984; overflow: hidden; }
 .mp-grid { position: absolute; pointer-events: none; }
 .mp-grid.h { left: 0; right: 0; border-top: 1px dashed rgba(90,70,40,0.35); }
 .mp-grid.v { top: 0; bottom: 0; border-left: 1px dashed rgba(90,70,40,0.35); }
@@ -1226,9 +1283,15 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 
 /* timeline */
 .tl-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
-.tl-side { border-right: 1px solid #1c1a22; }
+.tl-side { border-right: 1px solid #1c1a22; display: flex; flex-direction: column; min-height: 0; }
 .tl-note { margin: 12px 12px 0; padding: 8px 10px; background: #171410; border-left: 3px solid #d4a84b; font-family: 'Crimson Pro', Georgia, serif; font-size: 13px; line-height: 1.4; color: #d8c8a0; }
-.tl-photos { list-style: none; margin: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.tl-photos { list-style: none; margin: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
+/* the rail used to end 280px short of the panel; the photographs take that
+   room, which makes the thumbnail and its EXIF line bigger rather than
+   leaving a hole */
+.tl-photos li { flex: 1 1 auto; display: flex; max-height: 150px; }
+.tl-photos li > .mp-photo { flex: 1; align-items: center; }
+.tl-photos li > .mp-photo .thumb { width: 84px; height: 66px; }
 .mp-photo .up { color: #7a7868; }
 .tl-days { padding: 14px 16px; display: flex; flex-direction: column; gap: 22px; min-height: 100%; }
 .tl-day { display: flex; flex-direction: column; }
@@ -1247,6 +1310,10 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .tl-pin { width: 34px; height: 26px; overflow: hidden; border: 2px solid #efe7d6; }
 .tl-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .tl-window-note { margin: 6px 0 0; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #c8a868; display: flex; align-items: center; gap: 6px; }
+.tl-facts { list-style: none; margin: 8px 0 0; padding: 8px 0 0; border-top: 1px solid #1f1c26; display: flex; flex-direction: column; gap: 5px; }
+.tl-facts li { display: flex; gap: 10px; align-items: baseline; }
+.tl-at { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #8a8474; flex: 0 0 62px; text-align: right; }
+.tl-fact { font-family: 'Crimson Pro', Georgia, serif; font-size: 14px; line-height: 1.45; color: #bdb49e; }
 .tl-window-note .sw { width: 14px; height: 10px; background: repeating-linear-gradient(135deg, #5a4220 0 3px, #2a1d0c 3px 6px); display: inline-block; }
 
 /* compare */
@@ -1472,10 +1539,10 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 
 /* The timeline sat in the top third of the panel with its own strips
    squeezed and 400px of black underneath. The days take the height. */
-.tl-days { justify-content: flex-start; }
-.tl-day { flex: 1 1 0; min-height: 0; }
-.tl-day .tl-strip { flex: 1; align-items: stretch; }
-.tl-day .tl-slot { height: 100%; }
+.tl-days { justify-content: space-evenly; }
+.tl-day { flex: 0 1 auto; min-height: 0; }
+.tl-day .tl-strip { align-items: stretch; }
+.tl-day .tl-slot { height: 100%; min-height: 92px; max-height: 170px; }
 .tl-hour { font-size: 10.5px; letter-spacing: 0; white-space: nowrap; }
 @media (max-width: 760px) { .tl-hour { font-size: 10px; } }
 
@@ -1509,15 +1576,41 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .ph-who { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8ab0d0; }
 .ph-when { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em; color: #6f6d5f; }
 .ph-text { font-family: 'Crimson Pro', Georgia, serif; font-size: 17px; line-height: 1.75; color: #d6cfbd; margin: 0; }
-.ph-mark {
-  font: inherit; color: inherit; background: none; cursor: pointer; padding: 1px 3px; margin: 0 -1px;
-  border: none; border-bottom: 1px dashed #5a5a70; border-radius: 2px;
+/* Every word is a target and none of them is labelled. At rest a word looks
+   exactly like the prose it is part of — no underline, no box — because the
+   moment one carries a mark the reading is done for you. The old .ph-mark
+   also leaked 2px of padding either side of itself, so the prose rendered as
+   "near her Tuesday route ?" and "— Priya —". Words carry no padding now and
+   the real spaces between them are their own spans, which lets a selected
+   run highlight as one continuous stripe. */
+.ph-w {
+  font: inherit; color: inherit; background: none; border: none; border-radius: 2px;
+  padding: 0; margin: 0; cursor: pointer; line-height: inherit;
 }
-.ph-mark:hover:not(:disabled), .ph-mark:focus-visible {
-  background: rgba(212,168,75,0.16); border-bottom-color: #d4a84b; outline: none;
+/* A word is a <button>, which Chrome renders inline-block whatever `display`
+   says, so its painted box is the full 1.75em line; the spaces between the
+   words are inline spans, whose painted box is only the font's content area.
+   Left alone, a highlighted phrase came out as separate boxes of two
+   different heights with notches between them. Vertical padding on an inline
+   element paints without touching layout or line-breaking, so the spaces are
+   padded up to the same band: (1.75em − 1.118em) / 2. */
+.ph-gap { border-radius: 0; padding: 0.316em 0; }
+/* a hover must not out-specify a selection and dim the word you just chose */
+.ph-w:hover:not(:disabled):not(.sel):not(.hit) { background: rgba(212,168,75,0.14); }
+.ph-w:focus-visible { outline: 2px solid #d4a84b; outline-offset: 1px; }
+.ph-w.sel, .ph-gap.sel { background: rgba(212,168,75,0.32); color: #f6e9cc; border-radius: 0; }
+.ph-w.hit, .ph-gap.hit { background: rgba(90,180,110,0.22); color: #eaf5e6; box-shadow: inset 0 -2px 0 #4caf6a; border-radius: 0; }
+.ph-w:disabled { cursor: default; }
+
+/* what you are holding, and the two things you can do with it */
+.ph-sel-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-top: 9px; border-top: 1px dashed #2b2b38; }
+.ph-sel-t { font-family: 'Crimson Pro', Georgia, serif; font-size: 15px; color: #e6d7b4; flex: 1; min-width: 120px; }
+.ph-mark-btn, .ph-clear-btn {
+  font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 8px 12px; min-height: 36px; cursor: pointer; background: transparent; border: 1px solid #5a4a2a; color: #e8c870;
 }
-.ph-mark:focus-visible { box-shadow: 0 0 0 2px #d4a84b; }
-.ph-mark.hit { background: rgba(90,180,110,0.2); border-bottom: 2px solid #4caf6a; color: #eaf5e6; }
-.ph-mark.miss { background: rgba(200,90,80,0.14); border-bottom: 2px solid #a0564c; color: #f0cfc8; }
-.ph-mark:disabled { cursor: default; }
+.ph-mark-btn:hover { background: rgba(232,200,112,0.14); border-color: #d4a84b; }
+.ph-clear-btn { border-color: #3a3a46; color: #9a9384; }
+.ph-clear-btn:hover { background: rgba(255,255,255,0.05); color: #d8d0bc; }
+.ph-mark-btn:focus-visible, .ph-clear-btn:focus-visible { outline: 2px solid #d4a84b; outline-offset: 2px; }
 @media (max-width: 760px) { .ph-body { padding: 12px 10px; } .ph-text { font-size: 16px; line-height: 1.8; } }

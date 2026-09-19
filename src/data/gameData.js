@@ -173,6 +173,31 @@ export const GAME_DATA = {
           warning: 'Do not contact or alert the subject. Passive research only.',
         },
         content: {
+          recordsLabel: 'Open on her desktop',
+          records: [
+            {
+              label: 'Username scan — stillwater_m',
+              meta: 'six platforms',
+              fields: [
+                ['Reddit', '200 · active — 412 posts, last one Feb 28'],
+                ['Instagram', '200 · active — last post November'],
+                ['Vimeo', '200 · active — four landscape reels'],
+                ['Flickr', '403 · private — album locked Feb 3'],
+                ['Tumblr', '403 · suspended by the platform, 2019'],
+                ['Twitter / X', '404 · no such account'],
+              ],
+              note: 'Three codes, three different stories. Locked is not the same as suspended, and neither one is the same as never mind, there was nothing here.',
+            },
+            {
+              label: 'NOTES_DO_NOT_DELETE.txt',
+              meta: 'modified Feb 3',
+              fields: [
+                ['Feb 1', 'Started the scan. Six hits. Screenshotted all of them.'],
+                ['Feb 2', 'One of them is gone since yesterday. Not locked. Gone.'],
+                ['Feb 3', "Flickr's about to go the same way, I can feel it. Pulled what I could first — there is always a cached copy of a page older than the man who took it down."],
+              ],
+            },
+          ],
           questions: [
             {
               prompt: "Maya ran a username scan on stillwater_m across six platforms. On one, the profile doesn't exist at all — not private, not suspended, just gone. Which platform?",
@@ -364,6 +389,29 @@ export const GAME_DATA = {
         timestamp: { text: 'Maya\'s research — February 1', urgent: false },
         monologue: null,
         content: {
+          recordsLabel: 'Two records, side by side',
+          records: [
+            {
+              label: 'Oregon Business Registry',
+              meta: 'registered to PO Box 441, Millhaven',
+              fields: [
+                ['Cascade Sign & Print', 'Inactive — dissolved 2019'],
+                ['Harbour Lane Rentals', 'Active — registered 2016'],
+                ['Stillwater Media LLC', 'Active — registered 2018'],
+              ],
+            },
+            {
+              label: 'Millhaven Courier',
+              meta: 'Arts Night write-up, credits line',
+              fields: [
+                ['Catering', 'Rosewood Kitchen'],
+                ['Sound', 'Vale Audio'],
+                ['Photography', 'Stillwater Media'],
+                ['Flowers', 'Harbour & Vine'],
+              ],
+              note: 'Four suppliers in the paper, three businesses at one postbox. Only one name is on both lists.',
+            },
+          ],
           questions: [
             {
               prompt: 'The registrar and the newspaper both name the same business. Which business?',
@@ -697,10 +745,10 @@ export const GAME_DATA = {
             { id: 'q-corey', label: 'Dec 8 — stillwater_m', details: '"The ex deserves more attention. Corey Marsh. I\'ve seen things online."' },
             { id: 'q-room', label: 'Dec 15 — stillwater_m', details: '"I know that building. Happy to help identify faces."' },
             { id: 'q-flickr', label: 'Dec 22 — stillwater_m', details: '"Corey Marsh\'s Flickr has location data near her neighborhood. Someone should look."' },
-            { id: 'src-press', label: 'Police press release, Apr 18', details: 'Name, age, last seen at the arts night, what she was wearing. Nothing about her week.' },
+            { id: 'src-press', label: 'Police press release, Apr 18', details: 'Name, age, the evening she was last seen, what she was wearing. No venue, no address, nothing about her week.' },
             { id: 'src-thread', label: 'The thread itself, before Dec 8', details: 'Two hundred posts. Nobody has named anybody. No suspect has been put forward by anyone.' },
             { id: 'src-flickr', label: 'c_marsh_pdx on Flickr', details: 'Public album. EXIF left on. Opening one photograph shows where it was taken.' },
-            { id: 'src-nowhere', label: 'Nowhere public', details: 'Not in a paper, not on her profile, not in the thread. Known to her flatmate, her mother, and whoever was watching her' },
+            { id: 'src-nowhere', label: 'Nowhere public', details: 'Not in a paper, not on her profile, not in the thread. Known to her flatmate, her mother, and whoever was watching her.' },
           ],
           requiredConnections: [
             { from: 'q-route', to: 'src-nowhere', label: "Her Tuesday route has no public source — and \"someone told me\" has no name on it" },
@@ -918,7 +966,7 @@ export const GAME_DATA = {
         title: "Maya's Gmail — Accessed via Browser",
         tool: 'Email Client',
         timestamp: { text: 'March 10 — morning after', urgent: true },
-        monologue: "She wrote to me the night before. She never sent it.",
+        monologue: "She wrote to me the night before. I never got to read it.",
         osintTip: {
           id: 'email-drafts',
           title: 'Email Draft Forensics',
@@ -1247,7 +1295,7 @@ export const GAME_DATA = {
         // the paper left out is the entire point.
         content: {
           prompt: 'The printed summary against the clerk\'s copy — mark what the paper withheld',
-          hint: 'Same case, same day. Six lines. Read the paper against the filing.',
+          hint: 'Same case, same day, seven lines each. Read the paper against the filing.',
           before: {
             id: 'before', label: 'Millhaven Courier — court summary', when: 'As printed',
             lines: [

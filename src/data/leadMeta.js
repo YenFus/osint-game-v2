@@ -50,7 +50,7 @@ export const LEAD_META = {
     summary: 'A silent second account, opened the day he hid his name, wearing a crop of his own photograph and watching Corey Marsh.',
   },
   A11: {
-    card: { kind: 'index', scene: 'yarn' },
+    clue: 'postbox', card: { kind: 'index', scene: 'yarn' },
     hint: 'Work outward from the domain: the handle is in its name, the registration names the business, and the business is what the second account watches.',
     summary: 'A handle, a domain, a company and a postbox — one man, and not one of them a name. He shielded the record in November.',
   },
@@ -67,12 +67,12 @@ export const LEAD_META = {
 
   // ── THREAD B — the burned notebook ──
   B1: {
-    card: { kind: 'polaroid', scene: 'notebook' },
+    clue: 'burned_page', card: { kind: 'polaroid', scene: 'notebook' },
     hint: 'Char and ink are both black — brightness alone won\'t do it. Lift brightness past the midpoint, then push contrast until the writing separates from the burn. Watch the recovery bar.',
     summary: 'November. She found Lena\'s case, and she noticed straight away that one account knew more than it should.',
   },
   B2: {
-    clue: 'insider', card: { kind: 'index', scene: 'forum' },
+    clue: 'no_source', card: { kind: 'index', scene: 'forum' },
     hint: 'For each of his four posts, ask where that detail could have come from and join it to that source. Two have a public source. Two have none — those both go to the same card.',
     summary: 'He spent months pointing that forum at Corey Marsh, and twice he said things that had no public source at all.',
   },
@@ -82,7 +82,7 @@ export const LEAD_META = {
     summary: 'He quoted a police interview nobody released, and he described the exits of a room he shouldn\'t have known.',
   },
   B5: {
-    card: { kind: 'index', scene: 'notebook' },
+    clue: 'priya_words', card: { kind: 'index', scene: 'notebook' },
     hint: 'Q1: which document held Priya\'s exact words? Q2: the two letters in @nightwatch_rc.',
     summary: 'Priya said those words to the police. He said them on a forum. Maya wrote the initials in the margin.',
   },

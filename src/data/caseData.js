@@ -239,6 +239,38 @@ export const CLUES = {
     spoken: 'the reporter\'s details she kept on the back of her board',
     scene: 'note',
   },
+  // Four leads finished and handed the board nothing: A11, B1 and B5 had no
+  // clue at all, and B2 granted `insider`, which A2 already grants. Each of
+  // these is the thing its own lead proves and no other lead does. None of
+  // them carries the surname — A11, B1, B5 and B2 are all early-reachable.
+  postbox: {
+    title: 'Ownership chain — one postbox',
+    detail: 'Handle, domain, LLC and mailing address all resolve to PO Box 441, Millhaven. Four records, one box, no name on any of them.',
+    source: 'WHOIS + Oregon business registry',
+    spoken: 'four separate records that all end at the same postbox',
+    scene: 'shielded',
+  },
+  burned_page: {
+    title: "Maya's notebook — recovered page",
+    detail: 'November, in her hand: she had found Lena\'s case and flagged one account as knowing more than it should. She was eight months ahead of me.',
+    source: "Maya's notebook (partially burned)",
+    spoken: 'the page from her notebook I got back out of the burn',
+    scene: 'note',
+  },
+  priya_words: {
+    title: 'Verbatim match — Priya\'s statement',
+    detail: 'The phrasing Priya gave the police appears word for word in a forum post made before the statement was public. Maya wrote two initials in the margin beside it.',
+    source: 'Police statement + PDXmissing forum',
+    spoken: 'a witness statement quoted on a forum before anybody could have read it',
+    scene: 'document',
+  },
+  no_source: {
+    title: 'Sourcing pass — four posts',
+    detail: 'Two of his claims trace to a press release or an open album. Two trace nowhere public at all — and between them he handed the thread its only suspect.',
+    source: 'PDXmissing forum, sourced',
+    spoken: 'two things he said that had no public source anywhere',
+    scene: 'forum',
+  },
 }
 
 // ── THREAD DEDUCTIONS ──────────────────────────────────────────────

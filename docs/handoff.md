@@ -16,10 +16,11 @@ endings, save/load, the tutorial, the name reveal.
 
 **Score history:** 3.5, 3.8, 4.5, 4.8, 5.6, 5.8, 6.2, 6.8, 7.3, 7.6, 7.8, 7.7,
 8.1, **8.2** (round 14 — full report in §7, open work list in §7.3).
-**Round 15 shipped; not yet scored.** What it did and did not do is §13.
+**Round 16 came back 7.9** (down from 8.2 — it went deeper and found worse).
+Round 16's fix pass is shipped and unscored; see §14.
 
-**Start here:** read §13 — round 15's changes, and the four P-items it did not
-touch. §7.2 is three claims round 14 proved false; do not repeat them, and note
+**Start here:** read §14 — round 16's score, its fix pass, and what is left.
+§13 is round 15. §7.2 is three claims round 14 proved false; do not repeat them, and note
 §13.2 adds a fourth: round 14's own P0 was overstated.
 
 Round 13's sub-scores, for reference on where the headroom is:
@@ -40,9 +41,9 @@ panels.*
 | | |
 |---|---|
 | Repo | `/Users/mohit/Projects/osint-game-v2`, branch `main` |
-| HEAD | `6531f33` — "The cork has never loaded on the artifact, only on the dev server" |
+| HEAD | `b5e1c59` — "The free field manual printed the answer the paid hint charged for" |
 | Remote | https://github.com/YenFus/osint-game-v2 (pushed, tree clean) |
-| Live artifact | https://claude.ai/artifact/MuuT8ffPzFCtHUonQoDHXv — **Version 28** |
+| Live artifact | https://claude.ai/artifact/MuuT8ffPzFCtHUonQoDHXv — **Version 29** |
 | Tests | 37 pass (`npm test`) |
 | Lint | `npx eslint src` clean |
 | Dev server | `http://localhost:5173/osint-game-v2/` — usually already running; **do not start a second**, port 5173 is `--strictPort` |
@@ -690,3 +691,120 @@ Copy these forward with the rest:
 | `p0.cjs` | the ending-reveal focus probe from §13.2 |
 
 `gate.cjs` is still wrong (§7.2) and was not fixed. `poster.cjs` is still stale.
+
+---
+
+## 14. Round 16 — scored 7.9, then fixed
+
+The critic scored **7.9 (down from 8.2)**. Read the shape: eleven of round 15's
+thirteen claimed fixes verified exactly, one partial, none false. The score fell
+because the sweep went deeper and found worse things — a hub-screen layout
+collapse, and the fact that the two fixes round 15 took most credit for were
+hollow one question below the surface.
+
+| | R14 | R16 | | | R14 | R16 |
+|---|---|---|---|---|---|---|
+| Writing | 8.8 | **9.0** | | Visuals | 8.2 | 8.2 |
+| Story / pacing | 7.8 | 7.8 | | Audio | 5.8 | **6.5** |
+| Puzzle variety | 8.5 | **8.3** | | Mobile | 8.5 | **6.5** |
+| Fairness | 7.5 | 7.6 | | Accessibility | 6.5 | **7.2** |
+| Clue legibility | 8.3 | **7.6** | | Endings | 7.5 | **8.5** |
+| Onboarding | 8.0 | 8.0 | | Save / load | 8.5 | **9.0** |
+| UI / UX | 7.8 | **6.8** | | Feedback | 8.3 | 8.0 |
+| Bugs | 7.8 | **6.5** | | Performance | 9.0 | 9.2 |
+
+### 14.1 The lesson worth carrying
+
+> The clue pool has 28 distinct entries **and** four of them score zero. The
+> beds loop seamlessly **and** have no events in them. Neither is a lie. Both
+> are the kind of claim that stops being useful one question down.
+
+The standing rule is re-derive a number a second way. Round 16 added the
+companion: **ask what the number would have to be for the player to notice.**
+"28 distinct clues" was true and meaningless; the question was "can they be
+pinned", and the answer was no for eleven of them.
+
+### 14.2 Fixed this round
+
+| | |
+|---|---|
+| **Board collapse** | `.cb-threads:has(.folded)` is (0,3,0); the responsive override is (0,1,0) and media queries add no specificity — so closing one thread pulled the mobile board back to three tracks at every width, overlapping with nothing scrollable. Now scoped to `min-width:1101px`. Twelve layouts measured clean (390/768/1024/1440 × 0/1/2 folded). |
+| **Clue weights** | Eleven clues could not be pinned. Every clue now has a weight where it earns one and a written Okafor reaction in all three slots. Ceiling unchanged: 3.00 canonical, 2.50 best-without-naming, still gated by `namesSomeone`. |
+| **Mobile apartment** | The user's own report. See §14.3. |
+| **Contrast** | First axe run in the project's history: 134 nodes → **0**. |
+| **Ending focus ring** | Round 15's own regression: `autoFocus` + `:focus-visible` on an `inset:0` button = a full-screen gold rectangle for every player. Indicator moved to the cue line. |
+| **`#navigation`** | Skip link pointed at an id that never existed, on all six screens. Board nav has it now; the link only renders there. |
+| **Field manual leaks** | B12 and B2 printed the paid hint's answer for free, one button to the left. Both teach technique now. |
+| Small | `nested-interactive` in the apartment, `aria-progressbar-name` on the tag leads, focusable notes column, guarded `CLUES[id]?.spoken`. |
+
+### 14.3 The mobile blocker — how to not ship this again
+
+**The user hit this on a real phone: "could not move forward, things blocked or
+couldn't be seen."** Reproduced at 390×844, 360×740 and 414×896.
+
+The room photo sits above the sidebar on mobile and took ~45% of the screen,
+leaving the sidebar 516px for 845px of content. The third thread *and* "Open the
+case board" — the only way forward — were below the fold in a pane that scrolls
+with **no affordance**. The page cannot scroll: the shell is `h-screen` +
+`overflow:hidden`, and **the published artifact additionally pins `html, body`
+to `overflow:hidden` in the wrapper**, so page-scroll is never available. Any
+mobile fix has to work inside an inner scroller.
+
+Room capped at 34vh; the button is `position: fixed` at the bottom with
+`env(safe-area-inset-bottom)`. **Sticky does not work here** — the button's
+parent section is only as tall as its own content, so it has no range; it
+measured unchanged at 1109px.
+
+**The harness lesson:** `mobsweep.cjs` first reported ~29 covered controls, and
+almost all were false. `elementFromPoint` returns child nodes and pseudo
+overlays that still forward the tap, and controls behind an open modal are
+*correctly* covered and inert. Scope the probe to the modal when one is open,
+skip `[inert]` and `.skip-link`, and then **tap the survivors** — `taptest.cjs`
+proved A1/A7/B7/C8 were all fine. A fixed bottom bar will always "cover"
+something mid-scroll; the real question is whether the last item scrolls clear,
+which `bars.cjs` checks.
+
+### 14.4 Still open — the critic's list, in its order
+
+1. **C2 renders its own answer at rest.** Round 14 P3 item 2. I looked: the
+   STILLWATER MEDIA sign is the largest, most legible object in the plate,
+   readable before the magnifier is touched, and `table_sign` is the clue C2
+   grants. **It also fell out of both §13 lists, which the critic correctly
+   called an honesty gap — it was neither fixed nor declared.** It is declared
+   now. The sign is also far too big for the room and reads as generated. Fix
+   is a plate repair plus a re-measure of `ca-sign`'s hotspot percentages.
+2. **Thread C's last beat.** B7 and C8 are the same screen — same layout, same
+   placeholder, same four-row table, same footer, ~45% black. C8 *closes thread
+   C* and it is a file browser.
+3. **The beds have no events.** Over 720 × 50ms frames per bed, not one frame
+   exceeds the file's own median by 6dB, and L/R correlation is 0.9945–0.9995 —
+   they ship stereo and are effectively mono. Add one non-periodic event every
+   8–15s, decorrelate L/R by 10–20ms, drop the harmonic stacks to one filtered
+   layer. Then a SFX pass: `playSFX` is still oscillators.
+4. **Seven leads 20%+ empty**: C8 47%, B7 44%, B4 37%, B12 35%, B1/B11 33%,
+   A9 32%, C5 20%.
+5. **A8 is over-signposted** — the question, the context note *and* a footnote
+   under the list all say the same thing. Cut the footnote.
+6. **P5, C1→C2 verb adjacency.** Still conceded, still unpaid. The critic agreed
+   abandoning the conversion was right and named the real answer: thread C needs
+   a *new* opening interaction, not a reshuffle of the existing one.
+7. `prefers-contrast` has 0 rules. `caseData.test.js:273` tests node content for
+   the surname but not `LEAD_META`, which carries it on four lines (they sit on
+   leads with closure ≥ 9, so the gate holds — but nothing tests it).
+8. Still standing from §8: the voicemail is synthesis; `ph-maya.jpg`'s yoke seam
+   and window; `ph-shop.jpg`'s bumper, tail-light and rocker at plate size;
+   A13's slack; `src-press` orphan; A4's rail at 390px; convergence has one
+   landmark; `gate.cjs` and `poster.cjs` still wrong/stale.
+
+### 14.5 Harness added this round
+
+`axe1.cjs` (axe over all 28 leads, aggregated by colour pair — the only form
+that makes 134 nodes actionable), `fold.cjs` (the board at 4 widths × 3 fold
+counts), `mobsweep.cjs` + `taptest.cjs` + `bars.cjs` (§14.3), `mob2.cjs`
+(apartment scroll chain on three phones), `ring.cjs`, `clue_audit.mjs` (weights,
+fallbacks and the difficulty ceiling in one pass — run it after touching
+`FINAL_SLOTS`).
+
+**`built.cjs` earned its place again**: it is what proves the artifact bundle
+serves, and the mobile work all had to be checked against `dist-artifact`
+because of the wrapper's `overflow:hidden`.

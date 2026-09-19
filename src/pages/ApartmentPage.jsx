@@ -79,7 +79,7 @@ export default function ApartmentPage() {
   }, [handleQuickSave])
 
   return (
-    <div className="crt h-screen flex flex-col overflow-hidden relative" style={{ backgroundColor: '#08080e' }}>
+    <div className="apt-root crt h-screen flex flex-col overflow-hidden relative" style={{ backgroundColor: '#08080e' }}>
       {/* Maya's flat at night, drawn rather than rendered */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}><ApartmentArt /></div>
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(6,5,12,0.34)', zIndex: 0 }} />
@@ -174,23 +174,20 @@ export default function ApartmentPage() {
                           </div>
                           {done && <span className="font-mono text-xs text-green-600">✓ closed</span>}
                           {started && !done && <span className="font-mono text-xs text-amber-600">in progress</span>}
+                          {/* This "?" was a span[role=button][tabIndex=0] inside
+                              the real <button> wrapping the row — interactive
+                              inside interactive. It is decorative now: the
+                              button's own onFocus already opens the preview for
+                              keyboard users, so only the mouse affordance is
+                              left and nothing is lost. */}
                           {!done && !started && (
                             <span
-                              role="button"
-                              tabIndex={0}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setShowPreview(isShowingPreview ? null : item.id)
                               }}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault()
-                                  e.stopPropagation()
-                                  setShowPreview(isShowingPreview ? null : item.id)
-                                }
-                              }}
                               className="font-mono text-sm text-[#6a8aaa] hover:text-[#8ab0d0] transition-colors cursor-pointer px-2 py-1"
-                              aria-label="Preview this investigation path"
+                              aria-hidden="true"
                             >
                               ?
                             </span>
@@ -272,7 +269,7 @@ export default function ApartmentPage() {
                   <span className={`font-mono text-sm tracking-widest transition-all duration-300 font-medium ${
                     paths[p].completed ? 'text-green-500'
                     : paths[p].started ? 'text-amber-500'
-                    : 'text-[#4a4a58]'
+                    : 'text-[#7a7a8f]'
                   }`}>
                     {p}
                   </span>
@@ -284,9 +281,13 @@ export default function ApartmentPage() {
                 </div>
               ))}
             </div>
+            {/* On a phone the room takes the top of the screen and this
+                button sat ~330px below the fold inside a pane that scrolls
+                with no affordance — the only way forward, invisible. It
+                sticks to the bottom of the pane on mobile now. */}
             <button
               onClick={() => beginInvestigation(null)}
-              className={`w-full font-mono text-sm px-4 py-3 transition-all cursor-pointer tracking-wider uppercase font-medium text-left border ${completedCount >= 2 ? 'text-red-400 border-red-800 pulse-red' : 'text-[#e0c890] border-[#5a4a2a] hover:bg-[#2a2010]'}`}
+              className={`apt-cta w-full font-mono text-sm px-4 py-3 transition-all cursor-pointer tracking-wider uppercase font-medium text-left border ${completedCount >= 2 ? 'text-red-400 border-red-800 pulse-red' : 'text-[#e0c890] border-[#5a4a2a] hover:bg-[#2a2010]'}`}
             >
               {completedCount >= 2 ? 'The Suspect is open on the board →' : 'Open the case board →'}
             </button>
@@ -294,7 +295,7 @@ export default function ApartmentPage() {
         </div>
 
         {/* ── THE ROOM — click what you want to examine ── */}
-        <section aria-label="Maya's apartment" className="flex relative overflow-hidden order-first md:order-none md:flex-1 md:min-h-0">
+        <section aria-label="Maya's apartment" className="apt-room flex relative overflow-hidden order-first md:order-none md:flex-1 md:min-h-0">
           <ApartmentRoom paths={paths} onPick={(p) => beginInvestigation(p)} />
           <div className="absolute bottom-6 left-0 right-0 hidden md:flex justify-center pointer-events-none" style={{ zIndex: 5 }}>
             <p className="text-[15px] italic" style={{ fontFamily: "'Crimson Pro', serif", color: 'rgba(180,166,140,0.6)' }}>

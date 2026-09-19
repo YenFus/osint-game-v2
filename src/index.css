@@ -712,13 +712,43 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
     padding-bottom: 45vh !important;
   }
 
-  /* Mobile apartment sidebar — 3D scene hidden on mobile, sidebar fills all space */
+  /* Mobile apartment. The room is NOT hidden here (the old comment said it
+     was): it sits above the sidebar and took ~45% of the screen, leaving the
+     sidebar 516px for 845px of content. The third thread and the button that
+     opens the case board were both below the fold, inside a pane that scrolls
+     with no affordance — a dead end on a phone. */
   .apartment-sidebar {
     width: 100% !important;
     border-right: none !important;
     border-bottom: none;
     max-height: none;
     overflow-y: auto;
+    position: relative;
+    /* clear of the pinned button below */
+    padding-bottom: 76px;
+  }
+  /* give the list more of the screen than the photograph */
+  .apt-room {
+    flex: 0 0 34vh;
+    min-height: 34vh;
+    max-height: 34vh;
+  }
+  /* The way forward is always on screen. Sticky is no use here — the button's
+     parent section is only as tall as its own content, so it has no range to
+     stick within. Pinned to the viewport instead, clear of the home indicator. */
+  .apt-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    width: auto;
+    text-align: center;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    background: #0b0a12;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
   }
 
   /* Mobile menu */

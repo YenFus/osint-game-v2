@@ -8,74 +8,192 @@
 // reason it matters — the route nobody published, the flatmate's name,
 // the timetable that was never online.
 //
-// Every markable phrase is a button, so it plays by keyboard and touch.
+// This used to hand the answer over. Six phrases carried a dashed
+// underline at rest, one per post, three of them right: the reading was
+// already done, and what was left was picking three of six labelled
+// options. Every word is selectable now and nothing is marked. You
+// choose the first word and the last word of a phrase and put it up,
+// which is the actual motion of reading a page against what you know.
+//
+// Every word is a button, so it plays by keyboard and touch; within a
+// post the words are one tab stop with arrow-key travel, so six posts
+// cost six tab stops rather than eighty.
 // ─────────────────────────────────────────────────────────────────
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useDiscoveryFeedback } from '../discoveryContext'
 import { useGameStore } from '../../store/gameStore'
 import { useLeadProgress } from '../../hooks/useLeadProgress'
 import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
 import { wrongCost } from '../../data/caseData'
 
+// Words are compared the way a reader compares them: case, punctuation and
+// the difference between a hyphen and a dash don't decide whether two
+// phrases are the same phrase.
+const norm = (s) => s
+  .toLowerCase()
+  .replace(/[‘’]/g, "'")
+  .replace(/[^a-z0-9'\s]+/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+
+// A token is selectable if it has something to read in it. Bare punctuation
+// — the em dashes around a name, a lone question mark — is scenery: it can
+// sit inside a selection but it is not a place to start one.
+const READABLE = /[a-z0-9]/i
+const tokenize = (text) => text.split(/(\s+)/).filter(t => t !== '').map((t, i) => ({
+  i, text: t, space: /^\s+$/.test(t), pick: !/^\s+$/.test(t) && READABLE.test(t),
+}))
+
+// ── One post, with its own roving focus ───────────────────────────
+function Post({ post, tokens, sel, hits, disabled, onPick, onClear, onMark }) {
+  const [active, setActive] = useState(() => tokens.find(t => t.pick)?.i ?? 0)
+  const ref = useRef(null)
+  const picks = useMemo(() => tokens.filter(t => t.pick).map(t => t.i), [tokens])
+
+  const inSel = (i) => sel && i >= sel.from && i <= sel.to
+  const selText = sel ? tokens.slice(sel.from, sel.to + 1).map(t => t.text).join('') : ''
+
+  const move = (delta) => {
+    const at = picks.indexOf(active)
+    const next = picks[Math.min(picks.length - 1, Math.max(0, (at < 0 ? 0 : at) + delta))]
+    if (next === undefined) return
+    setActive(next)
+    ref.current?.querySelector(`[data-i="${next}"]`)?.focus()
+  }
+
+  const onKeyDown = (e) => {
+    const map = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }
+    if (map[e.key]) { e.preventDefault(); move(map[e.key]); return }
+    if (e.key === 'Home') { e.preventDefault(); setActive(picks[0]); ref.current?.querySelector(`[data-i="${picks[0]}"]`)?.focus() }
+    if (e.key === 'End') { const l = picks[picks.length - 1]; e.preventDefault(); setActive(l); ref.current?.querySelector(`[data-i="${l}"]`)?.focus() }
+    if (e.key === 'Escape' && sel) { e.preventDefault(); onClear() }
+  }
+
+  return (
+    <article className="ph-post">
+      <header className="ph-meta">
+        <span className="ph-who">{post.who}</span>
+        <span className="ph-when">{post.when}</span>
+      </header>
+      {/* the keydown handler is the roving-focus travel for the word buttons
+          inside; the paragraph itself is not a control. */}
+      <p className="ph-text" ref={ref} onKeyDown={onKeyDown}>
+        {tokens.map(t => {
+          const hit = hits.some(h => t.i >= h.from && t.i <= h.to)
+          const on = inSel(t.i)
+          if (!t.pick) {
+            return <span key={t.i} className={`ph-gap ${on ? 'sel' : ''} ${hit ? 'hit' : ''}`}>{t.text}</span>
+          }
+          return (
+            <button key={t.i} type="button" data-i={t.i}
+              className={`ph-w ${on ? 'sel' : ''} ${hit ? 'hit' : ''}`}
+              tabIndex={t.i === active ? 0 : -1}
+              aria-pressed={on}
+              disabled={disabled || hit}
+              onFocus={() => setActive(t.i)}
+              onClick={() => onPick(t.i)}>
+              {t.text}
+            </button>
+          )
+        })}
+      </p>
+      {sel && !disabled && (
+        <div className="ph-sel-bar">
+          <span className="ph-sel-t">“{selText.trim()}”</span>
+          <button type="button" className="ph-mark-btn" onClick={onMark}
+            aria-label={`Put up the phrase “${selText.trim()}”`}>Mark this ↵</button>
+          <button type="button" className="ph-clear-btn" onClick={onClear}
+            aria-label="Clear the selected words">Clear</button>
+        </div>
+      )}
+    </article>
+  )
+}
+
 export function PhraseNode({ content, onComplete, nodeId = null }) {
   const { triggerDiscovery } = useDiscoveryFeedback()
   const { markWrongGuess, activePath } = useGameStore()
-  const [marked, setMarked] = useLeadProgress(nodeId, 'marked', [])
+  const [found, setFound] = useLeadProgress(nodeId, 'found', [])
   const [wrongCount, setWrongCount] = useLeadProgress(nodeId, 'wrong', 0)
+  // { postId, anchor, from, to } — the anchor is the word you chose first
+  const [sel, setSel] = useState(null)
   const [feedback, setFeedback] = useState(null)
 
-  const required = useMemo(
-    () => content.posts.flatMap(p => p.parts.filter(x => x.id && x.required).map(x => x.id)),
-    [content.posts])
-  const done = required.every(id => marked.includes(id))
+  const posts = useMemo(() => content.posts.map(p => ({ ...p, tokens: tokenize(p.text) })), [content.posts])
+  const phrases = useMemo(
+    () => content.phrases.map(ph => ({ ...ph, norm: norm(ph.text) })), [content.phrases])
+  const decoys = useMemo(
+    () => (content.decoys ?? []).map(d => ({ ...d, norm: norm(d.text) })), [content.decoys])
+  const done = phrases.every(ph => found.includes(ph.id))
 
-  const mark = (part) => {
-    if (done || marked.includes(part.id)) return
-    if (part.required) {
-      const next = [...marked, part.id]
-      setMarked(next)
-      setFeedback({ type: 'correct', text: part.correctFeedback ?? 'Nobody published that.' })
-      triggerDiscovery(required.every(id => next.includes(id)) ? 'major' : 'minor')
-    } else {
-      const nth = wrongCount + 1
-      setWrongCount(nth)
-      if (activePath) markWrongGuess(activePath, nth)
-      setFeedback({
-        type: 'wrong',
-        text: `${part.wrongFeedback ?? 'That was in the papers the first week.'} (+${wrongCost(nth)} min)`,
+  // Where each found phrase sits, so its words stay marked on the page.
+  const hitsFor = useMemo(() => {
+    const out = {}
+    posts.forEach(p => {
+      out[p.id] = []
+      phrases.filter(ph => found.includes(ph.id)).forEach(ph => {
+        const words = p.tokens.filter(t => t.pick)
+        for (let a = 0; a < words.length; a++) {
+          for (let b = a; b < words.length; b++) {
+            const run = p.tokens.slice(words[a].i, words[b].i + 1).map(t => t.text).join('')
+            if (norm(run) === ph.norm) { out[p.id].push({ from: words[a].i, to: words[b].i }); return }
+          }
+        }
       })
+    })
+    return out
+  }, [posts, phrases, found])
+
+  const pick = (postId, i) => {
+    setFeedback(null)
+    setSel(cur => (cur && cur.postId === postId)
+      ? { postId, anchor: cur.anchor, from: Math.min(cur.anchor, i), to: Math.max(cur.anchor, i) }
+      : { postId, anchor: i, from: i, to: i })
+  }
+
+  const mark = (post) => {
+    if (!sel || sel.postId !== post.id) return
+    const text = norm(post.tokens.slice(sel.from, sel.to + 1).map(t => t.text).join(''))
+    const hit = phrases.find(ph => ph.norm === text && !found.includes(ph.id))
+    setSel(null)
+    if (hit) {
+      const next = [...found, hit.id]
+      setFound(next)
+      setFeedback({ type: 'correct', text: hit.correctFeedback ?? 'Nobody published that.' })
+      triggerDiscovery(phrases.every(ph => next.includes(ph.id)) ? 'major' : 'minor')
+      return
     }
+    if (phrases.some(ph => ph.norm === text)) {
+      setFeedback({ type: 'info', text: 'You have already put that one up.' })
+      return
+    }
+    const nth = wrongCount + 1
+    setWrongCount(nth)
+    if (activePath) markWrongGuess(activePath, nth)
+    const decoy = decoys.find(d => d.norm === text)
+    setFeedback({
+      type: 'wrong',
+      text: `${decoy?.feedback ?? content.missFeedback ?? 'Nothing in those words was ever private.'} (+${wrongCost(nth)} min)`,
+    })
   }
 
   return (
     <div className="ph-root">
       <div className="mp-bar" role="status">
-        <span>Marked {marked.filter(id => required.includes(id)).length} / {required.length}</span>
-        <span className="mp-bar-hint">{content.hint ?? 'Mark the words that were never made public'}</span>
+        <span>Marked {found.length} / {phrases.length}</span>
+        <span className="mp-bar-hint">{content.hint ?? 'Click the first word of a phrase, then its last word'}</span>
       </div>
 
       <div className="ph-body">
-        {content.posts.map(post => (
-          <article key={post.id} className="ph-post">
-            <header className="ph-meta">
-              <span className="ph-who">{post.who}</span>
-              <span className="ph-when">{post.when}</span>
-            </header>
-            <p className="ph-text">
-              {post.parts.map((part, i) => (
-                part.id ? (
-                  <button key={i} type="button"
-                    className={`ph-mark ${marked.includes(part.id) ? (part.required ? 'hit' : 'miss') : ''}`}
-                    disabled={done}
-                    aria-label={`Mark the phrase "${part.text}"`}
-                    onClick={() => mark(part)}>
-                    {part.text}
-                  </button>
-                ) : <span key={i}>{part.text}</span>
-              ))}
-            </p>
-          </article>
+        {posts.map(post => (
+          <Post key={post.id} post={post} tokens={post.tokens}
+            sel={sel && sel.postId === post.id ? sel : null}
+            hits={hitsFor[post.id] ?? []}
+            disabled={done}
+            onPick={(i) => pick(post.id, i)}
+            onClear={() => setSel(null)}
+            onMark={() => mark(post)} />
         ))}
       </div>
 

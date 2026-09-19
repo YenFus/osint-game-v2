@@ -586,6 +586,14 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
     min-height: 44px;
     min-width: 44px;
   }
+
+  /* …but a word inside a sentence is not a button-shaped thing. The blanket
+     rule turned the phrase lead's prose into a grid of 44px tiles, one word
+     per tile. Words keep their place in the line and get their touch area
+     from an overlay that paints nothing and moves nothing. */
+  .ph-w, .ph-gap { min-height: 0; min-width: 0; }
+  .ph-w { position: relative; }
+  .ph-w::after { content: ''; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
 }
 
 /* Small mobile */
@@ -789,6 +797,14 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
     min-height: 44px;
     min-width: 44px;
   }
+
+  /* …but a word inside a sentence is not a button-shaped thing. The blanket
+     rule turned the phrase lead's prose into a grid of 44px tiles, one word
+     per tile. Words keep their place in the line and get their touch area
+     from an overlay that paints nothing and moves nothing. */
+  .ph-w, .ph-gap { min-height: 0; min-width: 0; }
+  .ph-w { position: relative; }
+  .ph-w::after { content: ''; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
 
   /* Input fields larger on mobile */
   input[type="text"], input[type="email"], input[type="password"], textarea {

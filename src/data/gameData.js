@@ -110,39 +110,41 @@ export const GAME_DATA = {
         },
         content: {
           prompt: 'Mark the words nobody published',
-          hint: 'Ordinary posts, a few extraordinary words. Routes, names, timetables.',
+          hint: 'Click the first word of a phrase, then its last word. Routes, names, timetables.',
+          // Nothing on this page is marked. Six posts, every word selectable,
+          // three phrases that could only have come from watching her.
           posts: [
-            { id: 'sm-003', who: 'u/stillwater_m', when: 'r/PDXmissing · Feb 22', parts: [
-              { text: 'Those Coava sightings — wasn\'t that near ' },
-              { id: 'p-route', required: true, text: 'her Tuesday route', correctFeedback: "Her Tuesday route. She walked it every week and never once posted about it. Her flatmate knew. Her mother knew. Nobody else had any business knowing." },
-              { text: '?' },
-            ]},
-            { id: 'sm-008', who: 'u/stillwater_m', when: 'r/PDXmissing · Jan 11', parts: [
-              { text: 'Careful what we post. ' },
-              { id: 'p-class', required: true, text: 'Her class schedule', correctFeedback: "Her class schedule. Not in the paper, not on her profile. And he is the one asking for it to be taken down." },
-              { text: ' should stay off-thread.' },
-            ]},
-            { id: 'sm-006', who: 'u/stillwater_m', when: 'r/photography · Feb 1', parts: [
-              { text: 'Shot this at the ' },
-              { id: 'p-artsnight', text: 'Millhaven Arts Night', wrongFeedback: 'The arts night was in every write-up of the case. Him being there is a fact worth keeping — it just was not a secret.' },
-              { text: ' last spring. Good crowd, bad light.' },
-            ]},
-            { id: 'sm-005', who: 'u/stillwater_m', when: 'r/PDXmissing · Feb 9', parts: [
-              { text: 'Has anyone looked harder at the ex? ' },
-              { id: 'p-corey', text: 'Corey Marsh', wrongFeedback: 'Corey\'s name was on the forum for a year before this. He is repeating it, not revealing it — though who kept saying it is its own question.' },
-              { text: '. That\'s where I\'d look.' },
-            ]},
-            { id: 'sm-012', who: 'u/stillwater_m', when: 'r/PDXmissing · Dec 6', parts: [
-              { text: 'The roommate — ' },
-              { id: 'p-priya', required: true, text: 'Priya', correctFeedback: "He uses her flatmate's first name in December, like it is common knowledge. It was in one police statement and no newspaper." },
-              { text: ' — has she been interviewed properly? She was the last one in that flat.' },
-            ]},
-            { id: 'sm-002', who: 'u/stillwater_m', when: 'r/Portland · Feb 26', parts: [
-              { text: 'Cold but clear for ' },
-              { id: 'p-cycle', text: 'cycling the waterfront', wrongFeedback: 'A man went for a bike ride. Half the city posts this.' },
-              { text: ' today.' },
-            ]},
+            { id: 'sm-003', who: 'u/stillwater_m', when: 'r/PDXmissing · Feb 22',
+              text: "Those Coava sightings — wasn't that near her Tuesday route?" },
+            { id: 'sm-008', who: 'u/stillwater_m', when: 'r/PDXmissing · Jan 11',
+              text: 'Careful what we post. Her class schedule should stay off-thread.' },
+            { id: 'sm-006', who: 'u/stillwater_m', when: 'r/photography · Feb 1',
+              text: 'Shot this at the Millhaven Arts Night last spring. Good crowd, bad light.' },
+            { id: 'sm-005', who: 'u/stillwater_m', when: 'r/PDXmissing · Feb 9',
+              text: "Has anyone looked harder at the ex? Corey Marsh. That's where I'd look." },
+            { id: 'sm-012', who: 'u/stillwater_m', when: 'r/PDXmissing · Dec 6',
+              text: 'The roommate — Priya — has she been interviewed properly? She was the last one in that flat.' },
+            { id: 'sm-002', who: 'u/stillwater_m', when: 'r/Portland · Feb 26',
+              text: 'Cold but clear for cycling the waterfront today.' },
           ],
+          phrases: [
+            { id: 'p-route', text: 'her Tuesday route', correctFeedback: "Her Tuesday route. She walked it every week and never once posted about it. Her flatmate knew. Her mother knew. Nobody else had any business knowing." },
+            { id: 'p-class', text: 'Her class schedule', correctFeedback: "Her class schedule. Not in the paper, not on her profile. And he is the one asking for it to be taken down." },
+            { id: 'p-priya', text: 'Priya', correctFeedback: "He uses her flatmate's first name in December, like it is common knowledge. It was in one police statement and no newspaper." },
+          ],
+          // The readings that are worth answering rather than just refusing.
+          decoys: [
+            { text: 'Millhaven Arts Night', feedback: 'The arts night was in every write-up of the case. Him being there is a fact worth keeping — it just was not a secret.' },
+            { text: 'Corey Marsh', feedback: "Corey's name was on the forum for a year before this. He is repeating it, not revealing it — though who kept saying it is its own question." },
+            { text: 'cycling the waterfront', feedback: 'A man went for a bike ride. Half the city posts this.' },
+            { text: 'Coava', feedback: 'A coffee shop with a queue out the door. The sightings there were in the first news bulletin.' },
+            { text: 'Those Coava sightings', feedback: 'The sightings were public within a week. It is what he puts next to them that is not.' },
+            { text: 'the roommate', feedback: 'Everyone knew she had a flatmate. Read on — it is the next word that he should not have had.' },
+            { text: 'the last one in that flat', feedback: 'The police said that much at the first press conference.' },
+            { text: 'the ex', feedback: 'Half the thread was saying "the ex" by February. A name is not the same as a fact.' },
+            { text: 'Good crowd, bad light', feedback: "A photographer complaining about a room. It tells you he was working, not that he was watching." },
+          ],
+          missFeedback: 'That was in the papers the first week.',
           completionNote: "Three phrases in four months. Her route, her timetable, her flatmate's name. Every one of them something you would only know by watching her, and he set them down in public like the weather.",
         },
         unlocks: ['A3'],
@@ -385,34 +387,63 @@ export const GAME_DATA = {
       // A9 — Browse: Twitter follow list — find stillwater_m follow of nightwatch_rc
       {
         id: 'A9',
-        type: 'browse',
+        type: 'compare',
         path: 'A',
-        title: "stillwater_m — Following List (Cached)",
+        title: "@nightwatch_rc — Against stillwater_m",
         tool: 'Twitter Archive',
         timestamp: { text: 'Maya\'s research — January', urgent: false },
-        monologue: null,
-        content: {
-          variant: 'reddit-profile',
-          username: 'stillwater_m — Following (47)',
-          joinDate: null,
-          karma: null,
-          posts: [
-            { id: 'f-001', subreddit: '@PDXmissing_news', text: 'Local missing persons news aggregator. Millhaven and Portland area.', date: null, wrongFeedback: 'Expected follow for someone engaged with the missing persons community.' },
-            { id: 'f-002', subreddit: '@OregonianNews', text: 'The Oregonian — Portland\'s daily newspaper.', date: null, wrongFeedback: 'Major regional news account. No case relevance.' },
-            { id: 'f-003', subreddit: '@velvet_echo_fan', text: 'Unofficial fan account for @velvet.echo — art, updates, photography. Not affiliated.', date: null, suspicious: false, wrongFeedback: "A fan account for Lena's work. It existed long before she vanished." },
-            { id: 'f-004', subreddit: '@millhaven_arts', text: 'Millhaven Arts Collective — events, exhibitions, community news.', date: null, wrongFeedback: 'Arts community account. Consistent with claimed background.' },
-            { id: 'f-005', subreddit: '@nightwatch_rc', text: 'Personal account. Photography, Pacific Northwest. Quiet here.', date: null, suspicious: true, correctFeedback: 'nightwatch_rc. Two initials and nothing else — no name, no posts, no picture. An account kept for watching, not for talking.', tagRequired: true },
-            { id: 'f-006', subreddit: '@stillwater_media', text: 'Stillwater Media — Pacific Northwest photography and documentary work. Portfolio: stillwater-media.net', date: null, suspicious: true, correctFeedback: 'And the business account. Whoever this is, he follows his own company.', tagRequired: true },
-            { id: 'f-007', subreddit: '@c_marsh_pdx', text: 'Corey Marsh — cars, Portland, Pacific Northwest.', date: null, wrongFeedback: 'He follows Corey Marsh — he knew exactly who to point everyone at.' },
-            { id: 'f-008', subreddit: '@rvelasquez_reporter', text: 'Rosa Velasquez — Pacific Reporter. Covering digital safety, online harm, missing persons.', date: null, wrongFeedback: 'A journalist on the missing persons beat. Worth remembering, not suspicious.' },
-            { id: 'f-009', subreddit: '@OregonStateRecords', text: 'Oregon Secretary of State — business registry, court records, elections.', date: null, wrongFeedback: 'Public records agency account. Could indicate familiarity with records research.' },
+        monologue: "Forty-seven accounts he follows, and one of them has never said a word. She opened that one.",
+        osintTip: {
+          id: 'sock-puppets',
+          title: 'Tying a Quiet Account to a Loud One',
+          body: 'A second account kept for watching rather than talking leaves very little to search for: no posts, no photograph, no name. What it cannot help leaving is circumstance. Creation dates, the exact set of accounts it follows, a header image cropped from somewhere else and the hours it is active are all set by the same person on the same day, and they line up with the account they were made to watch from.',
+          steps: [
+            'Note the creation date and compare it against events in the loud account\'s history',
+            'Compare the following lists — a watching account usually follows a small, telling subset',
+            'Reverse image search the avatar and header; they are often crops of the other account\'s own pictures',
+            'Compare posting hours and time zone across both accounts',
           ],
-          requiredTagIds: ['f-005', 'f-006'],
-          completionNote: "Two accounts that lead back to the same man: his own company, and a silent one with two initials on it.",
+          tools: ['Wayback Machine (profile captures)', 'Reverse image search (TinEye, Google Lens)', 'Twitter advanced search', 'Account creation date lookups'],
+        },
+        // This was the fourth "read a list, flag two rows" in thread A. The
+        // evidence is not that @nightwatch_rc looks odd — it is that four
+        // separate things about it match stillwater_m exactly, and a match is
+        // a thing you hold two documents up against each other to find.
+        content: {
+          prompt: 'Two profiles — link each detail to the one that matches it',
+          left: {
+            title: '@nightwatch_rc — the quiet account',
+            items: [
+              { id: 'n-created', label: 'Account created', text: '9 November — no posts since, ever' },
+              { id: 'n-follows', label: 'Following (6)', text: '@stillwater_m · @stillwater_media · @c_marsh_pdx · @PDXmissing_news · @rvelasquez_reporter · @OregonStateRecords' },
+              { id: 'n-header', label: 'Header image', text: 'A folding table under a brick wall. No caption. Uploaded the day the account was made' },
+              { id: 'n-bio', label: 'Bio', text: 'Empty. No name, no location, no photograph. Two initials in the handle and nothing else' },
+              { id: 'n-hours', label: 'Active hours', text: 'Reads the timeline between 11pm and 2am, Pacific' },
+            ],
+          },
+          right: {
+            title: 'stillwater_m — what you already have',
+            kicker: 'From the forum, the archive and the registration',
+            items: [
+              { id: 's-shield', label: 'Domain registration', text: 'Privacy shield switched on 9 November, five days after Maya\'s first forum message' },
+              { id: 's-corey', label: 'Forum, Dec 8 and Dec 22', text: 'The first person to name Corey Marsh, and the first to point anyone at his photographs' },
+              { id: 's-gallery', label: 'Flickr, April', text: 'His own photograph of the side gallery at the arts night: his kit on a folding table by the door' },
+              { id: 's-handle', label: 'The handle', text: 'stillwater_m — the domain, the company and the forum account, all the same two words' },
+              { id: 's-posts', label: 'Forum timestamps', text: 'Ninety-one of his hundred and four posts went up between 11pm and 2am' },
+            ],
+          },
+          pairs: [
+            { left: 'n-created', right: 's-shield', required: true, feedback: 'Made on 9 November — the same day he put the shield up. He hid one account and opened another in the same sitting.' },
+            { left: 'n-header', right: 's-gallery', required: true, feedback: "That is his own photograph. The header on the silent account is a crop of the picture stillwater_m posted from the arts night — the table, the brick, the same wall." },
+            { left: 'n-follows', right: 's-corey', required: true, feedback: "Six accounts, and one of them is Corey Marsh. This is the account watching the man stillwater_m spent December pointing everybody at." },
+            { left: 'n-hours', right: 's-posts', feedback: 'The same hours, down to the window. One man, awake at the same time, on two accounts.' },
+            { left: 'n-bio', right: 's-handle', feedback: 'Two initials against two words. It is a pointer, not a name — but it is the only thing on the account he chose himself.' },
+          ],
+          wrongFeedback: 'Those two do not say the same thing. Look for a date, an image or a list that appears on both sides.',
+          completionNote: "An account opened the same day he covered his name, wearing a crop of his own photograph, watching the man he spent December accusing. Whoever this is, he follows his own company — and he built somewhere to stand and watch from.",
         },
         unlocks: [],
       },
-
 
       // A11 — Connect: Final confirmation
       {
@@ -447,7 +478,7 @@ export const GAME_DATA = {
       // This is where Thread A finally puts a surname to the handle.
       {
         id: 'A12',
-        type: 'browse',
+        type: 'diff',
         path: 'A',
         title: "WHOIS History — stillwater-media.net",
         tool: 'WHOIS History',
@@ -459,28 +490,52 @@ export const GAME_DATA = {
           body: 'Privacy protection only hides a record from today onwards. Several services keep dated snapshots of what a domain\'s registration said in the past, and archives of registration data outlive the moment someone decides to hide. If a record is redacted now, look for what it said before.',
           steps: [
             'Look up the domain in a WHOIS history service',
-            'Compare each snapshot — note the date the details were withheld',
+            'Put the snapshots side by side and read them field against field',
             'Take the registrant name and address from the last open snapshot',
             'Confirm the name against a second, independent record',
           ],
           tools: ['WhoisFreaks / WhoISrequest history', 'DomainTools Whois History', 'SecurityTrails', 'Wayback Machine (registrar pages)'],
         },
+        // This used to be a third "open a record, flag the suspicious line".
+        // Two dated snapshots of one registration is a comparison with an
+        // objective answer: four fields say the same thing in September and
+        // November, and three do not. You are not judging a record. You are
+        // reading one column against the other, which is the whole technique.
         content: {
-          variant: 'records',
-          systemName: 'Registration history — stillwater-media.net',
-          prompt: 'Open the snapshots. Flag what the shield was covering',
-          records: [
-            { title: 'Snapshot — 2 September (before the shield)', summary: 'Registrant details public', fields: { 'Captured': '2 September', 'Privacy': 'Not enabled', 'Registrant Name': 'R. Callahan', 'Registrant Organization': 'Stillwater Media', 'Registrant Address': 'PO Box 441, Millhaven, OR 97411' }, body: null, taggable: [
-              { id: 'wx-01', text: 'Registrant Name: R. Callahan', suspicious: true, revealsName: true, correctFeedback: "The registration as it stood before he hid it, with a name on it." },
-              { id: 'wx-02', text: 'Registrant Address: PO Box 441, Millhaven, OR 97411', suspicious: true, correctFeedback: "The same postbox the shielded record still shows. Same man, before and after." },
-              { id: 'wx-03', text: 'Captured 2 September', suspicious: false, wrongFeedback: 'The date of the copy. It matters that it exists, not when it was taken.' },
-            ]},
-            { title: 'Snapshot — 14 November (after the shield)', summary: 'Registrant details withheld', fields: { 'Captured': '14 November', 'Privacy': 'Enabled — Domains By Proxy, LLC', 'Registrant Name': 'REDACTED FOR PRIVACY', 'Registrant Organization': 'Stillwater Media', 'Registrant Address': 'PO Box 441, Millhaven, OR 97411' }, body: null, taggable: [
-              { id: 'wx-04', text: 'Privacy enabled 14 November — five days after Maya\'s first forum message', suspicious: true, correctFeedback: "He hid his name five days after she started asking. He was watching her do it." },
-            ]},
+          prompt: 'Two snapshots of one registration — mark every field that changed',
+          hint: 'Seven fields, captured ten weeks apart. Read across, not down.',
+          before: {
+            id: 'before', label: 'Snapshot — registration open', when: 'Captured 2 September',
+            lines: [
+              { id: 'b1', meta: 'Domain', text: 'stillwater-media.net' },
+              { id: 'b2', meta: 'Privacy service', text: 'Not enabled', change: 'ch-shield' },
+              { id: 'b3', meta: 'Registrant name', text: 'R. Callahan', change: 'ch-name' },
+              { id: 'b4', meta: 'Registrant organisation', text: 'Stillwater Media' },
+              { id: 'b5', meta: 'Registrant address', text: 'PO Box 441, Millhaven, OR 97411' },
+              { id: 'b6', meta: 'Registrar', text: 'Namecheap, Inc.', wrongFeedback: 'The registrar is the same in both. He did not move the domain, he covered it.' },
+              { id: 'b7', meta: 'Created', text: '11 May, four years ago', wrongFeedback: 'A creation date cannot change. That is the one field a registration can never rewrite.' },
+              { id: 'b8', meta: 'Updated', text: '11 May, four years ago', change: 'ch-updated' },
+            ],
+          },
+          after: {
+            id: 'after', label: 'Snapshot — registration shielded', when: 'Captured 14 November',
+            lines: [
+              { id: 'a1', meta: 'Domain', text: 'stillwater-media.net' },
+              { id: 'a2', meta: 'Privacy service', text: 'Enabled — Domains By Proxy, LLC', change: 'ch-shield' },
+              { id: 'a3', meta: 'Registrant name', text: 'REDACTED FOR PRIVACY', change: 'ch-name' },
+              { id: 'a4', meta: 'Registrant organisation', text: 'Stillwater Media', wrongFeedback: 'The company name survived the shield in both captures. It is the thing he forgot to hide, not the thing he changed.' },
+              { id: 'a5', meta: 'Registrant address', text: 'PO Box 441, Millhaven, OR 97411', wrongFeedback: 'The same postbox, before and after. Same man — it is not what changed.' },
+              { id: 'a6', meta: 'Registrar', text: 'Namecheap, Inc.' },
+              { id: 'a7', meta: 'Created', text: '11 May, four years ago' },
+              { id: 'a8', meta: 'Updated', text: '9 November', change: 'ch-updated' },
+            ],
+          },
+          changes: [
+            { id: 'ch-name', revealsName: true, feedback: "R. Callahan. That is what the registration said in September, and it is what the shield went up to cover." },
+            { id: 'ch-shield', feedback: 'A privacy service, switched on between the two captures. Somebody decided in November that this record should stop being readable.' },
+            { id: 'ch-updated', feedback: "Updated on 9 November. Maya posted her first question on the forum on 4 November. He took five days to think about it." },
           ],
-          requiredTagIds: ['wx-01', 'wx-02', 'wx-04'],
-          completionNote: "R. Callahan, PO Box 441. And he covered it five days after my daughter asked her first question.",
+          completionNote: "Three fields moved and four did not. The company stayed, the postbox stayed, the registrar stayed — and the name went. R. Callahan, PO Box 441. He covered it five days after my daughter asked her first question.",
         },
         unlocks: [],
       },
@@ -520,9 +575,21 @@ export const GAME_DATA = {
                 { day: 'd13', hour: 4, feedback: 'That\'s UTC with the date ignored. Seven hours back from 4:40am on the 14th is Saturday night.' },
               ] },
           ],
+          // What the case already knows about those two nights. The strip used
+          // to be twelve empty cells over a quarter-panel of nothing; the
+          // hours are what you are placing the photographs against, so they
+          // belong on the page rather than in the hint.
           days: [
-            { id: 'd12', label: 'Friday, April 12' },
-            { id: 'd13', label: 'Saturday, April 13' },
+            { id: 'd12', label: 'Friday, April 12', facts: [
+              { at: '5:40pm', text: 'Lena leaves the studio. Last confirmed sighting before the weekend.' },
+              { at: '7:52pm', text: "A photograph is taken on Lena's street in Portland. Nobody has said who by." },
+              { at: '11:10pm', text: 'Her phone stops moving for the night at the flat.' },
+            ] },
+            { id: 'd13', label: 'Saturday, April 13', facts: [
+              { at: '6:38pm', text: 'Lena arrives at Alder Hall, Millhaven. Photographed in the doorway.' },
+              { at: '8:11pm', text: 'Her last post goes up from inside the hall.' },
+              { at: '9:50pm', text: 'The hall empties. Nobody reports seeing her leave.' },
+            ] },
           ],
           windows: [
             { day: 'd12', from: 19, to: 24, label: 'Someone photographs Lena\'s street, Portland' },
@@ -600,49 +667,50 @@ export const GAME_DATA = {
       // B2 — Browse: forum archive — find 23 stillwater_m posts
       {
         id: 'B2',
-        type: 'browse',
+        type: 'connect',
         path: 'B',
-        title: "PDXmissing Forum — Full Archive",
+        title: "PDXmissing Forum — What He Should Not Have Known",
         tool: 'Forum Archive',
         timestamp: { text: 'December into January', urgent: false },
-        monologue: "She read the forum the way I used to read case files. Everything. Every post.",
+        monologue: "She read the forum the way I used to read case files. Everything. Every post. Then she asked the only question that matters: where could he have got that?",
         osintTip: {
           id: 'forum-archive',
-          title: 'Forum & Community Archive Research',
-          body: 'Online forums often have public archives accessible through web crawlers. Forum posts reveal patterns of behavior — when a user is online, what they respond to, what they ignore, and how their tone changes over time. Cross-referencing forum activity timestamps against real-world events is a standard OSINT technique.',
+          title: 'Reading an Account Against the Public Record',
+          body: 'Forum archives are easy to collect and hard to use. The useful pass is not "which post sounds sinister" — tone proves nothing — but "what does this post contain, and where else does that detail exist?" Build the public record first: press releases, published statements, what the forum itself already said and on what date. Then every claim either has a public source or it does not, and the ones that do not are the whole case.',
           steps: [
-            'Search forum usernames with site: operator on Google',
-            'Use Wayback Machine for older archived threads',
-            'Filter by username to see isolated post history',
-            'Map post timestamps against case timeline',
+            'Pull the account\'s full post history with dates',
+            'Build a dated list of what had been published, and by whom',
+            'For each specific claim, name the public source it could have come from',
+            'The claims with no source left are what needs explaining',
           ],
-          tools: ['Google: site:forum.com "username"', 'Wayback Machine', 'Forum-specific search', 'OSINT Framework'],
+          tools: ['Google: site:forum.com "username"', 'Wayback Machine', 'Police press releases', 'Court dockets'],
         },
+        // Was a fifth "read the thread, flag five rows", which is a tone
+        // judgement. Four of his posts, four places a detail could have come
+        // from: you are asked to source each claim, and two of them have no
+        // source that is not her.
         content: {
-          prompt: 'Flag where he steers the thread toward Corey',
-          variant: 'forum',
-          forumName: 'PDXmissing — Lena Vasquez thread',
-          posts: [
-            { id: 'fp-01', username: 'stillwater_m', threadTitle: 'General Discussion', date: 'Dec 2', text: 'Police dropped the ball here. Her people deserve answers.', wrongFeedback: 'Generic community sympathy post. Not specific enough to flag.' },
-            { id: 'fp-02', username: 'worried_mom_pdx', threadTitle: 'General Discussion', date: 'Dec 4', text: 'Has anyone tried her university? They\'d have records.', wrongFeedback: "Another community member's post. Not relevant." },
-            { id: 'fp-03', username: 'stillwater_m', threadTitle: 'Person of Interest Discussion', date: 'Dec 8', text: 'The ex deserves more attention. Corey Marsh. I\'ve seen things online.', suspicious: true, correctFeedback: "The first time anyone says Corey's name, it's him saying it. Nobody had suspected anyone yet.", tagRequired: true },
-            { id: 'fp-04', username: 'PDXtruth99', threadTitle: 'Evidence & Sightings', date: 'Dec 11', text: 'Anyone have photos from the arts night?', wrongFeedback: 'Other forum user asking about photos. Not stillwater_m.' },
-            { id: 'fp-05', username: 'stillwater_m', threadTitle: 'Evidence & Sightings', date: 'Dec 15', text: 'I know that building. Happy to help identify faces.', suspicious: true, correctFeedback: 'He offers to put names to faces from that night. How does a stranger know the room that well?', tagRequired: true },
-            { id: 'fp-06', username: 'lena_knew_her', threadTitle: 'General Discussion', date: 'Dec 19', text: 'I took a class with her. Quiet. Made this dark ceramic piece I still think about.', wrongFeedback: "Personal memory from a classmate. Not stillwater_m." },
-            { id: 'fp-07', username: 'stillwater_m', threadTitle: 'Person of Interest Discussion', date: 'Dec 22', text: 'Corey Marsh\'s Flickr has location data near her neighborhood. Someone should look.', suspicious: true, correctFeedback: "He points everyone at Corey's photographs. He'd have opened them himself. He knows they're pictures of a garage.", tagRequired: true },
-            { id: 'fp-08', username: 'PortlandMom412', threadTitle: 'General Discussion', date: 'Dec 27', text: 'Praying for her family. Not at the holidays.', wrongFeedback: 'Holiday sympathy post from another user.' },
-            { id: 'fp-09', username: 'stillwater_m', threadTitle: 'Evidence & Sightings', date: 'Jan 4', text: 'Someone told me she had a Tuesday routine — coffee on Burnside before class. Worth checking?', suspicious: true, correctFeedback: "The Tuesday route again. \"Someone told me,\" he says. Nobody posted it. So who told him?", tagRequired: true },
-            { id: 'fp-10', username: 'missing_justice_pdx', threadTitle: 'Person of Interest Discussion', date: 'Jan 9', text: 'Keep it to facts. No naming people without evidence.', wrongFeedback: 'Moderating post from another user.' },
-            { id: 'fp-11', username: 'stillwater_m', threadTitle: 'Person of Interest Discussion', date: 'Jan 11', text: 'I have screenshots of Corey\'s behavior, if the mods want them.', suspicious: true, correctFeedback: 'More proof against Corey, handed over free. Maya checked it. None of it held.', tagRequired: true },
-            { id: 'fp-12', username: 'velvet_watcher', threadTitle: 'Lena Before She Disappeared', date: 'Jan 16', text: 'She posted normally right up to that last arts night photo.', wrongFeedback: 'Community observation from another user.' },
-            { id: 'fp-13', username: 'stillwater_m', threadTitle: 'General Discussion', date: 'Jan 20', text: 'Strange to say, but I feel like I knew her. She had a real voice.', suspicious: false, wrongFeedback: "Parasocial attachment. Unsettling, but plenty of followers talk like this." },
+          cards: [
+            { id: 'q-route', label: 'Jan 4 — stillwater_m', details: '"Someone told me she had a Tuesday routine — coffee on Burnside before class. Worth checking?"' },
+            { id: 'q-corey', label: 'Dec 8 — stillwater_m', details: '"The ex deserves more attention. Corey Marsh. I\'ve seen things online."' },
+            { id: 'q-room', label: 'Dec 15 — stillwater_m', details: '"I know that building. Happy to help identify faces."' },
+            { id: 'q-flickr', label: 'Dec 22 — stillwater_m', details: '"Corey Marsh\'s Flickr has location data near her neighborhood. Someone should look."' },
+            { id: 'src-press', label: 'Police press release, Apr 18', details: 'Name, age, last seen at the arts night, what she was wearing. Nothing about her week.' },
+            { id: 'src-thread', label: 'The thread itself, before Dec 8', details: 'Two hundred posts. Nobody has named anybody. No suspect has been put forward by anyone.' },
+            { id: 'src-flickr', label: 'c_marsh_pdx on Flickr', details: 'Public album. EXIF left on. Opening one photograph shows where it was taken.' },
+            { id: 'src-nowhere', label: 'Nowhere public', details: 'Not in a paper, not on her profile, not in the thread. Known to her flatmate, her mother, and whoever was watching her' },
           ],
-          requiredTagIds: ['fp-03', 'fp-05', 'fp-07', 'fp-09', 'fp-11'],
-          completionNote: "Five posts. Three push me toward Corey. Two give away things that were never in the papers. She underlined every one in red.",
+          requiredConnections: [
+            { from: 'q-route', to: 'src-nowhere', label: "Her Tuesday route has no public source — and \"someone told me\" has no name on it" },
+            { from: 'q-room', to: 'src-nowhere', label: 'Nobody publishes the inside of a building. He offers to name faces in a room he should not know' },
+            { from: 'q-corey', to: 'src-thread', label: 'Two hundred posts and no suspect. He is not repeating a name, he is introducing one' },
+            { from: 'q-flickr', to: 'src-flickr', label: "He had opened Corey's photographs himself before he sent everybody to them" },
+          ],
+          wrongFeedback: "That post could not have come from there. Ask where the detail exists — a press release, the thread, an open album — and if it exists nowhere public, say so.",
+          completionNote: "Four posts, four answers. Two came from somewhere anybody could reach. Two came from nowhere at all — and in between them he handed the thread a suspect it had not thought of. She underlined every one in red.",
         },
         unlocks: ['B4'],
       },
-
 
       // B4 — Tag: 3 posts showing insider knowledge (subtle)
       // B4 — Compare: his posts against the statement he should never have read.
@@ -1019,42 +1087,44 @@ export const GAME_DATA = {
       // C4 — Browse: newspaper archive — find matching building
       {
         id: 'C4',
-        type: 'browse',
+        type: 'connect',
         path: 'C',
         title: "Millhaven Courier — Archive Search",
         tool: 'Newspaper Archive',
         timestamp: { text: 'verifying through press records', urgent: false },
-        monologue: "Local newspapers archive everything. She knew that.",
+        monologue: "Local newspapers archive everything. She knew that. Three items, twenty years apart, and every one of them lands on the same postbox.",
         osintTip: {
           id: 'newspaper-archive',
           title: 'Local Newspaper Archive Research',
-          body: 'Local newspapers publish event listings, business announcements, court summaries, and community notices that never appear in larger outlets. Many have searchable digital archives. Others have been digitized by universities, local libraries, or ProQuest.',
+          body: 'Local newspapers publish event listings, business announcements, court summaries and community notices that never appear in larger outlets. Read singly they are trivia. Read against each other they are a record of who was where and who owned what, because a small paper covers the same few streets for decades — and a credit line, a property notice and a court summary will name the same postbox without ever naming the man.',
           steps: [
-            'Search the newspaper\'s website directly for the person\'s name',
+            'Search the newspaper\'s website directly for the person\'s name and their company',
             'Try Google: site:newspaper.com "person name"',
-            'Contact the local library — many maintain print archive rooms',
-            'ProQuest Historical Newspapers covers some regional papers',
+            'Read the small print — credits, notices and summaries carry the detail the story does not',
+            'Contact the local library; many maintain print archive rooms',
           ],
           tools: ['Newspapers.com', 'ProQuest', 'GenealogyBank', 'Local library archives', 'Chronicling America (Library of Congress)'],
         },
+        // Was a sixth "open a record, flag the suspicious line". The Courier
+        // pieces mean nothing apart and everything together, which is what
+        // the lead now asks for: join each cutting to the thing it confirms.
         content: {
-          variant: 'news-archive',
-          systemName: 'Millhaven Courier — Digital Archive',
-          records: [
-            { title: 'Arts Collective Celebrates 10th Annual Spring Exhibition', summary: 'Apr 15 — Local coverage of the arts night. Photographer credit listed.', fields: { 'Date': 'April 15', 'Author': 'Staff Reporter, M. Connors', 'Section': 'Community Arts' }, body: 'The Arts Collective\'s tenth Spring Exhibition drew over 400 people to Alder Hall on Saturday. Collective director Owen Pryce, who introduced the evening\'s speakers, declined to release the guest list.\n\nEvent photography provided by Stillwater Media.\n\nWork from 34 local artists. Lena Vasquez, who has not been seen since the event, is noted as having attended.', taggable: [
-              { id: 'ta-01', text: '"Event photography provided by Stillwater Media."', suspicious: true, correctFeedback: "Stillwater Media. The same two words as the handle, the domain and the sign on that table. Whoever runs that account was working the room she vanished from." },
-              { id: 'ta-02', text: '"Lena Vasquez, who has not been seen since the event, is noted as having attended."', suspicious: true, correctFeedback: "The paper puts Lena at the arts night — the last place anybody saw her, on the record, in print." },
-              { id: 'ta-03', text: '"over 400 attendees"', suspicious: false, wrongFeedback: 'Attendance figure. Not relevant to the investigation.' },
-              { id: 'ta-06', text: '"Collective director Owen Pryce declined to release the guest list."', suspicious: false, wrongFeedback: "A man protecting his members\u2019 names, or a man with something to hide. Either way the paper does not say he was ever out of that hall." },
-            ]},
-            { title: 'Alder Hall Listed on Millhaven Historic Register', summary: 'Jun 3 (3 years ago) — Building designation announcement.', fields: { 'Date': '3 years ago', 'Section': 'Local History' }, body: 'Alder Hall joins the Millhaven Historic Register after nearly 80 years of community use.\n\nBuilt in 1944 and held by a family trust ever since. The trust donated partial use of the hall to the Arts Collective in 2014. The Courier\'s request for comment went to a PO box.' },
-            { title: 'Harassment Case Settled — Man Ordered to Stay Away', summary: '4 years ago — Court filing summary. Name partially redacted.', fields: { 'Date': '4 years ago', 'Section': 'Court Records' }, body: 'A Millhaven man has been issued a restraining order after a harassment complaint.\n\nThe respondent — case number MH-2021-0384 — must keep 300 yards from the complainant.\n\nThe Courier does not publish names in these cases. The order is on file with the county clerk.', taggable: [
-              { id: 'ta-04', text: 'Case number MH-2021-0384 — the restraining order', suspicious: true, correctFeedback: "A case number. Four years old, and she'd written it down." },
-              { id: 'ta-05', text: '"ordered to maintain a distance of 300 yards from the complainant"', suspicious: false, wrongFeedback: "Standard restraining order language. Not a specific clue." },
-            ]},
+          cards: [
+            { id: 'cut-credit', label: 'Apr 15 — Spring Exhibition', details: '"Event photography provided by Stillwater Media." 400 attended. Director Owen Pryce declined to release the guest list' },
+            { id: 'cut-lena', label: 'Apr 15 — same piece', details: '"Lena Vasquez, who has not been seen since the event, is noted as having attended"' },
+            { id: 'cut-hall', label: '3 years ago — Historic Register', details: 'Alder Hall, built 1944, held by a family trust. "The Courier\'s request for comment went to a PO box"' },
+            { id: 'cut-court', label: '4 years ago — Court Records', details: '"A Millhaven man" issued a restraining order. Case MH-2021-0384. "The Courier does not publish names in these cases"' },
+            { id: 'brd-domain', label: 'stillwater-media.net', details: 'The shielded registration. Organisation: Stillwater Media. PO Box 441, Millhaven' },
+            { id: 'brd-lastseen', label: 'Last confirmed sighting', details: 'Velvet.echo\'s final post, from the doorway of a hall, the night she disappeared' },
+            { id: 'brd-clerk', label: 'Marion County Court portal', details: 'Any case number pulls the full unredacted filing. The names the paper withholds are on it' },
           ],
-          requiredTagIds: ['ta-01', 'ta-02', 'ta-04'],
-          completionNote: "Three items: the photographer credit, Lena's confirmed attendance, and the case number. Three fragments of the same story.",
+          requiredConnections: [
+            { from: 'cut-credit', to: 'brd-domain', label: 'The paper credits the same two words as the registration — whoever runs that account was working the room she vanished from' },
+            { from: 'cut-lena', to: 'brd-lastseen', label: 'The paper puts Lena at the arts night. Her own last post puts her in the doorway of it' },
+            { from: 'cut-court', to: 'brd-clerk', label: 'The paper held the name back and printed the case number. That number is the key to the filing that did not' },
+          ],
+          wrongFeedback: 'Those two do not confirm each other. Look for the same company, the same place, or the same reference number.',
+          completionNote: "Three items: the photographer credit, Lena's confirmed attendance, and a case number the paper printed because it would not print a name. Three fragments of the same story — and a postbox that keeps turning up in a town this size.",
         },
         unlocks: ['C5', 'C9'],
       },
@@ -1148,38 +1218,63 @@ export const GAME_DATA = {
       // C6 — Tag: tag key facts in court record
       {
         id: 'C6',
-        type: 'browse',
+        type: 'diff',
         path: 'C',
         title: "Marion County Court — Case MH-2021-0384",
         tool: 'Court Records',
         timestamp: { text: 'pulling the court record', urgent: true },
-        monologue: "The full filing. Not the redacted newspaper version. The actual document.",
+        monologue: "The Courier printed a summary and held the names back. The clerk's copy holds nothing back.",
         osintTip: {
           id: 'court-records',
           title: 'Public Court Record Access',
-          body: 'Court filings are public records in the US unless specifically sealed by a judge. Restraining orders, civil complaints, and criminal records are searchable through state court portals and PACER (federal cases). Case numbers from newspaper reports can be used to pull the full unredacted filing.',
+          body: 'Court filings are public records in the US unless specifically sealed by a judge. Newspapers routinely withhold names in harassment and civil-protection cases as a matter of editorial policy — the court does not. A case number printed in a press summary is the key to the unredacted filing behind it, and the difference between the two documents is often the whole story.',
           steps: [
-            'Use the case number from the newspaper or other source',
-            'Search the state\'s court case lookup portal',
-            'Federal cases: PACER.gov (small fee per page)',
-            'Some states provide free access to civil records',
+            'Take the case number out of the newspaper summary',
+            'Search the state\'s court case lookup portal for that number',
+            'Read the filing against the published summary, line for line',
+            'Federal cases: PACER.gov, or CourtListener for free copies',
           ],
           tools: ['Oregon eCourt Case Information', 'PACER (federal)', 'CourtListener (free federal)', 'RECAP Archive'],
           warning: 'Sealed records are sealed for legal reasons — do not attempt to access them through unofficial means.',
         },
+        // Was a fourth "open a record, flag the suspicious line". The Courier
+        // told you in C4 that it does not publish names in these cases; this
+        // is that sentence made playable. Same case, two documents, and what
+        // the paper left out is the entire point.
         content: {
-          variant: 'court',
-          systemName: 'Marion County Court — Civil Filing',
-          records: [
-            { title: 'Case MH-2021-0384 — Restraining Order (Civil)', summary: 'Filed 4 years ago. Petitioner: K. Nair. Respondent named in the filing.', fields: { 'Case Number': 'MH-2021-0384', 'Case Type': 'Restraining Order — Civil Harassment', 'Filing Date': '4 years ago', 'Petitioner': 'K. Nair', 'Respondent': 'Raymond T. Callahan, PO Box 441, Millhaven, OR', 'Order Duration': '2 years (expired)', 'Status': 'Closed' }, body: 'PETITION FOR RESTRAINING ORDER\n\nPetitioner states that Respondent, Raymond T. Callahan, has engaged in a pattern of unwanted contact and surveillance over a period of eight months.\n\nSpecific conduct included:\n— Appearing at locations known only through Petitioner\'s private communications\n— Monitoring Petitioner\'s email account without consent\n— Creating online profiles to follow Petitioner\'s activities under pseudonymous accounts\n— Following Petitioner in a vehicle on four documented occasions\n\nRespondent denied all allegations. No criminal charges were filed.\n\nOrder granted. Respondent ordered to maintain 300-yard distance from Petitioner for a period of two years.\n\nOrder expired. No renewal sought.', taggable: [
-              { id: 'cr-01', text: 'Respondent: Raymond T. Callahan, PO Box 441, Millhaven, OR', suspicious: true, revealsName: true, correctFeedback: "His full name and his address, filed with a court. Nothing here came from me, or from Maya." },
-              { id: 'cr-02', text: '"Creating online profiles to follow Petitioner\'s activities under pseudonymous accounts"', suspicious: true, correctFeedback: "Accounts under names that weren't his. He did it four years ago, and a judge wrote it down." },
-              { id: 'cr-03', text: '"Appearing at locations known only through Petitioner\'s private communications" and "Monitoring Petitioner\'s email account without consent"', suspicious: true, correctFeedback: "He read her mail. He turned up in places she had only written down. Ray has had a key to my house for twenty years." },
-              { id: 'cr-04', text: 'Order expired. No renewal sought.', suspicious: false, wrongFeedback: "The expiration is significant but not a specific flag. The behavior described in the order is what matters." },
-            ]},
+          prompt: 'The printed summary against the clerk\'s copy — mark what the paper withheld',
+          hint: 'Same case, same day. Six lines. Read the paper against the filing.',
+          before: {
+            id: 'before', label: 'Millhaven Courier — court summary', when: 'As printed',
+            lines: [
+              { id: 'p1', meta: 'Case', text: 'Case number MH-2021-0384', wrongFeedback: 'The case number is identical in both — it is how you found the filing in the first place.' },
+              { id: 'p2', meta: 'Respondent', text: '"A Millhaven man"', change: 'ch-resp' },
+              { id: 'p3', meta: 'Petitioner', text: '"the complainant"', change: 'ch-pet' },
+              { id: 'p4', meta: 'Conduct alleged', text: '"a harassment complaint"', change: 'ch-conduct' },
+              { id: 'p5', meta: 'Method', text: '— not reported —', change: 'ch-method' },
+              { id: 'p6', meta: 'Order', text: 'Must keep 300 yards from the complainant', wrongFeedback: 'The distance is in both documents. Standard order language, printed as filed.' },
+              { id: 'p7', meta: 'Outcome', text: 'Order granted, two years. Expired, no renewal sought.', wrongFeedback: 'Both say the order was granted and left to expire. Nothing was held back here.' },
+            ],
+          },
+          after: {
+            id: 'after', label: 'Marion County Court — civil filing', when: 'As filed',
+            lines: [
+              { id: 'c1', meta: 'Case', text: 'Case number MH-2021-0384' },
+              { id: 'c2', meta: 'Respondent', text: 'Raymond T. Callahan, PO Box 441, Millhaven, OR', change: 'ch-resp' },
+              { id: 'c3', meta: 'Petitioner', text: 'K. Nair', change: 'ch-pet' },
+              { id: 'c4', meta: 'Conduct alleged', text: '"a pattern of unwanted contact and surveillance over a period of eight months"', change: 'ch-conduct' },
+              { id: 'c5', meta: 'Method', text: '"Creating online profiles to follow Petitioner\'s activities under pseudonymous accounts"; "Monitoring Petitioner\'s email account without consent"; "Appearing at locations known only through Petitioner\'s private communications"', change: 'ch-method' },
+              { id: 'c6', meta: 'Order', text: 'Must keep 300 yards from the complainant' },
+              { id: 'c7', meta: 'Outcome', text: 'Order granted, two years. Expired, no renewal sought.' },
+            ],
+          },
+          changes: [
+            { id: 'ch-resp', revealsName: true, feedback: "The paper printed \"a Millhaven man\". The court printed Raymond T. Callahan, PO Box 441. Nothing here came from me, or from Maya." },
+            { id: 'ch-pet', feedback: 'K. Nair. She has a name too, and she went to a judge four years before any of this.' },
+            { id: 'ch-conduct', feedback: '"A harassment complaint" in the paper. Eight months of contact and surveillance in the filing. The summary is not wrong. It is just small enough to skim past.' },
+            { id: 'ch-method', feedback: "Fake accounts. Reading her mail. Turning up where she had only written she would be. The paper reported none of it — and a judge wrote every word of it down four years ago. Ray has had a key to my house for twenty years." },
           ],
-          requiredTagIds: ['cr-01', 'cr-02', 'cr-03'],
-          completionNote: "Four years ago. A different woman.",
+          completionNote: "Four years ago. A different woman. He denied all of it and no charges were ever filed, so the order ran two years and expired and that was that. The same three things, in a court's own words — and the Courier printed him as \"a Millhaven man\".",
         },
         unlocks: ['C7'],
       },

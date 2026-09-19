@@ -373,26 +373,56 @@ describe('diff leads', () => {
 
 describe('phrase leads', () => {
   const leads = allLeads().filter(n => n.type === 'phrase')
+  // The lead compares the words you pick against the words in the post the
+  // same way the component does, so a phrase that cannot be selected is a
+  // failing test rather than a lead nobody can finish.
+  const norm = (t) => t.toLowerCase().replace(/[\u2018\u2019]/g, "'")
+    .replace(/[^a-z0-9'\s]+/g, ' ').replace(/\s+/g, ' ').trim()
+  const runsOf = (text) => {
+    const words = text.split(/\s+/).filter(Boolean)
+    const out = new Set()
+    for (let a = 0; a < words.length; a++)
+      for (let b = a; b < words.length; b++) out.add(norm(words.slice(a, b + 1).join(' ')))
+    return out
+  }
 
-  it('asks for phrases that are inside the post they belong to', () => {
+  it('asks only for phrases that can actually be selected in a post', () => {
+    for (const node of leads) {
+      const all = new Set()
+      for (const post of node.content.posts) {
+        expect(post.text.trim().length, `${node.id}: ${post.id} has no text`).toBeGreaterThan(10)
+        runsOf(post.text).forEach(r => all.add(r))
+      }
+      for (const ph of node.content.phrases) {
+        expect(all.has(norm(ph.text)), `${node.id}: "${ph.text}" is not a run of words in any post`).toBe(true)
+      }
+      for (const d of node.content.decoys ?? []) {
+        expect(all.has(norm(d.text)), `${node.id}: decoy "${d.text}" is not a run of words in any post`).toBe(true)
+      }
+    }
+  })
+
+  it('marks nothing in the prose, so the reading is the puzzle', () => {
     for (const node of leads) {
       for (const post of node.content.posts) {
-        const marks = post.parts.filter(p => p.id)
-        expect(marks.length, `${node.id}: ${post.id} has nothing to mark`).toBeGreaterThan(0)
-        for (const m of marks) expect(m.text.trim().length, `${node.id}: an empty phrase`).toBeGreaterThan(1)
+        // a post carrying its own list of markable parts is the old shape,
+        // which signposted every candidate with an underline
+        expect(post.parts, `${node.id}: ${post.id} still signposts its answers`).toBeUndefined()
       }
     }
   })
 
   it('keeps decoys, so marking is a judgement and not a sweep', () => {
     for (const node of leads) {
-      const marks = node.content.posts.flatMap(p => p.parts.filter(x => x.id))
-      const req = marks.filter(m => m.required)
-      expect(req.length, `${node.id} has no required phrases`).toBeGreaterThan(1)
-      expect(marks.length - req.length, `${node.id} has no wrong phrases to mark`).toBeGreaterThan(1)
-      for (const m of marks) {
-        expect(m.required ? m.correctFeedback : m.wrongFeedback, `${node.id}: "${m.text}" has no feedback`).toBeTruthy()
+      expect(node.content.phrases.length, `${node.id} has too few required phrases`).toBeGreaterThan(1)
+      expect((node.content.decoys ?? []).length, `${node.id} has no answered wrong readings`).toBeGreaterThan(1)
+      for (const ph of node.content.phrases) {
+        expect(ph.correctFeedback, `${node.id}: "${ph.text}" has no feedback`).toBeTruthy()
       }
+      for (const d of node.content.decoys ?? []) {
+        expect(d.feedback, `${node.id}: decoy "${d.text}" has no feedback`).toBeTruthy()
+      }
+      expect(node.content.missFeedback, `${node.id} has no fallback for an unlisted miss`).toBeTruthy()
     }
   })
 })

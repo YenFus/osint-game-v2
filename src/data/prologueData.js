@@ -34,6 +34,15 @@ export const PROLOGUE_BEATS = [
     id: 'voicemail',
     art: 'voicemail',
     stamp: 'Monday · 7:52 am — unheard',
+    // The one beat in this game that wanted a recording rather than a
+    // waveform drawn with Math.sin. It plays on a press, not on arrival:
+    // pressing play on your daughter's last message is the beat.
+    audio: {
+      src: 'audio/maya-voicemail.mp4',
+      label: "Maya's voicemail, Monday 7:52am",
+      // what is actually said, for anyone who cannot or will not hear it
+      transcript: "Dad, it's me. I need to tell you something, and I should have told you weeks ago. It's about what I've been working on. I'm okay. I want you to hear me say that first. But if I don't call you back tonight, I need you to — hang on. Someone's at the door.",
+    },
     lines: [
       { text: 'There was one waiting for me. From the morning before.' },
       { text: '"Dad, it\'s me. I need to tell you something—"', voice: 'maya' },

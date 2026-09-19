@@ -21,6 +21,15 @@ const INK = '#e8ecf4'
 const DIM = '#68718a'
 const RED = '#d8443a'
 
+// Measured from the recording, 56 RMS buckets normalised to its peak.
+const VM_WAVE = [
+  0.61, 0.46, 0.63, 0.22, 0.08, 0.75, 0.81, 0.73, 0.46, 0.71, 0.73, 0.78, 0.66, 0.81,
+  0.29, 0.08, 0.51, 0.89, 0.81, 0.78, 0.76, 0.08, 0.68, 0.84, 0.32, 0.56, 0.76, 0.72,
+  0.75, 0.69, 0.50, 0.08, 0.08, 0.80, 0.77, 1.00, 0.73, 0.65, 0.70, 0.59, 0.57, 0.08,
+  0.08, 0.08, 0.08, 0.75, 0.76, 0.08, 0.08, 0.08, 0.44, 0.79, 0.75, 0.58, 0.08, 0.08,
+]
+const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+
 // A phone held in the dark: the screen is the only light in the frame.
 function Screen({ children, x = 520, y = 40, w = 560, h = 820 }) {
   return (
@@ -96,27 +105,37 @@ const SCENES = {
   ),
 
   // ── the voicemail that was already waiting ──────────────────────
-  voicemail: (u) => (
-    <>
-      <Glow u={u} cx={800} cy={420} rx={520} ry={420} />
-      <Screen>
-        <text x="800" y="150" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={DIM} letterSpacing="5">VOICEMAIL</text>
-        <text x="800" y="200" textAnchor="middle" fontFamily={UI} fontSize="36" fill={INK}>Maya</text>
-        <text x="800" y="232" textAnchor="middle" fontFamily={MONO} fontSize="15" fill={RED}>Mon 7:52 am · unheard</text>
-        {Array.from({ length: 40 }).map((_, i) => {
-          const dead = i > 29
-          const h = dead ? 5 + (i % 3) * 2 : 14 + Math.abs(Math.sin(i * 0.8)) * 116
-          return <rect key={i} x={556 + i * 12.4} y={430 - h / 2} width="6.5" height={h} rx="3.2"
-            fill={dead ? '#2b3242' : '#8fb6ea'} />
-        })}
-        <path d="M926 336 v190" stroke={RED} strokeWidth="3" strokeDasharray="9 7" />
-        <path d="M596 636 H1004" stroke="#1b2130" strokeWidth="4" />
-        <circle cx="596" cy="636" r="7" fill="#8fb6ea" />
-        <text x="596" y="672" fontFamily={MONO} fontSize="16" fill={DIM}>0:00</text>
-        <text x="1004" y="672" textAnchor="end" fontFamily={MONO} fontSize="16" fill={DIM}>0:19</text>
-      </Screen>
-    </>
-  ),
+  // The bars are the RMS envelope of public/audio/maya-voicemail.m4a in 56
+  // buckets, measured off the file — so the shape on the screen is the shape
+  // of what you are about to hear, including the gap before "hang on".
+  voicemail: (u, st = {}) => {
+    const prog = Math.max(0, Math.min(1, st.progress ?? 0))
+    const cur = st.duration ? st.duration * prog : 0
+    return (
+      <>
+        <Glow u={u} cx={800} cy={420} rx={520} ry={420} />
+        <Screen>
+          <text x="800" y="150" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={DIM} letterSpacing="5">VOICEMAIL</text>
+          <text x="800" y="200" textAnchor="middle" fontFamily={UI} fontSize="36" fill={INK}>Maya</text>
+          <text x="800" y="232" textAnchor="middle" fontFamily={MONO} fontSize="15" fill={RED}>
+            Mon 7:52 am · {st.played ? 'played' : 'unheard'}
+          </text>
+          {VM_WAVE.map((v, i) => {
+            const h = 10 + v * 120
+            const past = (i + 0.5) / VM_WAVE.length <= prog
+            return <rect key={i} x={556 + i * 8.0} y={430 - h / 2} width="4.6" height={h} rx="2.3"
+              fill={past ? '#8fb6ea' : '#2b3242'} />
+          })}
+          <path d={`M${596 + 408 * prog} 336 v190`} stroke={RED} strokeWidth="3" strokeDasharray="9 7" />
+          <path d="M596 636 H1004" stroke="#1b2130" strokeWidth="4" />
+          <path d={`M596 636 H${596 + 408 * prog}`} stroke="#8fb6ea" strokeWidth="4" />
+          <circle cx={596 + 408 * prog} cy="636" r="7" fill="#8fb6ea" />
+          <text x="596" y="672" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(cur)}</text>
+          <text x="1004" y="672" textAnchor="end" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(st.duration ?? 0)}</text>
+        </Screen>
+      </>
+    )
+  },
 
   // ── who is calling ──────────────────────────────────────────────
   ray: (u) => (
@@ -223,7 +242,7 @@ function useIsPortrait() {
   return p
 }
 
-export function PrologueArt({ scene, className, style }) {
+export function PrologueArt({ scene, className, style, playback }) {
   const raw = useId()
   const id = raw.replace(/[^a-zA-Z0-9]/g, '')
   const u = (n) => `${n}-${id}`
@@ -256,7 +275,7 @@ export function PrologueArt({ scene, className, style }) {
         </filter>
       </defs>
       <rect x="-600" y="-400" width="2800" height="1700" fill="#05070c" />
-      {draw(u)}
+      {draw(u, playback)}
       <rect x="-600" y="-400" width="2800" height="1700" filter={`url(#${u('grain')})`} opacity="0.28" />
     </svg>
   )

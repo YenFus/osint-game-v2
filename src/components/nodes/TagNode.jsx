@@ -103,10 +103,8 @@ export function TagNode({ content, onComplete, nodeId = null }) {
   const examine = (item) => {
     setFocusId(item.id)
     if (!examined.includes(item.id)) setExamined(prev => [...prev, item.id])
-    // The zoom sits under the plate on a narrow screen. It used to be
-    // scrolled to, which pushed the photograph off the top of the screen —
-    // you could see the detail or the picture it came from, never both.
-    // The plate stays put now and the zoom comes to meet it.
+    // The zoom sits under the plate on a narrow screen. The plate stays put
+    // (it is sticky) and the effect below brings the zoom up to meet it.
   }
 
   const flagButton = (item) => {
@@ -161,6 +159,36 @@ export function TagNode({ content, onComplete, nodeId = null }) {
   }
 
   const focused = content.items.find(i => i.id === focusId)
+
+  // On a phone the magnified view sits in a column below the photograph, off
+  // the bottom of the screen — you tapped a detail and nothing appeared to
+  // happen. zoomRef was declared when this node was written and never wired.
+  //
+  // A plain scrollIntoView is what an earlier round removed, because it drove
+  // the photograph off the top and you could see the detail or the picture it
+  // came from but never both. That is why .photo-main is sticky. So scroll the
+  // pane by exactly the amount that brings the zoom up under the sticky plate,
+  // and no further.
+  useEffect(() => {
+    if (!focusId || !zoomRef.current) return
+    if (!window.matchMedia('(max-width: 768px)').matches) return
+    const el = zoomRef.current
+    let sc = el.parentElement
+    while (sc && !(sc.scrollHeight > sc.clientHeight + 2 && /auto|scroll/.test(getComputedStyle(sc).overflowY))) {
+      sc = sc.parentElement
+    }
+    if (!sc) return
+    // only a *pinned* plate is a floor; on a short screen it scrolls away
+    const plate = sc.querySelector('.photo-main')
+    const pinned = plate && getComputedStyle(plate).position === 'sticky'
+    const floor = pinned ? plate.getBoundingClientRect().bottom : sc.getBoundingClientRect().top
+    const gap = el.getBoundingClientRect().top - floor
+    if (gap <= 1) return
+    sc.scrollBy({
+      top: gap,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    })
+  }, [focusId])
   // In the photo, the zoomed-in card already shows the focused detail
   const listItems = hotspotMode ? [] : content.items
   const examinedChips = hotspotMode

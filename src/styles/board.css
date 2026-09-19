@@ -1428,13 +1428,42 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
    back up to find the photograph again. */
 @media (max-width: 768px) {
   .photo-main {
-    position: sticky; top: 0; z-index: 3;
     background: #0c0b0e; padding-bottom: 6px;
+  }
+  /* Keeping the photograph pinned while you read the magnified detail only
+     works if the pane is tall enough to hold both. At a 600px viewport the
+     lead body is 274px and the pinned plate took 236 of it, so the glass got
+     38px. Below that, the photograph scrolls away and the glass gets the pane. */
+  @media (min-height: 700px) {
+    .photo-main {
+      position: sticky; top: 0; z-index: 3;
+    }
   }
   .photo-main .plate { border-width: 6px; border-bottom-width: 14px; }
   .zoomwin { margin-top: 8px; }
-  /* the magnified pane does not need to be as tall as the photo itself */
-  .zoomwin, .zoomwin.empty { max-height: 40vh; }
+
+  /* Both of these were sized off a fixed aspect ratio, so on a phone with
+     browser chrome the sticky plate ate the screen and only 14-27% of the
+     magnified view fitted underneath it — tap a detail, see almost none of
+     it. Budget the viewport instead: the photograph and the glass each take
+     about a third, which leaves the header and the caption the rest.
+     dvh so the address bar collapsing does not change the deal. */
+  .photo-main .plate {
+    padding-top: 0;
+    height: 31vh;
+    height: 31dvh;
+  }
+  .zoomwin {
+    padding-top: 0;
+    height: 34vh;
+    height: 34dvh;
+    max-height: none;
+  }
+  .zoomwin.empty {
+    height: auto;
+    min-height: 150px;
+    max-height: 34dvh;
+  }
 }
 
 /* ── Diff lead: two captures of one page, side by side ───────────── */
@@ -1779,4 +1808,21 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 }
 @media (max-width: 700px) {
   .inp-records-grid { grid-template-columns: 1fr; }
+}
+
+/* ── the burned notebook page, on a phone ────────────────────────
+   Two failures here, in order. The page is a flex item and shrank below
+   its own content, so the recovered handwriting spilled out across the
+   brightness slider. Giving it flex-shrink:0 fixed that and created the
+   next one: at a 600px viewport the page then filled the screen and
+   pushed both sliders off the bottom — the controls the lead is made of.
+   So budget it, the way the photo lead budgets its plate, and let the
+   page itself scroll if a long entry needs it. */
+@media (max-width: 768px) {
+  .rec-page {
+    max-height: 38vh;
+    max-height: 38dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }

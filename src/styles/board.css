@@ -1619,3 +1619,137 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .ph-clear-btn:hover { background: rgba(255,255,255,0.05); color: #d8d0bc; }
 .ph-mark-btn:focus-visible, .ph-clear-btn:focus-visible { outline: 2px solid #d4a84b; outline-offset: 2px; }
 @media (max-width: 760px) { .ph-body { padding: 12px 10px; } .ph-text { font-size: 16px; line-height: 1.8; } }
+
+/* ── the ending reveal plate ─────────────────────────────────────
+   The plate itself is aria-hidden decoration; this button carries its
+   text for assistive tech and is the control that advances to the file.
+   It covers the whole plate so a click anywhere still works, exactly as
+   it did when the plate was a div with an onClick. */
+.end-reveal-skip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  z-index: 2;
+  /* keep the accessible name, drop the ink */
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+}
+.end-reveal-skip:focus-visible {
+  outline: 2px solid #c0a060;
+  outline-offset: -10px;
+}
+
+/* ── the escape hatch out of a lead ──────────────────────────────
+   This is the primary way back to the board from all 28 lead panels and
+   it painted as 63x16px, under the 24x24 floor. The negative margins keep
+   it optically flush with the header row it sits in. */
+.lo-back {
+  padding: 9px 12px;
+  /* left only: a negative right margin eats the flex gap and the focus ring
+     then paints over the timestamp beside it */
+  margin: 0 0 0 -12px;
+  border-radius: 3px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.lo-back:hover {
+  background: #ffffff0d;
+}
+.lo-back:focus-visible {
+  outline: 2px solid #c0a060;
+  outline-offset: 0;
+}
+
+/* ── records on the desk, for the input leads ────────────────────
+   A3 and A8 are early in thread A, so the notes column beside them is
+   nearly empty and the question sat over ~400px of black. These are the
+   documents the question refers to, open where it can be read. */
+.inp-records {
+  margin-top: 26px;
+  border-top: 1px solid #1d2331;
+  padding-top: 18px;
+}
+.inp-records-head {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #6f7c93;
+  margin-bottom: 14px;
+}
+.inp-records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.inp-rec {
+  border: 1px solid #263048;
+  background: linear-gradient(#0d1220, #0a0e18);
+  padding: 14px 16px 16px;
+}
+.inp-rec header {
+  /* a flex row squeezed "OREGON BUSINESS REGISTRY" into three stacked words
+     against the meta beside it; the meta gets its own line instead */
+  display: block;
+  border-bottom: 1px solid #1e2636;
+  padding-bottom: 9px;
+  margin-bottom: 11px;
+}
+.inp-rec header > * {
+  display: block;
+}
+.inp-rec-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9fb4d4;
+}
+.inp-rec-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #5f6b80;
+  margin-top: 4px;
+}
+.inp-rec dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(74px, auto) 1fr;
+  gap: 7px 14px;
+}
+.inp-rec dl > div {
+  display: contents;
+}
+.inp-rec dt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #667389;
+  padding-top: 2px;
+}
+.inp-rec dd {
+  margin: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #cbd6e6;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.inp-rec-note {
+  margin: 12px 0 0;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 13.5px;
+  color: #8b8578;
+  line-height: 1.6;
+}
+@media (max-width: 700px) {
+  .inp-records-grid { grid-template-columns: 1fr; }
+}

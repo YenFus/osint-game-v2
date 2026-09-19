@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useModalFocus } from '../hooks/useModalFocus'
 import { useGameStore } from '../store/gameStore'
 
@@ -38,6 +38,14 @@ function formatDate(timestamp) {
 
 // Mobile-friendly save slots
 function SaveSlot({ slot, index, mode, onSave, onLoad, onDelete }) {
+  // Deleting a slot used to be a single click with nothing between it and a
+  // wiped save. Arm it first; it disarms itself after five seconds.
+  const [armed, setArmed] = useState(false)
+  useEffect(() => {
+    if (!armed) return undefined
+    const t = setTimeout(() => setArmed(false), 5000)
+    return () => clearTimeout(t)
+  }, [armed])
   const isEmpty = !slot
   const canSave = mode === 'save' || mode === 'both'
   const isDisabled = !canSave && isEmpty
@@ -145,11 +153,16 @@ function SaveSlot({ slot, index, mode, onSave, onLoad, onDelete }) {
 
           {!isEmpty && (
             <button
-              onClick={() => onDelete(index)}
-              className="font-mono text-sm text-[#b4584c] border-2 border-[#5c2a24] px-4 py-3 hover:bg-[#241010] hover:border-[#8a3a30] transition-all cursor-pointer rounded min-h-[48px]"
-              aria-label={`Delete save in slot ${index + 1}`}
+              onClick={() => { if (armed) { setArmed(false); onDelete(index) } else setArmed(true) }}
+              onBlur={() => setArmed(false)}
+              className={`font-mono text-sm px-4 py-3 border-2 transition-all cursor-pointer rounded min-h-[48px] ${armed
+                ? 'text-[#f0d8d4] border-[#b4584c] bg-[#3a1512]'
+                : 'text-[#b4584c] border-[#5c2a24] hover:bg-[#241010] hover:border-[#8a3a30]'}`}
+              aria-label={armed
+                ? `Confirm deleting the save in slot ${index + 1}. This cannot be undone.`
+                : `Delete save in slot ${index + 1}`}
             >
-              Delete
+              {armed ? 'Confirm?' : 'Delete'}
             </button>
           )}
         </div>

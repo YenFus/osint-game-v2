@@ -134,9 +134,11 @@ export default function ApartmentPage() {
             </p>
           </div>
 
-          {/* Objects to investigate */}
-          <div className="px-4 sm:px-8 py-3 sm:py-6 flex-1">
-            <div className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-5">
+          {/* Objects to investigate. The board exposes eight landmarks and this
+              screen exposed one, so assistive tech navigated the two main
+              screens of the game in completely different ways. */}
+          <section className="px-4 sm:px-8 py-3 sm:py-6 flex-1" aria-labelledby="apt-poi">
+            <div id="apt-poi" className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-5">
               Points of Interest
             </div>
             <div className="space-y-3">
@@ -257,11 +259,11 @@ export default function ApartmentPage() {
                 )
               })}
             </div>
-          </div>
+          </section>
 
           {/* Path tracker + convergence */}
-          <div className="px-4 sm:px-8 py-3 sm:py-6 border-t border-[#1a1a28]">
-            <div className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-4">
+          <section className="px-4 sm:px-8 py-3 sm:py-6 border-t border-[#1a1a28]" aria-labelledby="apt-threads">
+            <div id="apt-threads" className="font-mono text-xs text-[#908878] tracking-[0.2em] uppercase mb-4">
               Investigation Threads
             </div>
             <div className="flex gap-6 mb-4">
@@ -288,18 +290,18 @@ export default function ApartmentPage() {
             >
               {completedCount >= 2 ? 'The Suspect is open on the board →' : 'Open the case board →'}
             </button>
-          </div>
+          </section>
         </div>
 
         {/* ── THE ROOM — click what you want to examine ── */}
-        <div className="flex relative overflow-hidden order-first md:order-none md:flex-1 md:min-h-0">
+        <section aria-label="Maya's apartment" className="flex relative overflow-hidden order-first md:order-none md:flex-1 md:min-h-0">
           <ApartmentRoom paths={paths} onPick={(p) => beginInvestigation(p)} />
           <div className="absolute bottom-6 left-0 right-0 hidden md:flex justify-center pointer-events-none" style={{ zIndex: 5 }}>
             <p className="text-[15px] italic" style={{ fontFamily: "'Crimson Pro', serif", color: 'rgba(180,166,140,0.6)' }}>
               Three threads. One answer.
             </p>
           </div>
-        </div>
+        </section>
       </div>
 
       {/* Save modal */}

@@ -113,7 +113,7 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
           <div className="lo-card hidden sm:block"><PolaroidArt scene={node.card?.scene ?? 'document'} /></div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <button onClick={onClose} className="font-mono text-xs text-[#a09888] hover:text-[#f0e0c0] uppercase tracking-[0.15em]">← Board</button>
+              <button onClick={onClose} className="lo-back font-mono text-xs text-[#a09888] hover:text-[#f0e0c0] uppercase tracking-[0.15em]">← Board</button>
               <span className="hidden sm:inline font-mono text-[12px] tracking-[0.2em] uppercase" style={{ color: node.timestamp?.urgent ? '#e04a3a' : '#8a7a60' }}>
                 {THREADS[pathKey].title} · {node.timestamp?.text}
               </span>

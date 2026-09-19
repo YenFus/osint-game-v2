@@ -14,6 +14,7 @@ import {
 import { GAME_DATA } from '../data/gameData'
 // the ending is built out of the board's material, so it needs its styles
 import '../styles/board.css'
+import { assetCssUrl } from '../assetUrl'
 
 const LENA = 'In a storage unit Ray rented off Route 9, investigators found Lena Vasquez\'s camera and phone. Eleven months after she vanished, her family finally had an answer. Not the one they had prayed for.'
 
@@ -282,9 +283,14 @@ export default function EndingPage() {
   const [showCall, setShowCall] = useState(true)
   const [phase, setPhase] = useState('reveal')
   useEffect(() => {
-    const t = setTimeout(() => setPhase('details'), 5200)
-    return () => clearTimeout(t)
-  }, [])
+    if (phase !== 'reveal') return undefined
+    const go = () => setPhase('details')
+    const t = setTimeout(go, 5200)
+    // the plate says "press any key", so honour that and not just Enter/Space
+    const onKey = (e) => { if (!e.metaKey && !e.ctrlKey && !e.altKey) go() }
+    window.addEventListener('keydown', onKey)
+    return () => { clearTimeout(t); window.removeEventListener('keydown', onKey) }
+  }, [phase])
 
   const restart = () => {
     useGameStore.getState().resetGame()
@@ -293,9 +299,14 @@ export default function EndingPage() {
 
   if (phase === 'reveal') {
     return (
-      <div className="fixed inset-0 flex items-center justify-center p-6 cursor-pointer" onClick={() => setPhase('details')}
+      <div className="fixed inset-0 flex items-center justify-center p-6"
         style={{ background: `radial-gradient(circle at center, ${ending.color}26 0%, #08080e 70%)` }}>
-        <div className="text-center" style={{ animation: 'fadeUp 1.4s ease forwards' }}>
+        {/* the whole plate is the control: clicking anywhere works, and it is a real
+            button so Enter, Space and a screen reader all reach the epilogue too */}
+        <button type="button" className="end-reveal-skip" autoFocus onClick={() => setPhase('details')}>
+          Maya Reyes — {ending.status}{afterLabel ? `, ${afterLabel}` : ''}. Continue to the case file.
+        </button>
+        <div className="text-center end-reveal-plate" aria-hidden="true" style={{ animation: 'fadeUp 1.4s ease forwards' }}>
           <div className="font-mono text-xs tracking-[0.4em] uppercase mb-5" style={{ color: ending.color }}>Maya Reyes</div>
           <h1 className="font-black uppercase tracking-tight mb-4"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.4rem, 9vw, 6.5rem)', color: ending.color, textShadow: `0 0 60px ${ending.color}55` }}>
@@ -307,7 +318,7 @@ export default function EndingPage() {
           <div className="font-mono text-sm tracking-[0.2em] uppercase text-[#9a9a98]">
             {totalHours === null ? 'Missing since Monday' : `Missing ${totalHours} hours in total`} · {evaluation.suspect === 'ray' ? 'Ray Callahan' : 'The man who took her'}: <span style={{ color: ending.color }}>{ending.ray}</span>
           </div>
-          <div className="font-mono text-xs text-[#5a5a68] mt-12 animate-pulse">Click to continue</div>
+          <div className="font-mono text-xs text-[#5a5a68] mt-12 animate-pulse">Press any key to continue</div>
         </div>
       </div>
     )
@@ -316,7 +327,7 @@ export default function EndingPage() {
   const mood = rayMood(suspicion)
 
   return (
-    <div className="end-root" style={{ '--cork': `url(${import.meta.env.BASE_URL}art/cork-surface.jpg)` }}>
+    <div className="end-root" style={{ '--cork': assetCssUrl('art/cork-surface.jpg') }}>
       <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-8 relative">
 
         {/* the file, closed and stamped — not a score */}

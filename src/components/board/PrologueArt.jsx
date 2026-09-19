@@ -28,6 +28,14 @@ const VM_WAVE = [
   0.75, 0.69, 0.50, 0.08, 0.08, 0.80, 0.77, 1.00, 0.73, 0.65, 0.70, 0.59, 0.57, 0.08,
   0.08, 0.08, 0.08, 0.75, 0.76, 0.08, 0.08, 0.08, 0.44, 0.79, 0.75, 0.58, 0.08, 0.08,
 ]
+
+// The waveform's geometry, shared with the playhead so the two cannot drift:
+// bars of width VM_BAR on a VM_PITCH grid, spanning VM_X0..VM_X1.
+const VM_X0 = 556
+const VM_PITCH = 8.0
+const VM_BAR = 4.6
+const VM_X1 = VM_X0 + (VM_WAVE.length - 1) * VM_PITCH + VM_BAR
+const VM_SPAN = VM_X1 - VM_X0
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
 // A phone held in the dark: the screen is the only light in the frame.
@@ -123,15 +131,18 @@ const SCENES = {
           {VM_WAVE.map((v, i) => {
             const h = 10 + v * 120
             const past = (i + 0.5) / VM_WAVE.length <= prog
-            return <rect key={i} x={556 + i * 8.0} y={430 - h / 2} width="4.6" height={h} rx="2.3"
+            return <rect key={i} x={VM_X0 + i * VM_PITCH} y={430 - h / 2} width={VM_BAR} height={h} rx="2.3"
               fill={past ? '#8fb6ea' : '#2b3242'} />
           })}
-          <path d={`M${596 + 408 * prog} 336 v190`} stroke={RED} strokeWidth="3" strokeDasharray="9 7" />
-          <path d="M596 636 H1004" stroke="#1b2130" strokeWidth="4" />
-          <path d={`M596 636 H${596 + 408 * prog}`} stroke="#8fb6ea" strokeWidth="4" />
-          <circle cx={596 + 408 * prog} cy="636" r="7" fill="#8fb6ea" />
-          <text x="596" y="672" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(cur)}</text>
-          <text x="1004" y="672" textAnchor="end" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(st.duration ?? 0)}</text>
+          {/* the playhead rides the waveform's own extent — it used to run
+              556..1000.6 as bars and 596..1004 as a track, so at 0:00 the
+              marker sat five unlit bars inside the wave */}
+          <path d={`M${VM_X0 + VM_SPAN * prog} 336 v190`} stroke={RED} strokeWidth="3" strokeDasharray="9 7" />
+          <path d={`M${VM_X0} 636 H${VM_X1}`} stroke="#1b2130" strokeWidth="4" />
+          <path d={`M${VM_X0} 636 H${VM_X0 + VM_SPAN * prog}`} stroke="#8fb6ea" strokeWidth="4" />
+          <circle cx={VM_X0 + VM_SPAN * prog} cy="636" r="7" fill="#8fb6ea" />
+          <text x={VM_X0} y="672" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(cur)}</text>
+          <text x={VM_X1} y="672" textAnchor="end" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(st.duration ?? 0)}</text>
         </Screen>
       </>
     )

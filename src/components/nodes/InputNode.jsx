@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
 import { useDiscoveryFeedback } from '../discoveryContext'
 import { useGameStore } from '../../store/gameStore'
 import { useLeadProgress } from '../../hooks/useLeadProgress'
@@ -62,6 +62,9 @@ export function InputNode({ content, onComplete, nodeId = null }) {
   // reopening reset the ladder to a first-offence 15 minutes.
   const [wrongStreak, setWrongStreak] = useLeadProgress(nodeId, 'wrong', 0)
   const inputRef = useRef(null)
+  // one id per rendered question, so the field's name follows the question it answers
+  const baseId = useId()
+  const qid = `${baseId}q${answers.length}`
   const feedbackRef = useRef(null)
 
   useEffect(() => {
@@ -165,14 +168,14 @@ export function InputNode({ content, onComplete, nodeId = null }) {
             }}>
               Question {answers.length + 1} of {content.questions.length}
             </div>
-            <p style={{
+            <p id={`${qid}-prompt`} style={{
               fontFamily: 'Barlow Condensed, sans-serif', fontSize: 20,
               color: '#e0d8c8', lineHeight: 1.5, marginBottom: 16, fontWeight: 500,
             }}>
               {currentQ.prompt}
             </p>
             {currentQ.contextNote && (
-              <p style={{
+              <p id={`${qid}-note`} style={{
                 fontFamily: 'Crimson Pro, serif', fontSize: 14,
                 color: '#908878', lineHeight: 1.6, marginBottom: 18,
                 paddingLeft: 16, borderLeft: '2px solid #3a3a48', fontStyle: 'italic',
@@ -184,6 +187,9 @@ export function InputNode({ content, onComplete, nodeId = null }) {
               <input
                 ref={inputRef}
                 type="text"
+                id={`${qid}-answer`}
+                aria-labelledby={`${qid}-prompt`}
+                aria-describedby={currentQ.contextNote ? `${qid}-note` : undefined}
                 value={inputValue}
                 onChange={e => {
                   setInputValue(e.target.value)
@@ -278,6 +284,34 @@ export function InputNode({ content, onComplete, nodeId = null }) {
               </div>
             )}
           </div>
+        )}
+        {/* The records the question is actually about. A3 and A8 sit early in
+            their thread, so the notes column beside them is nearly bare and
+            the question was floating over 400px of black — and worse, it was
+            asking the player to recall a document rather than read one. */}
+        {content.records && (
+          <section className="inp-records" aria-label="Records on the desk">
+            <div className="inp-records-head">{content.recordsLabel ?? 'On the desk'}</div>
+            <div className="inp-records-grid">
+              {content.records.map(rec => (
+                <article key={rec.label} className="inp-rec">
+                  <header>
+                    <span className="inp-rec-label">{rec.label}</span>
+                    {rec.meta && <span className="inp-rec-meta">{rec.meta}</span>}
+                  </header>
+                  <dl>
+                    {rec.fields.map(([k, v]) => (
+                      <div key={k}>
+                        <dt>{k}</dt>
+                        <dd>{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  {rec.note && <p className="inp-rec-note">{rec.note}</p>}
+                </article>
+              ))}
+            </div>
+          </section>
         )}
         </div>
 

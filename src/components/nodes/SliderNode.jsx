@@ -91,8 +91,15 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
       {/* Page content */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div
+          className="rec-page"
           style={{
             position: 'relative',
+            // A flex item shrinks below its content by default, and this one
+            // has no overflow of its own — so on a short viewport the page
+            // squashed and the recovered handwriting spilled out of the
+            // notebook and across the brightness slider. The column above
+            // already scrolls; let it.
+            flexShrink: 0,
             filter: `brightness(${brightness}%) contrast(${contrast}%)`,
             background: '#1a0e06',
             padding: '28px 32px',
@@ -156,7 +163,7 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
         {/* Controls - Mobile-friendly sliders */}
         <div style={{
           display: 'flex', flexDirection: 'column', gap: 18,
-          padding: '20px 0',
+          padding: '20px 0', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <span style={{

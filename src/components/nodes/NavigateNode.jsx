@@ -48,7 +48,7 @@ function FileTreeNode({ node, onOpen, openedFiles, depth = 0 }) {
         onMouseLeave={e => e.currentTarget.style.color = isOpened ? '#6a9060' : '#8a8278'}
       >
         {/* an opened file used to reuse ▸, the glyph for a shut folder */}
-        <span aria-hidden="true" style={{ color: '#4a4840' }}>{isOpened ? '✓' : '·'}</span>
+        <span aria-hidden="true" style={{ color: '#7e7a6d' }}>{isOpened ? '✓' : '·'}</span>
         {node.name}
       </button>
     )
@@ -160,7 +160,7 @@ export function NavigateNode({ content, onComplete, nodeId = null }) {
       }}>
         <div style={{
           fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-          color: '#4a4840', letterSpacing: '0.3em', textTransform: 'uppercase',
+          color: '#7e7a6d', letterSpacing: '0.3em', textTransform: 'uppercase',
           padding: '8px 12px 12px',
         }}>
           File System
@@ -220,7 +220,7 @@ export function NavigateNode({ content, onComplete, nodeId = null }) {
           {!allRequired ? (
             <div style={{
               fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-              color: '#7a7060', letterSpacing: '0.05em',
+              color: '#857a68', letterSpacing: '0.05em',
             }}>
               {/* how many files still matter — not which ones. Naming them
                   turned three leads into "click the two we told you about". */}

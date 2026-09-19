@@ -19,7 +19,7 @@ function VolumeSlider({ label, value, onChange }) {
           background: `linear-gradient(to right, #c0392b 0%, #c0392b ${value * 100}%, #2a2a38 ${value * 100}%, #2a2a38 100%)`,
         }}
       />
-      <div className="font-mono text-[12px] text-[#6a6868] w-8 text-right">
+      <div className="font-mono text-[12px] text-[#7d7b7b] w-8 text-right">
         {Math.round(value * 100)}%
       </div>
     </div>
@@ -67,7 +67,7 @@ function Toggle({ label, checked, onChange, description }) {
           {label}
         </div>
         {description && (
-          <div className="font-mono text-[12px] text-[#6a6868] mt-1 leading-relaxed">
+          <div className="font-mono text-[12px] text-[#7d7b7b] mt-1 leading-relaxed">
             {description}
           </div>
         )}
@@ -91,7 +91,7 @@ function RadioGroup({ label, options, value, onChange }) {
               font-mono text-[12px] px-3 py-1.5 border transition-all cursor-pointer
               ${value === opt.value
                 ? 'border-red-800 text-red-500 bg-red-950/20'
-                : 'border-[#2a2a38] text-[#6a6868] hover:border-[#3a3a48] hover:text-[#8a8888]'
+                : 'border-[#2a2a38] text-[#7d7b7b] hover:border-[#3a3a48] hover:text-[#8a8888]'
               }
             `}
             aria-pressed={value === opt.value}

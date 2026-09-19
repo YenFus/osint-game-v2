@@ -210,7 +210,7 @@ export default function MainMenuPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowNewGameConfirm(false)}
-                className="flex-1 font-mono text-xs text-[#7a7068] border border-[#2a2a38] px-4 py-3 hover:border-[#4a4a58] hover:text-[#9a9088] transition-all cursor-pointer tracking-widest uppercase"
+                className="flex-1 font-mono text-xs text-[#7a7068] border border-[#2a2a38] px-4 py-3 hover:border-[#7a7a8f] hover:text-[#9a9088] transition-all cursor-pointer tracking-widest uppercase"
               >
                 Cancel
               </button>

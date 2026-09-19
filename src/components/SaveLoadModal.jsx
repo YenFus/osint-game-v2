@@ -259,7 +259,7 @@ export function SaveLoadModal({ mode = 'save', onClose }) {
 
         {/* Footer hint */}
         <div className="px-4 sm:px-6 py-4 border-t border-[#3a2c20]">
-          <p className="font-mono text-sm text-[#6a6868] text-center">
+          <p className="font-mono text-sm text-[#7d7b7b] text-center">
             {mode === 'load'
               ? 'Select a save slot to continue your investigation.'
               : 'Saves are stored in your browser. Clearing browser data will erase saves. Your current run is kept even without saving.'

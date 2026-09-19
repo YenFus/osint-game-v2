@@ -72,7 +72,7 @@ function RedditProfile({ content, onComplete, nodeId }) {
           <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#9a9890' }}>
             u/{content.username}
           </div>
-          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4840', marginTop: 3 }}>
+          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7e7a6d', marginTop: 3 }}>
             {content.karma?.toLocaleString()} karma · joined {content.joinDate}
           </div>
         </div>
@@ -185,7 +185,7 @@ function ForumArchive({ content, onComplete, nodeId }) {
       <div style={{
         padding: '10px 20px', borderBottom: '1px solid #1a1a28',
         fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-        color: '#4a4840', letterSpacing: '0.2em', textTransform: 'uppercase',
+        color: '#7e7a6d', letterSpacing: '0.2em', textTransform: 'uppercase',
         display: 'flex', justifyContent: 'space-between',
       }}>
         <span>{content.forumName ?? 'Forum Archive'}</span>
@@ -540,8 +540,8 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#c0b8a8', marginBottom: 8 }}>{activeEmail.subject}</div>
-            {activeEmail.from && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4840', marginBottom: 4 }}>From: {activeEmail.from}</div>}
-            {activeEmail.to && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4840', marginBottom: 4 }}>To: {activeEmail.to}</div>}
+            {activeEmail.from && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7e7a6d', marginBottom: 4 }}>From: {activeEmail.from}</div>}
+            {activeEmail.to && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7e7a6d', marginBottom: 4 }}>To: {activeEmail.to}</div>}
             {activeEmail.date && <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#3a3830', marginBottom: 12 }}>{activeEmail.date}</div>}
           </div>
           <pre style={{
@@ -592,7 +592,7 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
       </div>
 
       {/* Email list header */}
-      <div style={{ padding: '10px 16px', borderBottom: '1px solid #1a1a28', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#6a6868', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+      <div style={{ padding: '10px 16px', borderBottom: '1px solid #1a1a28', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7d7b7b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
         {activeFolder} · {folder?.emails?.length ?? 0} messages
       </div>
 
@@ -618,14 +618,14 @@ function GmailClient({ content, onComplete, onCinematicTrigger }) {
                 <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 13, color: isRead ? '#5a5868' : '#a0a0b8' }}>
                   {email.from ?? email.to ?? '(draft)'}
                 </span>
-                <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#4a4a58' }}>
+                <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7a7a8f' }}>
                   {email.date}
                 </span>
               </div>
               <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 14, color: isRead ? '#5a5868' : '#9a9aa8' }}>
                 {email.subject}
               </div>
-              <div style={{ fontFamily: 'Crimson Pro, serif', fontSize: 13, color: '#5a5a68', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              <div style={{ fontFamily: 'Crimson Pro, serif', fontSize: 13, color: '#7c7c8e', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                 {email.preview}
               </div>
             </button>

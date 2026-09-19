@@ -161,7 +161,7 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <span style={{
               fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
-              color: '#7a7868', letterSpacing: '0.15em', textTransform: 'uppercase',
+              color: '#838170', letterSpacing: '0.15em', textTransform: 'uppercase',
               width: 100, flexShrink: 0,
             }}>
               Brightness
@@ -186,7 +186,7 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <span style={{
               fontFamily: 'Share Tech Mono, monospace', fontSize: 13,
-              color: '#7a7868', letterSpacing: '0.15em', textTransform: 'uppercase',
+              color: '#838170', letterSpacing: '0.15em', textTransform: 'uppercase',
               width: 100, flexShrink: 0,
             }}>
               Contrast
@@ -214,7 +214,7 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
         <div style={{ marginBottom: 12 }}>
           <div style={{
             fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-            color: '#5a5a68', letterSpacing: '0.1em', marginBottom: 6,
+            color: '#7c7c8e', letterSpacing: '0.1em', marginBottom: 6,
             textTransform: 'uppercase',
           }}>
             Recovery progress
@@ -237,7 +237,7 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
             fontFamily: 'Crimson Pro, serif',
             fontStyle: 'italic',
             fontSize: 13,
-            color: '#4a4a58',
+            color: '#7a7a8f',
             margin: '0 0 4px',
           }}>
             Each page burned differently — recalibrate the sliders.
@@ -253,7 +253,7 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
           ) : (
             <span style={{
               fontFamily: 'Crimson Pro, serif', fontSize: 15,
-              color: '#6a6860', fontStyle: 'italic',
+              color: '#7e7b72', fontStyle: 'italic',
             }}>
               {readabilityProgress > 0.3
                 ? 'Getting closer... keep adjusting'

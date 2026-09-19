@@ -223,7 +223,7 @@ export function InputNode({ content, onComplete, nodeId = null }) {
             </div>
             <div style={{
               fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
-              color: '#5a5a68', marginTop: 10,
+              color: '#7c7c8e', marginTop: 10,
             }}>
               Press Enter to submit
             </div>
@@ -319,7 +319,7 @@ export function InputNode({ content, onComplete, nodeId = null }) {
             to ask the player to remember a line from another lead with the
             journal two clicks away behind the board — a memory test rather
             than an investigation. */}
-        <aside className="inp-notes" aria-label="What you have found so far">
+        <aside className="inp-notes" aria-label="What you have found so far" tabIndex={0}>
           <div className="inp-notes-head">Your notes</div>
           {notes.length === 0 && <p className="inp-notes-empty">Nothing in the drawer yet.</p>}
           <ul>

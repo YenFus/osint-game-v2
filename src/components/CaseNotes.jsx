@@ -86,7 +86,7 @@ export function CaseNotes({ onClose }) {
             >
               Case Notes
             </h2>
-            <div className="font-mono text-xs text-[#5a5a68] mt-1">
+            <div className="font-mono text-xs text-[#7c7c8e] mt-1">
               {tab === 'cast'
                 ? `${cast.length} ${cast.length === 1 ? 'person' : 'people'} named so far`
                 : `${totalDiscoveries} discoveries recorded`}
@@ -131,7 +131,7 @@ export function CaseNotes({ onClose }) {
                     style={{ fontFamily: "'Crimson Pro', serif" }}>{person.line}</p>
                 </div>
               ))}
-              <p className="font-mono text-[12px] text-[#5a5a68] pt-2">
+              <p className="font-mono text-[12px] text-[#7c7c8e] pt-2">
                 Names are added here as the case turns them up.
               </p>
             </div>

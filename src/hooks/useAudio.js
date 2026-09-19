@@ -60,6 +60,9 @@ class AudioEngine {
     this.reverbNode = null
     this.compressor = null
     this.ambientNodes = new Map()
+    // decoded room-tone beds, keyed by track name; see startAmbient
+    this.bedBuffers = new Map()
+    this.bedPending = new Map()
     this.initialized = false
   }
 
@@ -484,6 +487,57 @@ class AudioEngine {
 
   // ── AMBIENT MANAGEMENT ─────────────────────────────────────────────────
 
+  // Four of the rooms have a produced bed on disk — filtered noise layers with
+  // real movement, rendered by scripts/gen_ambience.py. The oscillator tracks
+  // below are what the audio sub-score was measuring; they stay as the
+  // fallback for anything that has no file, and for a failed fetch or decode.
+  async loadBed(name) {
+    if (this.bedBuffers.has(name)) return this.bedBuffers.get(name)
+    if (this.bedPending.has(name)) return this.bedPending.get(name)
+    const url = `${import.meta.env.BASE_URL}audio/amb-${name}.mp4`
+    const job = (async () => {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`${res.status} ${url}`)
+      const buf = await this.ctx.decodeAudioData(await res.arrayBuffer())
+      this.bedBuffers.set(name, buf)
+      return buf
+    })()
+    this.bedPending.set(name, job)
+    try {
+      return await job
+    } finally {
+      this.bedPending.delete(name)
+    }
+  }
+
+  startBed(name, buffer, volume) {
+    // the track may have been switched away from while the file was decoding
+    if (!this.ambientNodes.has(name)) return
+    const slot = this.ambientNodes.get(name)
+    if (slot.bedGain || slot.stopped) return
+    const now = this.ctx.currentTime
+
+    // The bed gets its own gain straight to master. The synth tracks run
+    // through the convolver; a recorded room already has its own space, and
+    // putting reverb on room tone just smears it.
+    const bedGain = this.ctx.createGain()
+    bedGain.gain.value = 0
+    bedGain.connect(this.masterGain)
+
+    const src = this.ctx.createBufferSource()
+    src.buffer = buffer
+    src.loop = true
+    src.connect(bedGain)
+    src.start(0, Math.random() * buffer.duration)   // don't always open on the same second
+
+    bedGain.gain.setTargetAtTime(volume * BED_LEVEL, now, 1.0)
+    // and take the oscillator track out from under it
+    slot.gain.gain.setTargetAtTime(0, now, 1.0)
+
+    slot.sources = [...(slot.sources ?? []), src]
+    slot.bedGain = bedGain
+  }
+
   startAmbient(name, volume = 1) {
     if (this.ambientNodes.has(name)) return
 
@@ -517,6 +571,11 @@ class AudioEngine {
       // Slow fade in — 1.2s time constant for gentle entrance
       nodes.gain.gain.setTargetAtTime(volume * 0.15, this.ctx.currentTime, 1.2)
       this.ambientNodes.set(name, nodes)
+      if (BED_TRACKS.has(name)) {
+        this.loadBed(name)
+          .then(buf => this.startBed(name, buf, volume))
+          .catch(() => { /* no file, or decode failed — the synth track carries it */ })
+      }
     }
   }
 
@@ -525,7 +584,13 @@ class AudioEngine {
   setAmbientVolume(volume) {
     if (!this.ctx) return
     for (const nodes of this.ambientNodes.values()) {
-      nodes.gain?.gain.setTargetAtTime(volume * 0.15, this.ctx.currentTime, 0.25)
+      // once a produced bed is playing it is the ambient layer, and the
+      // oscillator track under it stays at zero
+      if (nodes.bedGain) {
+        nodes.bedGain.gain.setTargetAtTime(volume * BED_LEVEL, this.ctx.currentTime, 0.25)
+      } else {
+        nodes.gain?.gain.setTargetAtTime(volume * 0.15, this.ctx.currentTime, 0.25)
+      }
     }
   }
 
@@ -534,7 +599,9 @@ class AudioEngine {
     if (!nodes) return
 
     // Slow fade out, then kill oscillators
+    nodes.stopped = true
     nodes.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.6)
+    nodes.bedGain?.gain.setTargetAtTime(0, this.ctx.currentTime, 0.6)
     setTimeout(() => {
       // stop() throws if a node was never started or already stopped — safe to ignore
       const stopQuietly = (n) => { try { n.stop() } catch { /* already stopped */ } }
@@ -548,6 +615,12 @@ class AudioEngine {
     this.ambientNodes.forEach((_, name) => this.stopAmbient(name))
   }
 }
+
+// Rooms with a produced bed in public/audio. The beds sit a little louder than
+// the oscillator tracks did: they are room tone rather than a drone, so they
+// need to be audible to do anything at all.
+const BED_LEVEL = 0.34
+const BED_TRACKS = new Set(['investigation', 'apartment', 'convergence', 'ending'])
 
 // Single shared engine instance
 const audioEngine = new AudioEngine()

@@ -1366,8 +1366,26 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   .mp-strip, .tl-photos {
     flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid #1c1a22;
     padding: 8px 10px; position: sticky; top: 0; z-index: 2; background: #0c0b0e;
+    /* A4 and A13 ask you to place three photographs and 1.7 of them fit. The
+       second was sliced clean through its own coordinates with nothing to say
+       there was a third. Snap so a swipe lands on a card, and hang a fade off
+       the right edge so the slice reads as "more this way" rather than as a
+       rendering fault. */
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 10px;
+    -webkit-overflow-scrolling: touch;
   }
-  .mp-strip li, .tl-photos li { flex: 0 0 210px; }
+  .mp-strip li, .tl-photos li { flex: 0 0 210px; scroll-snap-align: start; }
+  /* The fade is a mask on the scroller, not a sticky pseudo-element inside
+     it: a sticky child is positioned against the padding box and gets clipped
+     by the scrollport, so the card kept reappearing in the 10px gutter past
+     the gradient — which read as a rendering fault, worse than the hard cut
+     it replaced. A mask fades the scroller's own right edge, at any scroll
+     position, with nothing to mis-position. */
+  .mp-strip, .tl-photos {
+    -webkit-mask-image: linear-gradient(to left, transparent 0, #000 46px);
+    mask-image: linear-gradient(to left, transparent 0, #000 46px);
+  }
   .mp-sheets { grid-template-columns: 1fr; padding: 10px; }
   .tl-days { padding: 10px; }
   .tl-strip { grid-template-columns: repeat(6, minmax(0, 1fr)); }

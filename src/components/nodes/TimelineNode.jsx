@@ -78,7 +78,7 @@ export function TimelineNode({ content, onComplete, nodeId = null }) {
     <div className="tl-root">
       <div className="mp-bar" role="status">
         <span>Placed {placedCount} / {required.length}</span>
-        <span className="mp-bar-hint">{selected ? 'Now choose the hour it was taken' : 'Choose a photograph'}</span>
+        <span className="mp-bar-hint">{selected ? 'Now choose the two-hour block it falls in' : 'Choose a photograph'}</span>
       </div>
 
       <div className="tl-body">
@@ -123,7 +123,7 @@ export function TimelineNode({ content, onComplete, nodeId = null }) {
                       disabled={done}
                       onClick={() => handleSlot(day.id, start)}
                       aria-label={`${day.label}, ${clock(start)} to ${clock(start + SLOT_HOURS)}${win ? `, ${win.label}` : ''}${here.length ? `, ${here.length} placed` : ''}`}>
-                      <span className="tl-hour">{clock(start)}</span>
+                      <span className="tl-hour">{clock(start)}–{clock(start + SLOT_HOURS)}</span>
                       {here.map(p => (
                         <span key={p.id} className="tl-pin">
                           {plateSrc(p.filename) && <img src={plateSrc(p.filename)} alt="" />}

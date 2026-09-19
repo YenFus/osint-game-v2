@@ -28,7 +28,7 @@ export const THREAD_INFO = {
 // In-game minutes each lead type costs to work through
 export const LEAD_TIME_COST = {
   read: 10, navigate: 12, tag: 15, input: 12, slider: 15, browse: 18, connect: 15, typewriter: 5,
-  map: 15, timeline: 12, compare: 12, diff: 12,
+  map: 15, timeline: 12, compare: 12, diff: 12, phrase: 12,
 }
 export const WRONG_GUESS_COST = 15
 // Wrong guesses cost 15 the first time and 30 after that. One

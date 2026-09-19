@@ -16,8 +16,8 @@ export const LEAD_META = {
   },
   A2: {
     clue: 'insider', card: { kind: 'index', scene: 'forum' },
-    hint: 'Ignore hobbies and sympathy. Flag the four posts that reveal something private: a route, a schedule, a name, where Lena was last seen.',
-    summary: 'His posts give away her Tuesday route, her class times, her roommate\'s name. None of it was ever public. And he was at the arts night.',
+    hint: 'Read for specifics, not for tone. A route, a timetable and a first name are the three things in here that were never published.',
+    summary: 'Three phrases across four months: her Tuesday route, her class schedule, her flatmate\'s first name. None of it was ever public.',
   },
   A3: {
     clue: 'deleted', card: { kind: 'index', scene: 'phone' },

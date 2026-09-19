@@ -370,3 +370,29 @@ describe('diff leads', () => {
     }
   })
 })
+
+describe('phrase leads', () => {
+  const leads = allLeads().filter(n => n.type === 'phrase')
+
+  it('asks for phrases that are inside the post they belong to', () => {
+    for (const node of leads) {
+      for (const post of node.content.posts) {
+        const marks = post.parts.filter(p => p.id)
+        expect(marks.length, `${node.id}: ${post.id} has nothing to mark`).toBeGreaterThan(0)
+        for (const m of marks) expect(m.text.trim().length, `${node.id}: an empty phrase`).toBeGreaterThan(1)
+      }
+    }
+  })
+
+  it('keeps decoys, so marking is a judgement and not a sweep', () => {
+    for (const node of leads) {
+      const marks = node.content.posts.flatMap(p => p.parts.filter(x => x.id))
+      const req = marks.filter(m => m.required)
+      expect(req.length, `${node.id} has no required phrases`).toBeGreaterThan(1)
+      expect(marks.length - req.length, `${node.id} has no wrong phrases to mark`).toBeGreaterThan(1)
+      for (const m of marks) {
+        expect(m.required ? m.correctFeedback : m.wrongFeedback, `${node.id}: "${m.text}" has no feedback`).toBeTruthy()
+      }
+    }
+  })
+})

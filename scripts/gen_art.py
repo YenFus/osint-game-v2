@@ -98,6 +98,20 @@ ASSETS = {
             "folding chairs. " + NIGHT + " " + CAMERA
         ),
     ),
+    # The photograph on the MISSING poster, and the one thing in this game
+    # that is a person. Her father took it; she is not posing for it and her
+    # face is turned away, which is both the art direction and the reason it
+    # does not read as a generated portrait.
+    "ph-maya": dict(
+        seed=88, w=1344, h=896,
+        prompt=(
+            "Candid snapshot taken by a parent at a kitchen table: a young woman in her "
+            "twenties seen from behind and slightly to one side, turning away towards a "
+            "window, dark hair, grey jumper, laughing at something out of frame. Her face "
+            "is not visible to the camera. Mugs and papers on the table, warm lamp light, "
+            "ordinary evening. Slightly out of focus, taken without warning. " + CAMERA
+        ),
+    ),
     "apartment-room": dict(
         seed=29, w=1344, h=896,
         prompt=(

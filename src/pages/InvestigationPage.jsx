@@ -17,6 +17,7 @@ import { MapNode } from '../components/nodes/MapNode'
 import { TimelineNode } from '../components/nodes/TimelineNode'
 import { CompareNode } from '../components/nodes/CompareNode'
 import { DiffNode } from '../components/nodes/DiffNode'
+import { PhraseNode } from '../components/nodes/PhraseNode'
 import { SystemAlertFlash } from '../components/SystemAlertFlash'
 import { SaveLoadModal } from '../components/SaveLoadModal'
 import { CaseNotes } from '../components/CaseNotes'
@@ -28,7 +29,7 @@ import { NameRevealCard } from '../components/board/NameRevealCard'
 const NODE_RENDERERS = {
   navigate: NavigateNode, tag: TagNode, input: InputNode,
   slider: SliderNode, browse: BrowseNode, connect: ConnectNode,
-  map: MapNode, timeline: TimelineNode, compare: CompareNode, diff: DiffNode,
+  map: MapNode, timeline: TimelineNode, compare: CompareNode, diff: DiffNode, phrase: PhraseNode,
 }
 
 // The edge label names the object this thread came out of. Thread A is
@@ -47,6 +48,7 @@ const NODE_INSTRUCTIONS = {
   map: 'Put each photograph where it was taken', timeline: 'Put each photograph on its hour',
   compare: 'Link the details that confirm each other',
   diff: 'Two captures of the same page — mark what changed',
+  phrase: 'Mark the words that were never public',
 }
 
 function FieldManual({ tip, onClose }) {

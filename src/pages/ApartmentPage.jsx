@@ -117,10 +117,10 @@ export default function ApartmentPage() {
             <div className="font-mono text-xs text-red-600 tracking-[0.25em] uppercase mb-3">
               Location
             </div>
-            <h2 className="text-[#f0e8d8] text-3xl font-black uppercase tracking-tight leading-tight mb-3"
+            <h1 className="text-[#f0e8d8] text-3xl font-black uppercase tracking-tight leading-tight mb-3"
               style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
               Maya's Apartment
-            </h2>
+            </h1>
             <div className="font-mono text-sm text-[#908878] leading-relaxed">
               14B Marlowe St, 3rd floor<br />
               You let yourself in with the key she gave you.

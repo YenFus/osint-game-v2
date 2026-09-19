@@ -24,14 +24,14 @@ export function NameRevealCard({ onDone }) {
   return (
     <div ref={ref} className="cb-tut name-reveal" role="alertdialog" aria-modal="true" aria-label="A name">
       <div className="card">
-        <div className="type" style={{ fontSize: 12, letterSpacing: '0.3em', color: '#c8a050' }}>I HAVE READ IT THREE TIMES</div>
-        <div className="hand" style={{ fontSize: 44, lineHeight: 1.05, color: '#f4e6d8', margin: '10px 0 4px' }}>Raymond T. Callahan</div>
-        <p style={{ color: '#d8c8b0' }}>
+        <div className="nr-eyebrow">I have read it three times</div>
+        <div className="nr-name">Raymond T. Callahan</div>
+        <p className="nr-body">
           Ray held my hand at the hospital the night Elena died. He taught Maya to drive. He is
           godfather to my daughter and he has a key to my house, and I have just found his name
           on the paperwork behind the man who took her.
         </p>
-        <p style={{ color: '#c8a898' }}>
+        <p className="nr-body quiet">
           There will be an explanation. I am going to sit here a minute, and then I am going to
           go and find it, because a name is not a case.
         </p>

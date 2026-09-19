@@ -1436,3 +1436,88 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   .cb-viewport { scroll-padding-top: 108px; }
   .cb-cork { padding-top: 64px; }
 }
+
+/* The name is not a note on the corkboard, so it does not use the board's
+   cream paper. It had been inheriting that paper while carrying colours
+   written for a dark card: white on cream, 1.01:1, unreadable. */
+.name-reveal .card {
+  background: #14100c; color: #efe6d2; border: 1px solid #6a5232;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.85);
+}
+.nr-eyebrow {
+  font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; color: #d8a850;
+}
+.nr-name {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 46px; line-height: 1.04; letter-spacing: 0.01em;
+  color: #fbf3e2; margin: 10px 0 6px;
+}
+.name-reveal .card p.nr-body { font-family: 'Crimson Pro', Georgia, serif; font-size: 17px; line-height: 1.55; color: #ddd2bd; margin-top: 10px; }
+.name-reveal .card p.nr-body.quiet { color: #b9a893; }
+.name-reveal .card button { background: #8c1a14; color: #fff5ea; }
+.name-reveal .card button:disabled { opacity: 0.45; cursor: default; }
+
+/* What you are holding, kept on screen while you go looking for its match. */
+.cp-pick { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.cp-pick .cp-crop { width: 92px; flex-shrink: 0; border-width: 1px; }
+.cp-pick-t { display: flex; flex-direction: column; min-width: 0; }
+.cp-pick-t b { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #e8d8b0; }
+.cp-pick-t i { font-family: 'Crimson Pro', Georgia, serif; font-size: 12.5px; color: #9a9384; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
+@media (max-width: 760px) {
+  .cp-root .mp-bar { position: sticky; top: 0; z-index: 4; background: #0c0b0e; flex-wrap: nowrap; }
+  .cp-pick .cp-crop { width: 76px; }
+  .cp-pick .mp-bar-hint { display: none; }
+}
+
+/* The timeline sat in the top third of the panel with its own strips
+   squeezed and 400px of black underneath. The days take the height. */
+.tl-days { justify-content: flex-start; }
+.tl-day { flex: 1 1 0; min-height: 0; }
+.tl-day .tl-strip { flex: 1; align-items: stretch; }
+.tl-day .tl-slot { height: 100%; }
+.tl-hour { font-size: 10.5px; letter-spacing: 0; white-space: nowrap; }
+@media (max-width: 760px) { .tl-hour { font-size: 10px; } }
+
+/* The room is dark and nothing marked the three things in it until you
+   happened to hover one. Unstarted threads get a small light of their own
+   — the way a torch beam finds an object — while examined ones go quiet. */
+.room-hot::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 13px; height: 13px;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,214,150,0.95) 0%, rgba(255,190,110,0.35) 55%, transparent 72%);
+  box-shadow: 0 0 16px rgba(255,190,110,0.55);
+  animation: roomPulse 2.8s ease-in-out infinite;
+}
+.room-hot.started::after { animation-duration: 4.4s; opacity: 0.7; }
+.room-hot.done::after {
+  background: radial-gradient(circle, rgba(150,220,170,0.75) 0%, rgba(120,180,140,0.25) 55%, transparent 72%);
+  box-shadow: none; animation: none; opacity: 0.5;
+}
+.room-hot:hover::after, .room-hot:focus-visible::after { opacity: 0; }
+@keyframes roomPulse {
+  0%, 100% { opacity: 0.45; transform: translate(-50%, -50%) scale(0.92); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) { .room-hot::after { animation: none; opacity: 0.8; } }
+
+/* ── Phrase lead: mark the words, not the row ─────────────────────── */
+.ph-root { flex: 1; min-height: 0; display: flex; flex-direction: column; background: #0c0b0e; color: #d8d0bc; }
+.ph-body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; max-width: 860px; width: 100%; margin: 0 auto; }
+.ph-post { background: #101018; border: 1px solid #23232e; border-left: 3px solid #3a4a6a; padding: 12px 14px 14px; }
+.ph-meta { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 7px; }
+.ph-who { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8ab0d0; }
+.ph-when { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em; color: #6f6d5f; }
+.ph-text { font-family: 'Crimson Pro', Georgia, serif; font-size: 17px; line-height: 1.75; color: #d6cfbd; margin: 0; }
+.ph-mark {
+  font: inherit; color: inherit; background: none; cursor: pointer; padding: 1px 3px; margin: 0 -1px;
+  border: none; border-bottom: 1px dashed #5a5a70; border-radius: 2px;
+}
+.ph-mark:hover:not(:disabled), .ph-mark:focus-visible {
+  background: rgba(212,168,75,0.16); border-bottom-color: #d4a84b; outline: none;
+}
+.ph-mark:focus-visible { box-shadow: 0 0 0 2px #d4a84b; }
+.ph-mark.hit { background: rgba(90,180,110,0.2); border-bottom: 2px solid #4caf6a; color: #eaf5e6; }
+.ph-mark.miss { background: rgba(200,90,80,0.14); border-bottom: 2px solid #a0564c; color: #f0cfc8; }
+.ph-mark:disabled { cursor: default; }
+@media (max-width: 760px) { .ph-body { padding: 12px 10px; } .ph-text { font-size: 16px; line-height: 1.8; } }

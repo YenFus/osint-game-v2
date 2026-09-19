@@ -90,6 +90,9 @@ export function CompareNode({ content, onComplete, nodeId = null }) {
   }
 
   const found = required.filter(k => linked.includes(k)).length
+  const picked = pick
+    ? (pick.side === 'left' ? content.left.items : content.right.items).find(i => i.id === pick.id)
+    : null
 
   const item = (side, it) => {
     const on = pick?.side === side && pick.id === it.id
@@ -113,11 +116,24 @@ export function CompareNode({ content, onComplete, nodeId = null }) {
 
   return (
     <div className="cp-root">
+      {/* On a phone the thing you just picked is scrolled off the screen by
+          the time you reach the other column — and for a cropped detail its
+          words are sr-only, so there was nothing on screen saying what you
+          were holding. It travels with you now. */}
       <div className="mp-bar" role="status">
         <span>Confirmed {found} / {required.length}</span>
-        <span className="mp-bar-hint">
-          {pick ? `Now find its match on the ${pick.side === 'left' ? 'right' : 'left'}` : 'Choose a detail on either side'}
-        </span>
+        {picked ? (
+          <span className="cp-pick">
+            {picked.crop && <Crop crop={picked.crop} plate={picked.plate ?? content.left.plate} />}
+            <span className="cp-pick-t">
+              <b>{picked.label}</b>
+              <i>{picked.text}</i>
+            </span>
+            <span className="mp-bar-hint">now its match on the {pick.side === 'left' ? 'right' : 'left'}</span>
+          </span>
+        ) : (
+          <span className="mp-bar-hint">Choose a detail on either side</span>
+        )}
       </div>
 
       <div className="cp-body">

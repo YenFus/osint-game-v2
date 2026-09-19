@@ -352,6 +352,11 @@ const SCENES = {
 // a photographic case board read as clip-art, which is what it was.
 // zoom/cx/cy crop into the frame the way the magnifier does.
 const PHOTO_SCENES = {
+  // the photograph on the MISSING poster: her father took it, she is turning
+  // away from the camera, and it is the only person in this game
+  maya: { file: 'ph-maya.jpg' },
+  // Lena's last post — the doorway she walked into
+  lena: { file: 'ph-venue.jpg', zoom: 2.1, cx: 33, cy: 58 },
   building: { file: 'ph-venue.jpg' },
   car: { file: 'ph-shop.jpg' },
   photo: { file: 'gallery-room.jpg' },

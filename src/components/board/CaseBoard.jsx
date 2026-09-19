@@ -731,7 +731,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
       <div className="cb-head">
         <button className="cb-btn" onClick={onApartment}>← Apartment</button>
         <div className="cb-title">
-          <div className="hand">Where is Maya?</div>
+          <h1 className="hand" style={{ font: 'inherit', margin: 0 }}>Where is Maya?</h1>
           <div className="type">Case board · {closedCount}/3 threads closed</div>
         </div>
         <RayChip suspicion={suspicion} active={s.rayLog.length > 0} minutesLeft={minutesLeft} gone={gone} named={named} />

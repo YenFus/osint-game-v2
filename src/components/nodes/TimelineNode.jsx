@@ -138,6 +138,16 @@ export function TimelineNode({ content, onComplete, nodeId = null }) {
                   <span className="sw" aria-hidden="true" /> {clock(w.from)}–{clock(w.to)} · {done ? w.label : 'hours the case needs accounted for'}
                 </p>
               ))}
+              {/* the hours you are placing photographs against, on the page
+                  rather than in a hint — and the quarter-panel of blank that
+                  used to sit under each strip is where they go */}
+              {day.facts && (
+                <ol className="tl-facts">
+                  {day.facts.map(f => (
+                    <li key={f.at}><span className="tl-at">{f.at}</span><span className="tl-fact">{f.text}</span></li>
+                  ))}
+                </ol>
+              )}
             </section>
           ))}
         </div>

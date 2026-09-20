@@ -208,6 +208,16 @@ export function NavigateNode({ content, onComplete, nodeId = null }) {
                 )
               })}
             </ul>
+            {/* Four files make four rows, and the pane is 690px tall — C8 and
+                B7 both measured ~44% and ~41% black below the list, and they
+                are the same screen as each other besides. What fills it is the
+                thing this game is actually good at: the reason Thomas is
+                sitting in front of this machine at all. */}
+            {content.idleBody && (
+              <aside className="nv-idle-body">
+                {content.idleBody.map((para, i) => <p key={i}>{para}</p>)}
+              </aside>
+            )}
           </div>
         )}
 

@@ -1844,3 +1844,32 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
     overscroll-behavior: contain;
   }
 }
+
+/* ── the navigate lead's idle pane ───────────────────────────────
+   A file list of four rows left ~330px of flat black underneath it on
+   C8 and B7, which are otherwise the same screen. This is Thomas at the
+   machine, in his own voice, sized to sit under the list rather than
+   float in the middle of nothing. */
+.nv-idle-body {
+  margin: 26px 0 0;
+  padding: 18px 20px 4px;
+  border-top: 1px solid #1b1b26;
+}
+.nv-idle-body p {
+  margin: 0 0 14px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 15.5px;
+  font-style: italic;
+  line-height: 1.75;
+  color: #9d9482;
+  max-width: 62ch;
+}
+.nv-idle-body p:first-child::first-letter {
+  font-style: normal;
+  font-size: 1.15em;
+  color: #c3b896;
+}
+@media (max-width: 760px) {
+  .nv-idle-body { margin-top: 18px; padding: 14px 14px 2px; }
+  .nv-idle-body p { font-size: 15px; }
+}

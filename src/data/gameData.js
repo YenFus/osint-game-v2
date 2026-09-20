@@ -864,6 +864,10 @@ export const GAME_DATA = {
           warning: 'Source code is public by design — viewing it is legal and standard.',
         },
         content: {
+          idleBody: [
+            "The live site is four photographs and a contact form. I have looked at it twice and it tells me nothing, which I think is the point — somebody tidied it.",
+            "This is the copy a crawler took in November, before he did. Same address, older furniture. What matters is not what the page says; it is what is underneath it, in the part a visitor never opens.",
+          ],
           root: {
             name: 'stillwater-media.net (cached Nov 20)',
             type: 'folder',
@@ -1373,6 +1377,11 @@ export const GAME_DATA = {
         monologue: "There's one more thing on this board. I almost missed it.",
         journalistUnlock: true,
         content: {
+          idleBody: [
+            "I have been through this board four times. Her handwriting is on every card, and I have read all of it, and there is nothing here I have not already written down somewhere else.",
+            "So I am going to do the thing she would have done, which is turn it over. Everything on the front of this board was meant to be looked at. She pinned it facing out, for herself, to argue with.",
+            "Whatever she did not want to argue with is on the back.",
+          ],
           root: {
             name: 'Corkboard — Maya\'s Investigation',
             type: 'folder',

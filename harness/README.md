@@ -101,3 +101,30 @@ Notes:
   calling anything a defect — a sheet made the A13 timeline look like it
   overflowed when it was the sheet's own crop, and made a working edge fade look
   absent when it was painting.
+
+
+## ink.py — how empty is a panel, really
+
+```bash
+.venv-img/bin/python harness/ink.py '/tmp/shots/desktop/*lead-*-rest.png'
+```
+
+Measures the largest run of blank rows by **local gradient**: a flat fill of any
+colour has none, text and graphics have plenty.
+
+Every simpler measure has failed on this layout, and each failure looked
+plausible first:
+- a DOM walk reports the outermost container, which always fills — ~18px of
+  slack for every lead, including ones that are half black;
+- a per-row median fails because the panels are two columns with different
+  backgrounds, so a blank row reads as half-deviating;
+- and the **seed matters more than the instrument** — with `clues: []`, three
+  input leads measured 42–45% empty and 3% with the clue pool a player would
+  actually hold. Use `lib-state.cjs`'s `atLead()`, which seeds each lead with
+  its predecessors.
+
+## A note on where these live
+
+**The session scratchpad is not storage.** It was wiped between two sessions of
+this project and took the whole screenshot set and the `r10.cjs` regression
+suite with it. Anything worth running twice belongs in this directory.

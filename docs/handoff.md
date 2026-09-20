@@ -899,3 +899,82 @@ Put this in the brief verbatim; it is the gap in every previous one:
 Unchanged from §14.4 — C2's rest-legible sign, thread C's closing beat, the
 beds having no events, seven leads 20%+ empty, A8 over-signposted, P5, and the
 §8 list. Nothing in §15 displaced them; this was a separate class.
+
+---
+
+## 16. The screenshot round
+
+The user asked for a critic that *looks*: "screenshot after every interaction or
+anything that is different — the whole game should be screenshotted and
+critiqued — only then you'll be able to see the minute details."
+
+`harness/shotall.cjs` was written for this and is now the way to review the
+game. 355 images, desktop and a 390×664 phone, every screen and one frame after
+every interaction. **Zero page errors across all of it, twice.**
+
+A critic subagent was launched over the set and **died immediately on an account
+rate limit, producing nothing.** The review below is mine, from the pictures.
+
+### 16.1 Fixed
+
+| | |
+|---|---|
+| **Photo rails** (A4, A13) | A4 holds seven cards in 1561px of scroll in a 366px strip; the second was sliced through its own latitude with no affordance. Snap + a masked edge. Declared unfixed since round 14 as 7.4 #7. |
+| **C8 and B7** | Not similar — *the same screen*, and C8 closes thread C. Both ~330px of black under a four-row file list. Filled with Thomas's voice via a new `content.idleBody`. Desktop **44%→21%** and **41%→25%**, mobile 5%. |
+
+### 16.2 What the pictures show that the prose never did
+
+**Duplicate screens are the real density problem.** Laid out side by side:
+
+- **C1 and C2** are the same screen twice — same header, same `FLAGGED: 0/3`,
+  same plate, same "0 of 8 details examined", same footer. Only the title
+  differs. This is the C1→C2 verb adjacency, and it is far more damning seen
+  than argued. **C9 then shows the same arts-night photograph a third time.**
+- **B1 and B11** likewise: both "Burned Notebook", both "RECOVER THE BURNED
+  INK", both `1 / 3`, both a dark plate over BRIGHTNESS 15 / CONTRAST 80.
+
+Fixing the remaining empty panels one at a time misses this. Thread C needs a
+different *opening*, and B11 needs to not be B1 again.
+
+### 16.3 Density, all 28 leads, fresh
+
+```
+B4 35% · B12 33% · B1/B11 31% · A9 30% · B7 25% · C8 21% · C5 19%
+```
+
+### 16.4 Checked and found fine — do not "fix" these
+
+Each looked like a defect in a contact sheet and was not, on zooming:
+- **A13's timeline grid** — 368px in a 390px viewport, no overflow. The sheet's
+  crop, not the game.
+- **A8's wrong-answer feedback** — left-aligned and correct; thumbnail scaling
+  made it look ragged.
+- **B1's plate at rest** — a near-black rectangle by design; the handwriting is
+  there at std 6.5 and the lead is about recovering it.
+- The edge fade on the rails looked absent in a sheet while it was painting.
+
+**Crop and zoom the real file before calling anything a defect.** Contact sheets
+are for scanning only.
+
+### 16.5 Genuinely good
+
+The name reveal is the best screen in the game — cream on near-black, the name
+huge, and the prose earns it. The prologue reads cleanly beat by beat. The seven
+endings are all distinct in verdict, stamp and transcript length. The
+wrong-answer feedback is specific and useful on every input lead. The writing
+remains the strongest thing here by a distance.
+
+### 16.6 The scratchpad is not storage
+
+It was wiped between two sessions of this project and took the 355-image set
+**and `r10.cjs`** with it. `mobplay.cjs`, `shotall.cjs`, `lib-state.cjs` and
+`ink.py` survived because they had been moved into `harness/`. **`r10.cjs` is
+gone and has not been rebuilt** — `node harness/shotall.cjs leads` boots all 28
+leads on both viewports and reports page errors, which covers the smoke-test
+part of what it did, but not its assertions. Rebuilding it belongs in `harness/`.
+
+### 16.7 Still open
+
+§14.4 stands, minus the two fixed above: C2's rest-legible sign, the beds having
+no events, `playSFX` still oscillators, B4/B12/B1/B11/A9/C5 density, A8
+over-signposted, P5 — now restated as §16.2, which is the sharper version of it.

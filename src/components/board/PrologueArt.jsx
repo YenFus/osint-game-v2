@@ -1,13 +1,17 @@
 // ─────────────────────────────────────────────────────────────────
-// PROLOGUE ART — found media, not illustration.
+// PROLOGUE ART — what Thomas was looking at.
 //
-// Every beat is a screen Thomas was actually looking at. No drawn
-// people, no depicted rooms: a message thread, a call ringing out, a
-// voicemail waveform, a name on an incoming call, his own photographs
-// of her apartment, her browser. Flat, high contrast, one accent red.
+// Each beat is a screen: his texts, the call, the voicemail, a receipt
+// from the police, Ray's call, his photos of her flat, her laptop. Behind
+// each phone is the place he was standing, blurred, so the screen is never
+// floating in a black void.
 //
-// Photographs appear the way they appear on a phone — a frame, grain,
-// a filename, a timestamp — never as a drawing of their contents.
+// An earlier pass had a rule that nobody and nothing was ever depicted —
+// photographs were drawn as empty grey boxes with a label, Lena's poster
+// as a blank rectangle, and the text on her page as grey bars. After a
+// full playthrough the player said the prologue images looked bad, and
+// they were right: that was placeholder art. The photographs are real
+// now (local FLUX, scripts/gen_art.py) and the text is text.
 // ─────────────────────────────────────────────────────────────────
 
 import { useId, useState, useEffect } from 'react'
@@ -15,18 +19,18 @@ import { useId, useState, useEffect } from 'react'
 
 const MONO = "'Share Tech Mono', monospace"
 const UI = "'Barlow Condensed', -apple-system, sans-serif"
-const HAND = "'Caveat', cursive"
 
 const INK = '#e8ecf4'
-const DIM = '#68718a'
+const DIM = '#98a1b5'
 const RED = '#d8443a'
 
-// Measured from the recording, 56 RMS buckets normalised to its peak.
+// Measured from the recording, 56 RMS buckets normalised to its peak —
+// printed by scripts/gen_voicemail.py every time the voicemail is rebuilt.
 const VM_WAVE = [
-  0.61, 0.46, 0.63, 0.22, 0.08, 0.75, 0.81, 0.73, 0.46, 0.71, 0.73, 0.78, 0.66, 0.81,
-  0.29, 0.08, 0.51, 0.89, 0.81, 0.78, 0.76, 0.08, 0.68, 0.84, 0.32, 0.56, 0.76, 0.72,
-  0.75, 0.69, 0.50, 0.08, 0.08, 0.80, 0.77, 1.00, 0.73, 0.65, 0.70, 0.59, 0.57, 0.08,
-  0.08, 0.08, 0.08, 0.75, 0.76, 0.08, 0.08, 0.08, 0.44, 0.79, 0.75, 0.58, 0.08, 0.08,
+  0.04, 0.86, 0.66, 0.41, 0.03, 0.96, 0.42, 0.40, 0.74, 0.67, 0.63, 0.62, 0.66, 0.79,
+  0.50, 0.08, 0.69, 0.54, 0.32, 0.84, 0.77, 0.76, 0.72, 0.26, 0.10, 0.82, 0.50, 0.84,
+  0.68, 0.63, 0.35, 0.73, 0.39, 0.15, 0.97, 0.67, 0.58, 0.50, 0.71, 0.86, 0.62, 0.60,
+  0.75, 0.20, 0.30, 0.21, 0.51, 0.88, 0.69, 0.28, 1.00, 0.29, 0.03, 0.03, 0.03, 0.03,
 ]
 
 // The waveform's geometry, shared with the playhead so the two cannot drift:
@@ -53,147 +57,194 @@ function Screen({ children, x = 520, y = 40, w = 560, h = 820 }) {
   )
 }
 
-function Glow({ u, cx, cy, rx, ry, o = 0.2 }) {
-  return <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={`url(#${u('glow')})`} opacity={o} />
+const BASE = import.meta.env.BASE_URL
+const art = (f) => `${BASE}art/${f}`
+
+// The place he was standing when he looked at each screen. Pre-blurred and
+// darkened by scripts/prologue_bg.py so the phone stays the brightest thing.
+const BACKDROP = {
+  messages: 'pro-bg-restaurant.jpg',
+  calling: 'pro-bg-restaurant.jpg',
+  voicemail: 'pro-bg-restaurant.jpg',
+  police: 'pro-bg-street.jpg',
+  ray: 'pro-bg-street.jpg',
+  apartment: 'pro-bg-flat.jpg',
+  laptop: 'pro-bg-flat.jpg',
+}
+
+function Photo({ u, href, x, y, w, h, r = 0, id }) {
+  const clip = u(`clip-${id}`)
+  return (
+    <>
+      <clipPath id={clip}><rect x={x} y={y} width={w} height={h} rx={r} /></clipPath>
+      <image href={href} x={x} y={y} width={w} height={h} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${clip})`} />
+    </>
+  )
 }
 
 const SCENES = {
   // ── a thread with his daughter ──────────────────────────────────
-  messages: (u) => {
+  messages: () => {
     const X = 520, Wd = 560
     const bubbles = [
-      { me: false, t: 'Dinner tuesday? I need to talk to you', y: 196, w: 390 },
-      { me: true, t: 'Seven. Your pick.', y: 292, w: 210 },
-      { me: false, t: "Don't be late this time", y: 366, w: 270 },
-      { me: true, t: "I'm here. Got us the corner table", y: 552, w: 380 },
-      { me: true, t: 'Maya?', y: 640, w: 120 },
+      { me: false, t: 'Dinner tuesday? I need to', t2: 'talk to you about something', y: 190, w: 360, two: true },
+      { me: true, t: 'Seven. You pick.', y: 318, w: 220 },
+      { me: false, t: "Luigi's on 23rd. don't be", t2: 'late this time dad', y: 392, w: 340, two: true },
+      { me: true, t: "I'm here. Got us the corner table", y: 588, w: 420 },
+      { me: true, t: 'Maya?', y: 676, w: 124 },
     ]
     return (
       <>
-        <Glow u={u} cx={800} cy={430} rx={520} ry={480} o={0.22} />
         <Screen>
-          <text x="800" y="112" textAnchor="middle" fontFamily={UI} fontSize="36" fill={INK}>Maya</text>
-          <text x="800" y="144" textAnchor="middle" fontFamily={MONO} fontSize="15" fill={DIM}>daughter · mobile</text>
-          <path d="M545 168 H1055" stroke="#161c27" strokeWidth="2" />
-          {bubbles.map((b, i) => (
-            <g key={i}>
-              <rect x={b.me ? X + Wd - b.w - 24 : X + 24} y={b.y} width={b.w} height="56" rx="27"
-                fill={b.me ? '#1e3a63' : '#171c28'} />
-              <text x={b.me ? X + Wd - 44 : X + 44} y={b.y + 36}
-                textAnchor={b.me ? 'end' : 'start'} fontFamily={UI} fontSize="23"
-                fill={b.me ? '#d8e5f8' : '#c3cbdc'}>{b.t}</text>
-            </g>
-          ))}
-          <text x="1056" y="446" textAnchor="end" fontFamily={MONO} fontSize="13" fill={DIM}>Read Sunday 11:04</text>
-          <text x="1056" y="716" textAnchor="end" fontFamily={MONO} fontSize="13" fill={RED}>Delivered · not read</text>
+          <text x="800" y="112" textAnchor="middle" fontFamily={UI} fontSize="38" fill={INK}>Maya</text>
+          <text x="800" y="144" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={DIM}>daughter · mobile</text>
+          <path d="M545 168 H1055" stroke="#1d2431" strokeWidth="2" />
+          <text x="800" y="182" textAnchor="middle" fontFamily={MONO} fontSize="14" fill={DIM}>Sunday</text>
+          {bubbles.map((b, i) => {
+            const h = b.two ? 92 : 58
+            return (
+              <g key={i}>
+                <rect x={b.me ? X + Wd - b.w - 24 : X + 24} y={b.y} width={b.w} height={h} rx="28"
+                  fill={b.me ? '#2456a0' : '#232a38'} />
+                <text x={b.me ? X + Wd - 46 : X + 46} y={b.y + 38}
+                  textAnchor={b.me ? 'end' : 'start'} fontFamily={UI} fontSize="26" fill="#eef2fa">{b.t}</text>
+                {b.two && <text x={b.me ? X + Wd - 46 : X + 46} y={b.y + 72}
+                  textAnchor={b.me ? 'end' : 'start'} fontFamily={UI} fontSize="26" fill="#eef2fa">{b.t2}</text>}
+              </g>
+            )
+          })}
+          <text x="1056" y="506" textAnchor="end" fontFamily={MONO} fontSize="15" fill={DIM}>Read Sunday 11:04 pm</text>
+          <text x="800" y="570" textAnchor="middle" fontFamily={MONO} fontSize="14" fill={DIM}>Tuesday 7:20 pm</text>
+          <text x="1056" y="756" textAnchor="end" fontFamily={MONO} fontSize="15" fill={RED}>Delivered · not read</text>
         </Screen>
       </>
     )
   },
 
-  // ── the call that rings out ─────────────────────────────────────
-  calling: (u) => (
+  // ── the call that rings out, and the voicemail he'd missed ───────
+  calling: () => (
     <>
-      <Glow u={u} cx={800} cy={400} rx={480} ry={460} o={0.18} />
       <Screen>
-        <text x="800" y="256" textAnchor="middle" fontFamily={UI} fontSize="66" fill={INK} letterSpacing="4">MAYA</text>
-        <text x="800" y="306" textAnchor="middle" fontFamily={MONO} fontSize="20" fill={DIM}>calling…</text>
-        {[0, 1, 2, 3, 4, 5, 6].map(i => (
-          <circle key={i} cx={671 + i * 43} cy="378" r="8" fill="#3d4658" />
-        ))}
-        <text x="800" y="436" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={DIM}>seven rings</text>
-        <rect x="600" y="492" width="400" height="82" rx="10" fill="#11161f" stroke="#242b39" strokeWidth="2" />
-        <text x="800" y="528" textAnchor="middle" fontFamily={UI} fontSize="22" fill="#98a3b8">This person has not set up</text>
-        <text x="800" y="556" textAnchor="middle" fontFamily={UI} fontSize="22" fill="#98a3b8">a voicemail box.</text>
-        <circle cx="800" cy="706" r="46" fill={RED} />
-        <path d="M778 700 q22 -16 44 0 l-7 18 q-15 -8 -30 0 Z" fill="#0a0b10"
-          transform="rotate(134 800 706)" />
+        <text x="800" y="236" textAnchor="middle" fontFamily={UI} fontSize="68" fill={INK} letterSpacing="4">MAYA</text>
+        <text x="800" y="288" textAnchor="middle" fontFamily={MONO} fontSize="22" fill={DIM}>no answer</text>
+        <text x="800" y="330" textAnchor="middle" fontFamily={MONO} fontSize="18" fill={DIM}>call ended · 0:41</text>
+        <circle cx="800" cy="470" r="46" fill="#3a4152" />
+        <path d="M778 464 q22 -16 44 0 l-7 18 q-15 -8 -30 0 Z" fill="#0a0b10" transform="rotate(134 800 470)" />
+        {/* the notification he hadn't looked at since Monday */}
+        <rect x="548" y="610" width="504" height="126" rx="20" fill="#1c2230" stroke="#3a4458" strokeWidth="2" />
+        <circle cx="600" cy="673" r="24" fill="#2e7d4f" />
+        <path d="M590 673 h20 M600 663 v20" stroke="#e8ecf4" strokeWidth="0" />
+        <text x="600" y="681" textAnchor="middle" fontFamily={UI} fontSize="22" fill="#e8ecf4">▶</text>
+        <text x="640" y="660" fontFamily={UI} fontSize="24" fill={INK}>Voicemail · Maya</text>
+        <text x="640" y="694" fontFamily={MONO} fontSize="17" fill={DIM}>Monday 7:52 am · 0:22</text>
+        <text x="1036" y="660" textAnchor="end" fontFamily={MONO} fontSize="15" fill={RED}>new</text>
       </Screen>
     </>
   ),
 
-  // ── the voicemail that was already waiting ──────────────────────
-  // The bars are the RMS envelope of public/audio/maya-voicemail.m4a in 56
-  // buckets, measured off the file — so the shape on the screen is the shape
-  // of what you are about to hear, including the gap before "hang on".
-  voicemail: (u, st = {}) => {
+  // ── the voicemail ───────────────────────────────────────────────
+  // The bars are the RMS envelope of public/audio/maya-voicemail.mp4 in 56
+  // buckets, measured off the file — the shape on the screen is the shape of
+  // what you are about to hear, including the gap where the knock is.
+  voicemail: (_u, st = {}) => {
     const prog = Math.max(0, Math.min(1, st.progress ?? 0))
     const cur = st.duration ? st.duration * prog : 0
     return (
       <>
-        <Glow u={u} cx={800} cy={420} rx={520} ry={420} />
         <Screen>
-          <text x="800" y="150" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={DIM} letterSpacing="5">VOICEMAIL</text>
-          <text x="800" y="200" textAnchor="middle" fontFamily={UI} fontSize="36" fill={INK}>Maya</text>
-          <text x="800" y="232" textAnchor="middle" fontFamily={MONO} fontSize="15" fill={RED}>
+          <text x="800" y="150" textAnchor="middle" fontFamily={MONO} fontSize="18" fill={DIM} letterSpacing="5">VOICEMAIL</text>
+          <text x="800" y="200" textAnchor="middle" fontFamily={UI} fontSize="38" fill={INK}>Maya</text>
+          <text x="800" y="234" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={RED}>
             Mon 7:52 am · {st.played ? 'played' : 'unheard'}
           </text>
           {VM_WAVE.map((v, i) => {
             const h = 10 + v * 120
             const past = (i + 0.5) / VM_WAVE.length <= prog
             return <rect key={i} x={VM_X0 + i * VM_PITCH} y={430 - h / 2} width={VM_BAR} height={h} rx="2.3"
-              fill={past ? '#8fb6ea' : '#2b3242'} />
+              fill={past ? '#8fb6ea' : '#3a4356'} />
           })}
-          {/* the playhead rides the waveform's own extent — it used to run
-              556..1000.6 as bars and 596..1004 as a track, so at 0:00 the
-              marker sat five unlit bars inside the wave */}
+          {/* the playhead rides the waveform's own extent */}
           <path d={`M${VM_X0 + VM_SPAN * prog} 336 v190`} stroke={RED} strokeWidth="3" strokeDasharray="9 7" />
-          <path d={`M${VM_X0} 636 H${VM_X1}`} stroke="#1b2130" strokeWidth="4" />
+          <path d={`M${VM_X0} 636 H${VM_X1}`} stroke="#252c3c" strokeWidth="4" />
           <path d={`M${VM_X0} 636 H${VM_X0 + VM_SPAN * prog}`} stroke="#8fb6ea" strokeWidth="4" />
           <circle cx={VM_X0 + VM_SPAN * prog} cy="636" r="7" fill="#8fb6ea" />
-          <text x={VM_X0} y="672" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(cur)}</text>
-          <text x={VM_X1} y="672" textAnchor="end" fontFamily={MONO} fontSize="16" fill={DIM}>{fmt(st.duration ?? 0)}</text>
+          <text x={VM_X0} y="672" fontFamily={MONO} fontSize="17" fill={DIM}>{fmt(cur)}</text>
+          <text x={VM_X1} y="672" textAnchor="end" fontFamily={MONO} fontSize="17" fill={DIM}>{fmt(st.duration ?? 0)}</text>
         </Screen>
       </>
     )
   },
 
+  // ── Wednesday: the report, and the shrug ────────────────────────
+  police: () => (
+    <>
+      <Screen>
+        <text x="800" y="112" textAnchor="middle" fontFamily={UI} fontSize="34" fill={INK}>Missing Persons Unit</text>
+        <text x="800" y="144" textAnchor="middle" fontFamily={MONO} fontSize="16" fill={DIM}>automated message</text>
+        <path d="M545 168 H1055" stroke="#1d2431" strokeWidth="2" />
+        <text x="800" y="200" textAnchor="middle" fontFamily={MONO} fontSize="14" fill={DIM}>Wednesday 9:10 am</text>
+        <rect x="544" y="224" width="470" height="300" rx="28" fill="#232a38" />
+        {[
+          'Your missing person report',
+          'has been received.',
+          '',
+          'Report no. 25-081133',
+          'Subject: Maya Reyes, 24',
+          '',
+          'An officer may contact you.',
+          'Adults have the right to go',
+          'missing. Most return within',
+          '72 hours.',
+        ].map((line, i) => (
+          <text key={i} x="572" y={266 + i * 26} fontFamily={UI} fontSize="23"
+            fill={i === 3 || i === 4 ? '#ffffff' : '#dfe5ef'} fontWeight={i === 3 ? 700 : 400}>{line}</text>
+        ))}
+        <text x="544" y="556" fontFamily={MONO} fontSize="15" fill={DIM}>Replies to this number are not monitored.</text>
+      </Screen>
+    </>
+  ),
+
   // ── who is calling ──────────────────────────────────────────────
   ray: (u) => (
     <>
-      <Glow u={u} cx={800} cy={380} rx={460} ry={420} o={0.16} />
       <Screen>
-        <text x="800" y="150" textAnchor="middle" fontFamily={MONO} fontSize="16" fill={DIM} letterSpacing="5">INCOMING CALL</text>
-        {/* a contact with no picture set — initials only */}
-        <circle cx="800" cy="268" r="74" fill="#1a202c" stroke="#2b3342" strokeWidth="2" />
-        <text x="800" y="292" textAnchor="middle" fontFamily={UI} fontSize="56" fill="#7d8798">R</text>
-        <text x="800" y="396" textAnchor="middle" fontFamily={UI} fontSize="46" fill={INK}>Ray</text>
-        <text x="800" y="430" textAnchor="middle" fontFamily={MONO} fontSize="17" fill={DIM}>mobile · favorites</text>
-        <circle cx="700" cy="706" r="44" fill="#8e2b24" />
+        <text x="800" y="140" textAnchor="middle" fontFamily={MONO} fontSize="18" fill={DIM} letterSpacing="5">INCOMING CALL</text>
+        <circle cx="800" cy="290" r="118" fill="#1a202c" />
+        <Photo u={u} id="ray" href={art('pro-ray.jpg')} x={682} y={172} w={236} h={236} r={118} />
+        <circle cx="800" cy="290" r="118" fill="none" stroke="#3a4458" strokeWidth="3" />
+        <text x="800" y="470" textAnchor="middle" fontFamily={UI} fontSize="50" fill={INK}>Ray</text>
+        <text x="800" y="506" textAnchor="middle" fontFamily={MONO} fontSize="18" fill={DIM}>mobile · favourites</text>
+        <circle cx="700" cy="706" r="46" fill="#a3322a" />
         <path d="M680 700 q20 -15 40 0 l-6 17 q-14 -7 -28 0 Z" fill="#0a0b10" transform="rotate(134 700 706)" />
-        <circle cx="900" cy="706" r="44" fill="#2f7a46" />
+        <circle cx="900" cy="706" r="46" fill="#34874e" />
         <path d="M880 700 q20 -15 40 0 l-6 17 q-14 -7 -28 0 Z" fill="#0a0b10" />
       </Screen>
     </>
   ),
 
-  // ── his own photographs of her apartment ────────────────────────
+  // ── his own photographs of her flat ─────────────────────────────
   apartment: (u) => {
     const shots = [
-      { n: 'IMG_4471', c: '#2e2a25', t: '18:31', label: 'keys · still in the bowl' },
-      { n: 'IMG_4472', c: '#26242b', t: '18:33', label: 'wallet · cash in it' },
-      { n: 'IMG_4476', c: '#1b1815', t: '18:38', label: 'desk · burned pages' },
-      { n: 'IMG_4479', c: '#242229', t: '18:41', label: 'bed · not slept in' },
+      { n: 'IMG_4471', f: 'pro-keys.jpg', t: '18:31' },
+      { n: 'IMG_4472', f: 'pro-wallet.jpg', t: '18:33' },
+      { n: 'IMG_4476', f: 'ph-notebook.jpg', t: '18:38' },
+      { n: 'IMG_4479', f: 'pro-bed.jpg', t: '18:41' },
     ]
     return (
       <>
-        <Glow u={u} cx={800} cy={420} rx={520} ry={440} o={0.14} />
         <Screen>
-          <text x="800" y="120" textAnchor="middle" fontFamily={UI} fontSize="32" fill={INK}>Recents</text>
-          <text x="800" y="150" textAnchor="middle" fontFamily={MONO} fontSize="14" fill={DIM}>4 photos · today</text>
+          <text x="800" y="116" textAnchor="middle" fontFamily={UI} fontSize="34" fill={INK}>Recents</text>
+          <text x="800" y="148" textAnchor="middle" fontFamily={MONO} fontSize="16" fill={DIM}>4 photos · today</text>
           {shots.map((s, i) => {
-            const gx = 552 + (i % 2) * 254
-            const gy = 190 + Math.floor(i / 2) * 266
+            const gx = 548 + (i % 2) * 256
+            const gy = 178 + Math.floor(i / 2) * 290
             return (
               <g key={s.n}>
-                <rect x={gx} y={gy} width="230" height="200" fill={s.c} />
-                {/* the photograph is not drawn — only its grain and its label */}
-                <rect x={gx} y={gy} width="230" height="200" filter={`url(#${u('grain')})`} opacity="0.55" />
-                <rect x={gx} y={gy} width="230" height="200" fill="none" stroke="#1b212d" strokeWidth="2" />
-                <text x={gx + 12} y={gy + 30} fontFamily={HAND} fontSize="22" fill="#cbb98e">{s.label}</text>
-                <rect x={gx} y={gy + 166} width="230" height="34" fill="rgba(4,6,10,0.85)" />
-                <text x={gx + 10} y={gy + 189} fontFamily={MONO} fontSize="13" fill="#9fabc0">{s.n}</text>
-                <text x={gx + 220} y={gy + 189} textAnchor="end" fontFamily={MONO} fontSize="13" fill={DIM}>{s.t}</text>
+                <rect x={gx} y={gy} width="248" height="248" fill="#11151c" />
+                <Photo u={u} id={s.n} href={art(s.f)} x={gx} y={gy} w={248} h={248} />
+                <rect x={gx} y={gy + 212} width="248" height="36" fill="rgba(4,6,10,0.78)" />
+                <text x={gx + 10} y={gy + 236} fontFamily={MONO} fontSize="14" fill="#c3cddd">{s.n}</text>
+                <text x={gx + 238} y={gy + 236} textAnchor="end" fontFamily={MONO} fontSize="14" fill={DIM}>{s.t}</text>
               </g>
             )
           })}
@@ -202,43 +253,65 @@ const SCENES = {
     )
   },
 
-  // ── her browser ─────────────────────────────────────────────────
-  laptop: (u) => (
+  // ── her browser: the first time Thomas reads Lena's name ────────
+  // This is where the player meets Lena, so the page has to be readable:
+  // who she is, when and where she was last seen, what the police said.
+  // It deliberately does not name the building (thread C finds that).
+  laptop: (u, _st, portrait) => (
     <>
-      <Glow u={u} cx={800} cy={400} rx={640} ry={430} />
-      <rect x="150" y="86" width="1300" height="728" rx="14" fill="#0a0e15" stroke="#232b39" strokeWidth="3" />
-      <rect x="168" y="104" width="1264" height="48" fill="#141a24" />
+      {/* Packed into the top two-thirds of the frame: the caption lines sit
+          over the bottom third, and they were covering the poster's "last
+          seen" lines — the two facts this beat exists to show. */}
+      <rect x="150" y="54" width="1300" height="590" rx="14" fill="#0b0f16" stroke="#2a3342" strokeWidth="3" />
+      <rect x="168" y="70" width="1264" height="40" fill="#161c27" />
       {Array.from({ length: 17 }).map((_, i) => (
         <g key={i}>
-          <rect x={174 + i * 73} y={110} width="68" height="38" rx="6" fill={i === 4 ? '#1d2634' : '#10151d'} />
-          <rect x={182 + i * 73} y={124} width="44" height="6" rx="3" fill={i === 4 ? '#6f8fbe' : '#39435a'} />
+          <rect x={174 + i * 73} y={75} width="68" height="30" rx="6" fill={i === 4 ? '#243044' : '#121820'} />
+          <rect x={182 + i * 73} y={87} width="44" height="6" rx="3" fill={i === 4 ? '#8fb0dd' : '#3d4760'} />
         </g>
       ))}
-      <text x="1424" y="182" textAnchor="end" fontFamily={MONO} fontSize="15" fill={DIM}>17 tabs</text>
-      <rect x="196" y="204" width="1208" height="60" rx="8" fill="#111823" />
-      <text x="220" y="242" fontFamily={MONO} fontSize="21" fill="#8fb0dd">pdxmissing.org/threads/lena-vasquez</text>
-      <text x="220" y="330" fontFamily={UI} fontSize="50" fill={INK} letterSpacing="1">LENA VASQUEZ</text>
-      <text x="220" y="372" fontFamily={UI} fontSize="25" fill="#93a0b6">Missing since April 13 · Millhaven, Oregon</text>
-      {/* The poster was an empty grey rectangle with a filename under it —
-          at the beat where Thomas first sees who his daughter was chasing.
-          It is a scan of a missing poster now: the sheet, the word, and the
-          frame where a face would be. No face is drawn; the rule across the
-          game is that people are never depicted, only their media. */}
-      <rect x="220" y="404" width="300" height="230" fill="#cfc9bd" />
-      <text x="370" y="436" textAnchor="middle" fontFamily={UI} fontWeight="700"
-        fontSize="30" letterSpacing="3" fill="#8a1410">MISSING</text>
-      <rect x="248" y="450" width="244" height="118" fill="#8d8a84" />
-      <rect x="248" y="450" width="244" height="118" fill="none" stroke="#b4afa4" strokeWidth="2" />
-      <text x="370" y="592" textAnchor="middle" fontFamily={UI} fontSize="21" fill="#241f18">LENA VASQUEZ · 29</text>
-      <text x="370" y="616" textAnchor="middle" fontFamily={MONO} fontSize="13" fill="#5d564c">LAST SEEN APR 13 · MILLHAVEN</text>
-      <rect x="220" y="404" width="300" height="230" filter={`url(#${u('grain')})`} opacity="0.45" />
-      <rect x="220" y="404" width="300" height="230" fill="none" stroke="#2a3140" strokeWidth="2" />
-      <text x="232" y="656" fontFamily={MONO} fontSize="13" fill="#8b95a9">missing-poster.jpg</text>
-      {[430, 472, 514, 556, 598].map((y, i) => (
-        <rect key={y} x="556" y={y} width={780 - (i % 3) * 160} height="12" rx="6" fill="#232a37" />
+      <rect x="196" y="122" width="1208" height="42" rx="8" fill="#131a26" />
+      <text x="220" y="150" fontFamily={MONO} fontSize="20" fill="#9fbbe6">pdxmissing.org/threads/lena-vasquez</text>
+      <text x="1400" y="150" textAnchor="end" fontFamily={MONO} fontSize="16" fill={DIM}>17 tabs</text>
+      {/* the poster */}
+      <rect x="220" y="184" width="344" height="440" fill="#e9e4d8" />
+      <text x="392" y="228" textAnchor="middle" fontFamily={UI} fontWeight="700" fontSize="40" letterSpacing="5" fill="#9a1712">MISSING</text>
+      <Photo u={u} id="lena" href={art('pro-lena.jpg')} x={252} y={244} w={280} h={262} />
+      <text x="392" y="546" textAnchor="middle" fontFamily={UI} fontWeight="700" fontSize="30" fill="#1f1a14">LENA VASQUEZ, 29</text>
+      <text x="392" y="578" textAnchor="middle" fontFamily={MONO} fontSize="17" fill="#3d372d">LAST SEEN SAT 13 APRIL 2024</text>
+      <text x="392" y="604" textAnchor="middle" fontFamily={MONO} fontSize="17" fill="#3d372d">MILLHAVEN ARTS NIGHT</text>
+      {/* the thread, which says it plainly — on a phone the crop is the
+          poster alone, and this column was being sliced mid-word at its edge */}
+      {!portrait && <>
+      <text x="604" y="226" fontFamily={UI} fontSize="42" fill={INK}>Have you seen Lena?</text>
+      <text x="604" y="258" fontFamily={MONO} fontSize="17" fill={DIM}>posted by her friends · 214 replies</text>
+      {[
+        'Lena is a painter. She lives in Portland, near the',
+        'waterfront, and teaches a class at Millhaven',
+        'University on Tuesdays and Thursdays.',
+        '',
+        'She was last seen on Saturday 13 April at the',
+        'Millhaven Arts Night, forty miles south of the city.',
+        'Her phone was switched off the next day.',
+        '',
+        'Police say there is "no evidence of foul play."',
+        "We don't believe that. Please share.",
+      ].map((line, i) => (
+        <text key={i} x="604" y={304 + i * 32} fontFamily={UI} fontSize="26" fill="#d9dfea">{line}</text>
       ))}
+      </>}
     </>
   ),
+}
+
+const PORTRAIT_BOX = {
+  messages: '520 70 560 720',
+  calling: '520 150 560 620',
+  voicemail: '520 110 560 600',
+  police: '520 70 560 520',
+  ray: '520 110 560 660',
+  apartment: '538 92 524 600',
+  laptop: '206 176 372 456',
 }
 
 function useIsPortrait() {
@@ -260,9 +333,13 @@ export function PrologueArt({ scene, className, style, playback }) {
   const draw = SCENES[scene] ?? SCENES.messages
   const portrait = useIsPortrait()
   // a phone screen is already portrait — on a phone, frame it whole
-  const box = portrait
-    ? (scene === 'laptop' ? '150 60 1300 780' : '470 0 660 900')
-    : '0 0 1600 900'
+  // On a phone the laptop page is cropped to the poster and the first lines
+  // of the thread rather than shrunk whole — shrunk, its text was ~7px.
+  // On a phone the words take the bottom half and the art fits above them,
+  // so each scene is cropped to the part that carries it rather than the
+  // whole handset — his four photographs were ~35px each at the full crop.
+  const box = portrait ? (PORTRAIT_BOX[scene] ?? '470 0 660 900') : '0 0 1600 900'
+  const bg = BACKDROP[scene]
 
   return (
     // `slice` used to crop the landscape frame to fill its box, which cut
@@ -286,7 +363,8 @@ export function PrologueArt({ scene, className, style, playback }) {
         </filter>
       </defs>
       <rect x="-600" y="-400" width="2800" height="1700" fill="#05070c" />
-      {draw(u, playback)}
+      {bg && <image href={art(bg)} x="-160" y="-90" width="1920" height="1080" preserveAspectRatio="xMidYMid slice" />}
+      {draw(u, playback, portrait)}
       <rect x="-600" y="-400" width="2800" height="1700" filter={`url(#${u('grain')})`} opacity="0.28" />
     </svg>
   )

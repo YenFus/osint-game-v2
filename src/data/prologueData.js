@@ -1,14 +1,18 @@
 // ─────────────────────────────────────────────────────────────────
-// PROLOGUE — six screens off Thomas's phone and his daughter's laptop.
+// PROLOGUE — seven screens, one fact each.
 //
-// Nothing here is a depicted scene. You are looking at what he was
-// looking at: a message thread, a call that rings out, a voicemail,
-// a name on an incoming call, photographs he took himself, her
-// browser. Found media, the way the rest of the game works.
+// Each beat shows the thing Thomas was looking at — his texts, the call,
+// the voicemail, the police receipt, Ray's call, his photos of her flat,
+// her laptop — and his line says, in plain words, what it told him.
 //
-// It also has one job besides mood: say plainly who everyone is
-// before the investigation starts. Maya is his daughter. Ray is his
-// oldest friend. Lena is the woman Maya was looking for.
+// Rewritten after a full playthrough. The player said the old lines read
+// as AI-written noir ("Maya is never late twice", "He knew it first") and
+// that Lena arrived as one sentence of narration rather than something
+// they read. Now the facts are on the screens and Thomas just talks.
+//
+// Voice: Thomas is a retired crime reporter. He's frightened and keeping
+// it together. Short sentences, contractions, no poses. See
+// docs/story-bible.md.
 // ─────────────────────────────────────────────────────────────────
 
 export const PROLOGUE_BEATS = [
@@ -17,8 +21,8 @@ export const PROLOGUE_BEATS = [
     art: 'messages',
     stamp: 'Tuesday · 8:20 pm',
     lines: [
-      { text: 'My daughter Maya asked me to dinner. She picked the place.' },
-      { text: 'She is an hour late, and Maya is never late twice.' },
+      { text: 'Maya asked me to dinner. She said she had something to tell me.' },
+      { text: "She picked the place. She's an hour late, and she's never late. Not for me." },
     ],
   },
   {
@@ -26,27 +30,36 @@ export const PROLOGUE_BEATS = [
     art: 'calling',
     stamp: 'Tuesday · 8:21 pm',
     lines: [
-      { text: 'Seven rings. She never did set up her voicemail.' },
-      { text: 'The last message she opened was on Sunday.' },
+      { text: 'I called. It rang out.' },
+      { text: "Then I saw it. A voicemail from her, from Monday morning. I'd missed it." },
     ],
   },
   {
     id: 'voicemail',
     art: 'voicemail',
     stamp: 'Monday · 7:52 am — unheard',
-    // The one beat in this game that wanted a recording rather than a
-    // waveform drawn with Math.sin. It plays on a press, not on arrival:
-    // pressing play on your daughter's last message is the beat.
+    // The one beat that plays a real recording. It plays on a press, not on
+    // arrival: pressing play on your daughter's last message is the beat.
     audio: {
       src: 'audio/maya-voicemail.mp4',
       label: "Maya's voicemail, Monday 7:52am",
-      // what is actually said, for anyone who cannot or will not hear it
-      transcript: "Dad, it's me. I need to tell you something, and I should have told you weeks ago. It's about what I've been working on. I'm okay. I want you to hear me say that first. But if I don't call you back tonight, I need you to — hang on. Someone's at the door.",
+      // exactly what the recording says (checked with a speech recogniser)
+      transcript: "Hey Dad, it's me. Okay. I need to tell you something, and I should've told you weeks ago. I'm sorry. It's about the thing I've been working on. I'm okay. I want you to hear me say that first. I'm okay. But if I don't call you back tonight, I need you to go to the— Hang on. Someone's at the door. One sec.",
     },
     lines: [
-      { text: 'There was one waiting for me. From the morning before.' },
-      { text: '"Dad, it\'s me. I need to tell you something—"', voice: 'maya' },
-      { text: '"—hang on. Someone\'s at the door."', voice: 'maya' },
+      { text: 'I thought it was about dinner. It was the last thing she said to anyone.' },
+      { text: '"I\'m okay. I want you to hear me say that first."', voice: 'maya' },
+      { text: '"Hang on. Someone\'s at the door."', voice: 'maya' },
+    ],
+  },
+  {
+    id: 'police',
+    art: 'police',
+    stamp: 'Wednesday · 9:10 am',
+    lines: [
+      { text: 'Wednesday morning I reported her missing.' },
+      { text: "The officer was kind about it. She's twenty-four, he said. Adults switch their phones off. Give it a few days." },
+      { text: "I don't have a few days. I used to do this for a living. I'll do it myself." },
     ],
   },
   {
@@ -54,9 +67,9 @@ export const PROLOGUE_BEATS = [
     art: 'ray',
     stamp: 'Wednesday · 12:04 pm',
     lines: [
-      { text: 'Ray. My oldest friend, thirty years of him.' },
-      { text: 'He heard before I could call him.' },
-      { text: '"Whatever you need, Tom. I mean it."', voice: 'ray' },
+      { text: "Ray. My best friend for thirty years. He's Maya's godfather." },
+      { text: "He'd heard before I could tell him." },
+      { text: '"Tom. Whatever you need, buddy. I mean it. Anything."', voice: 'ray' },
     ],
   },
   {
@@ -64,9 +77,9 @@ export const PROLOGUE_BEATS = [
     art: 'apartment',
     stamp: 'Wednesday · 6:30 pm — my photos',
     lines: [
-      { text: 'I let myself into her apartment and photographed everything.' },
-      { text: 'Her keys. Her wallet. Her bed not slept in.' },
-      { text: 'Her notebook was half burned, shoved under a pile of paper.' },
+      { text: "I've got a key to her place. I photographed everything, the way I used to at a scene." },
+      { text: 'Her keys were in the bowl by the door. Her wallet was on the counter, cards still in it.' },
+      { text: "She didn't walk out of here. And somebody had tried to burn her notebook." },
     ],
   },
   {
@@ -74,9 +87,9 @@ export const PROLOGUE_BEATS = [
     art: 'laptop',
     stamp: 'Wednesday · 6:40 pm — her laptop',
     lines: [
-      { text: 'Seventeen tabs. All of them the same missing woman.' },
-      { text: 'Lena Vasquez. Lived across the river from here. Gone a year, after a night forty miles south.' },
-      { text: 'My daughter was hunting someone. He knew it first.' },
+      { text: 'Her laptop was open. Seventeen tabs, all about the same woman.' },
+      { text: "Lena Vasquez. Missing since last April. I'd never heard her name." },
+      { text: "Whatever Maya was working on, she was doing it on her own. I'm going to find out what it was." },
     ],
   },
 ]

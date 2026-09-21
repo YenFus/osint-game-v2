@@ -173,6 +173,52 @@ ASSETS = {
         " standing on the shop floor seen from the front corner, every strip light switched "
         "off except one work lamp on a stand, black windows, deep shadows, nobody in frame. "
         "Only this one car in the picture. " + CAMERA)),
+    # ── The prologue ────────────────────────────────────────────────────
+    # The prologue used to draw its photographs as empty grey boxes with a
+    # label on them, and Lena's missing poster as a blank rectangle — a rule
+    # from an earlier pass that people were never depicted. After a full
+    # playthrough the player said those images looked bad, and the art brief
+    # has always allowed people who look like people. These are the actual
+    # pictures: the table she didn't come to, the four things her father
+    # photographed in her flat, Ray's contact photo, and Lena.
+    "pro-restaurant": dict(seed=118, w=1344, h=896, prompt=(
+        "Candid phone photo across a small table for two in a neighbourhood Italian "
+        "restaurant at night. The chair opposite is empty. On the far side, a folded "
+        "napkin and an untouched glass of water; on the near side a half-drunk glass of "
+        "red wine and a phone lying face down. A candle in a glass jar. Behind, a window "
+        "streaked with rain and blurred street lights. Nobody in frame. " + NIGHT + " " + CAMERA)),
+    "pro-street": dict(seed=23, w=1344, h=896, prompt=(
+        "Candid phone photo taken from the driver's seat of a parked car through a "
+        "rain-spotted windscreen, looking at the entrance of a plain grey brick police "
+        "station on a wet city street at midday. Wipers resting at the bottom of the "
+        "glass. Overcast, nobody walking past. " + DAY + " " + CAMERA)),
+    "pro-keys": dict(seed=132, w=1024, h=1024, prompt=(
+        "Amateur phone photo looking down at a small hand-thrown ceramic bowl on a narrow "
+        "hallway table beside a front door. Inside it a set of house keys on a ring with a "
+        "bike-lock key and a small enamel pin shaped like a cat, and a folded paper bus "
+        "pass. Scuffed painted wood, a lamp on to one side, evening. " + CAMERA)),
+    "pro-wallet": dict(seed=138, w=1024, h=1024, prompt=(
+        "Amateur phone photo of a worn brown leather wallet lying open on a small kitchen "
+        "counter, a few folded dollar bills and a plastic student ID card showing inside, "
+        "a white phone charger cable coiled next to it, a mug in the background. Evening "
+        "kitchen light. " + CAMERA)),
+    "pro-bed": dict(seed=43, w=1024, h=1024, prompt=(
+        "Amateur phone photo of a single bed in a small studio apartment, the duvet thrown "
+        "back and rumpled, the pillow still dented, a paperback face down on the floor "
+        "beside it and a phone charger trailing off the bedside table. One lamp on, grey "
+        "window light, evening. Nobody in the room. " + CAMERA)),
+    "pro-lena": dict(seed=53, w=1024, h=1024, prompt=(
+        "Candid phone photo of a woman in her late twenties standing in a cluttered painting "
+        "studio, short dark curly hair, olive skin, a small smudge of blue paint on her cheek, "
+        "laughing at someone just off camera, wearing a paint-stained denim shirt. Canvases "
+        "leaning against the wall behind her, large window daylight. Head and shoulders, "
+        "slightly off-centre, natural skin, taken by a friend. " + CAMERA)),
+    "pro-ray": dict(seed=162, w=1024, h=1024, prompt=(
+        "Candid phone photo of a friendly man in his early sixties at a backyard barbecue, "
+        "short grey beard, reading glasses pushed up on his head, laughing with his eyes "
+        "creased, holding a pair of tongs, wearing a faded plaid flannel shirt. Late "
+        "afternoon sun, a fence and trees behind him. Head and shoulders, taken by a friend, "
+        "natural skin. " + CAMERA)),
     "ph-booth": dict(seed=118, w=1344, h=896, prompt=(
         "Amateur phone photo of " + COREY_CAR + " inside a spray paint booth, white booth "
         "walls, masking paper and tape over the windows and wheels, bright extraction "

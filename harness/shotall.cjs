@@ -71,8 +71,13 @@ async function sections(p, vp, want) {
     for (let i = 0; i < 24; i++) {
       await shot(p, `prologue-${String(i).padStart(2, '0')}`, vp)
       if (await p.evaluate(() => !!document.querySelector('.apartment-sidebar'))) break
-      const adv = await p.$('button:not([disabled])')
-      if (!adv || !(await tap(p, adv, 700))) break
+      // the full-screen advance control, not "the first button" — on a phone
+      // the first button in the DOM is Skip, which ended the capture at beat 2
+      // and not a tap at the centre either: on the voicemail beat the Play
+      // button sits there and takes the tap. The prologue listens for
+      // ArrowRight, so advance the way a keyboard player does.
+      if (!(await p.$('.pro-root'))) break
+      await p.keyboard.press('ArrowRight'); await p.waitForTimeout(700)
     }
   }
 

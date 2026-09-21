@@ -4,7 +4,7 @@
 // advances. The whole opening is under a hundred words.
 // ─────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
 import { PrologueArt } from './board/PrologueArt'
 import { useAudio } from '../hooks/useAudio'
 import { useAudioStore } from '../store/audioStore'
@@ -101,6 +101,27 @@ export function PrologueSequence({ beats, onComplete }) {
 
   const [vm, toggleVm] = useVoicemail(current.audio, true)
 
+  // The art used to reserve a fixed 26% of the screen for the words. A
+  // three-line caption on a phone is taller than that, so the words printed
+  // over the bottom of the picture — over Lena's "last seen" lines and the
+  // bottom row of his photographs. Measure where the words start instead.
+  const captionRef = useRef(null)
+  const [artBottom, setArtBottom] = useState(null)
+  useLayoutEffect(() => {
+    const el = captionRef.current
+    if (!el) return undefined
+    const measure = () => {
+      const audioEl = el.parentElement?.querySelector('.pro-audio')
+      const top = Math.min(el.getBoundingClientRect().top, audioEl ? audioEl.getBoundingClientRect().top : Infinity)
+      setArtBottom(Math.max(0, Math.round(window.innerHeight - top + 10)))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    window.addEventListener('resize', measure)
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure) }
+  }, [beat])
+
   return (
     /* This whole sequence used to be one screen-sized role="button" with a
        tabIndex on it — a screen reader announced eleven children as the name
@@ -112,7 +133,8 @@ export function PrologueSequence({ beats, onComplete }) {
       <button type="button" className="pro-tap" onClick={advance}
         aria-label={allShown ? 'Continue to the next scene' : 'Show the rest of this scene'} />
       {beats.map((b, i) => (
-        <div key={b.id} className={`pro-art ${i === beat ? 'on' : ''}`} aria-hidden={i !== beat}>
+        <div key={b.id} className={`pro-art ${i === beat ? 'on' : ''}`} aria-hidden={i !== beat}
+          style={artBottom != null ? { bottom: artBottom } : undefined}>
           <PrologueArt scene={b.art} playback={i === beat ? vm : undefined} />
         </div>
       ))}
@@ -133,10 +155,17 @@ export function PrologueSequence({ beats, onComplete }) {
         </div>
       )}
 
-      <div className="pro-lines">
-        {current.lines.slice(0, shown).map((l, i) => (
-          <p key={`${current.id}-${i}`} className={`pro-line ${l.voice ? `v-${l.voice}` : ''}`}>{l.text}</p>
-        ))}
+      {/* Every line of the beat is laid out from the start and the unshown
+          ones are invisible, so the caption's height is fixed for the beat
+          and the art above it doesn't jump each time a line appears. */}
+      <div className="pro-caption" ref={captionRef}>
+        <div className="pro-lines">
+          {current.lines.map((l, i) => (
+            <p key={`${current.id}-${i}`}
+              className={`pro-line ${l.voice ? `v-${l.voice}` : ''} ${i < shown ? '' : 'pending'}`}
+              aria-hidden={i >= shown}>{l.text}</p>
+          ))}
+        </div>
       </div>
 
       <div className="pro-dots" aria-hidden="true">

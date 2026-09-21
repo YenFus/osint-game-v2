@@ -25,7 +25,7 @@ import { PolaroidArt } from './PolaroidArt'
 // how long the banner stays when nobody is pointing at or focused on it
 const BANNER_MS = 9000
 
-export function ClueCard({ clueId, onDone, offerQuiet = false }) {
+export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true }) {
   const clue = CLUES[clueId]
   const quiet = useAccessibilityStore(s => s.quietClues)
   const setQuiet = useAccessibilityStore(s => s.setQuietClues)
@@ -92,11 +92,14 @@ export function ClueCard({ clueId, onDone, offerQuiet = false }) {
           </div>
         </div>
         <div className="cc-src"><span>Where it came from</span>{clue.source}</div>
-        <p className="cc-how">
-          It goes in your notes. If it answers one of the questions on the board, pin it there.
-          Not every note answers something.
-        </p>
-        <button type="button" className="cc-take" onClick={take} autoFocus>Add to my notes</button>
+        {/* the how-to is for the first couple of notes; after that it's just more to read */}
+        {showHow && (
+          <p className="cc-how">
+            It goes in your notes. If it answers one of the questions on the board, pin it there.
+            Not every note answers something.
+          </p>
+        )}
+        <button type="button" className={`cc-take ${showHow ? '' : 'cc-take-gap'}`} onClick={take} autoFocus>Add to my notes</button>
         {offerQuiet && (
           <label className="cc-quiet">
             <input type="checkbox" checked={quiet} onChange={(e) => setQuiet(e.target.checked)} />

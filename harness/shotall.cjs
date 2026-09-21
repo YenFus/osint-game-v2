@@ -131,6 +131,10 @@ async function sections(p, vp, want) {
   if (has('leads')) {
     for (const id of S.ALL) {
       await load(p, S.atLead(id), 1200)
+      // every lead opens on its briefing; shoot it, then start the work
+      await shot(p, `lead-${id}-brief`, vp)
+      const start = p.locator('.lob-start')
+      if (await start.count()) { await start.click(); await p.waitForTimeout(500) }
       await shot(p, `lead-${id}-rest`, vp)
 
       const hotspots = await p.$$('.hotspot')

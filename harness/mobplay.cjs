@@ -183,6 +183,9 @@ async function drive(p, id){
     for(const id of leads){
       await p.evaluate(s=>localStorage.setItem('maya-game-v3-storage',JSON.stringify({state:s,version:0})),lead(id))
       await p.reload(); await p.waitForTimeout(800)
+      // the briefing's Start must be reachable on every phone height too
+      const start = p.locator('.lob-start')
+      if (await start.count()) { await start.click({ timeout: 4000 }); await p.waitForTimeout(400) }
       const atRest=await p.evaluate(CHECK)
       const steps=await drive(p,id)
       const after=await p.evaluate(CHECK)

@@ -2,8 +2,9 @@
 // What happens when a lead is finished, and what a lead looks like when you
 // arrive. shotall.cjs never finishes a lead, so it can't see any of this.
 //
-//   1-brief-arrive   A13 on arrival: the brief is open (phones included)
-//   2-brief-touched  after the first touch on the puzzle: folded on phones
+//   1-brief-arrive   A13's briefing screen
+//   2-work           after Start: the puzzle screen
+//   2b-work-facts    'What you know' reopened on the puzzle screen
 //   3-card           A3 finished with 4+ notes held: the full card, with the
 //                    opt-in "short banner" choice
 //   4-after          after "Add to my notes": the drawer marks it new
@@ -25,6 +26,7 @@ async function finishA3(p, quiet) {
     localStorage.setItem('maya-accessibility', JSON.stringify({ state: { quietClues: q }, version: 0 }))
   }, [st, quiet])
   await p.reload(); await p.waitForTimeout(1200)
+  await p.locator('.lob-start').click(); await p.waitForTimeout(400)
   for (const a of ['twitter', 'wayback']) {
     const inp = p.locator('input[type=text], input:not([type])').first()
     await inp.fill(a); await inp.press('Enter'); await p.waitForTimeout(1600)
@@ -45,10 +47,10 @@ async function finishA3(p, quiet) {
     await p.evaluate(s => localStorage.setItem('maya-game-v3-storage', JSON.stringify({ state: s, version: 0 })), S.atLead('A13', SEEN))
     await p.reload(); await p.waitForTimeout(1200)
     await snap('1-brief-arrive')
-    const box = await p.locator('.lo-panel').boundingBox()
-    await p.mouse.click(box.x + box.width / 2, box.y + box.height - 40)
-    await p.waitForTimeout(500)
-    await snap('2-brief-touched')
+    await p.locator('.lob-start').click(); await p.waitForTimeout(500)
+    await snap('2-work')
+    await p.getByRole('button', { name: /what you know/i }).click(); await p.waitForTimeout(300)
+    await snap('2b-work-facts')
 
     await finishA3(p, false)
     await snap('3-card')

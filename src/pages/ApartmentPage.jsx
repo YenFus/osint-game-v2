@@ -130,7 +130,7 @@ export default function ApartmentPage() {
           {/* Scene note */}
           <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
             <p className="text-[#a09888] text-base italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif" }}>
-              "I haven't been here since she painted it. The bed's unmade. The lamp over her desk is still on, and the window she never shuts properly is open a crack. It all looks completely normal. She's just not in it."
+              "Her lamp is still on. Everything looks normal. She's just not here."
             </p>
           </div>
 
@@ -299,7 +299,7 @@ export default function ApartmentPage() {
           <ApartmentRoom paths={paths} onPick={(p) => beginInvestigation(p)} />
           <div className="absolute bottom-6 left-0 right-0 hidden md:flex justify-center pointer-events-none" style={{ zIndex: 5 }}>
             <p className="text-[15px] italic" style={{ fontFamily: "'Crimson Pro', serif", color: 'rgba(180,166,140,0.6)' }}>
-              Three threads. One answer.
+              Click something of hers to start.
             </p>
           </div>
         </section>

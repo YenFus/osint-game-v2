@@ -24,7 +24,7 @@ export const LEAD_META = {
     summary: 'Maya was investigating a forum account called stillwater_m. It knew private things about a missing woman, Lena Vasquez. Her first suspect was Lena\'s ex, Corey Marsh. She never said a word to me.',
   },
   A2: {
-    brief: [{ fact: 'stillwater_m is the forum account Maya was investigating. She wrote that it knew things that were never public.', from: 'NOTES_DO_NOT_DELETE.txt, on Maya\'s laptop' }, { fact: 'Already public: Lena\'s name, the arts night, the coffee-shop sightings, and Corey\'s name.', from: 'the news, and the forum itself' }],
+    brief: [{ fact: 'Maya wrote that the forum account stillwater_m knew things that were never public.', from: 'NOTES_DO_NOT_DELETE.txt, on Maya\'s laptop' }, { fact: 'Already public: Lena\'s name, the arts night, the coffee-shop sightings, and Corey\'s name.', from: 'the news, and the forum itself' }],
     clue: 'insider', card: { kind: 'index', scene: 'forum' },
     hint: 'Ignore the tone. Look for things only someone close to Lena could know: a weekly routine, a timetable, a first name. There are three.',
     summary: 'In four months of posts he mentioned her Tuesday route, her class schedule and her flatmate\'s first name. None of that was ever public.',
@@ -36,7 +36,7 @@ export const LEAD_META = {
     summary: 'Two days after Maya asked the forum who he was, his Twitter was deleted and his Flickr went private. She\'d already saved his photos.',
   },
   A4: {
-    brief: [{ fact: 'Lena lived near the Portland waterfront.', from: 'her friends\' forum page' }, { fact: 'She was last seen at the Millhaven Arts Night, forty miles south, on Saturday 13 April.', from: 'her friends\' forum page' }, { fact: 'His Flickr went private in February, but Maya saved a copy first.', from: 'Maya\'s notes' }],
+    brief: [{ fact: 'Lena lived near the Portland waterfront. She was last seen at the Millhaven Arts Night, 40 miles south, on 13 April.', from: 'her friends\' forum page' }, { fact: 'Maya saved his Flickr before it went private in February.', from: 'Maya\'s notes' }],
     clue: 'flickr_gps', card: { kind: 'polaroid', scene: 'building' },
     hint: 'Only the April photos matter. Pick a photo and its coordinates show in the bar. Latitude lines run across the map, longitude lines run down. Put the photo where they cross.',
     summary: 'His own photos put him on the waterfront two streets from Lena\'s flat the night before she vanished — and inside the arts night hall the evening she did.',
@@ -48,7 +48,7 @@ export const LEAD_META = {
     summary: 'Between September and November he deleted the post saying he worked the arts night and the post announcing his website, and took his town out of his bio and an old post.',
   },
   A7: {
-    brief: [{ fact: 'stillwater-media.net is the website he announced on Twitter — the same words as his username.', from: 'his Twitter, archived' }, { fact: 'Maya posted her first question on the forum on 4 November.', from: 'NOTES_DO_NOT_DELETE.txt' }],
+    brief: [{ fact: 'stillwater-media.net is the website he announced on Twitter.', from: 'his Twitter, archived' }, { fact: 'Maya posted her first question on the forum on 4 November.', from: 'NOTES_DO_NOT_DELETE.txt' }],
     clue: 'shield', card: { kind: 'index', scene: 'shielded' },
     hint: 'The name is hidden — that\'s what a privacy shield does. Flag the shield itself, the date it went up, and the two details it didn\'t hide.',
     summary: 'His website\'s registration is hidden behind a privacy shield, switched on 9 November — five days after Maya\'s first question on the forum. It still shows a company, Stillwater Media, and a postbox in Millhaven.',
@@ -76,7 +76,7 @@ export const LEAD_META = {
     summary: 'The registration as it was in September, before he hid it: R. Callahan, PO Box 441, Millhaven. He changed it on 9 November.',
   },
   A13: {
-    brief: [{ fact: 'stillwater_m told the forum someone was watching Lena\'s street on Friday 12 April, and that Corey\'s photos "look like her street".', from: 'c_marsh_crossref.txt, on Maya\'s laptop' }, { fact: 'Lena\'s hours that weekend — shown on the timeline below.', from: 'lena_timeline.txt, on Maya\'s laptop' }],
+    brief: [{ fact: 'stillwater_m told the forum someone was watching Lena\'s street on Friday 12 April, and that Corey\'s photos "look like her street".', from: 'c_marsh_crossref.txt, on Maya\'s laptop' }, { fact: 'Lena\'s hours that weekend are on the timeline.', from: 'lena_timeline.txt, on Maya\'s laptop' }],
     clue: 'corey_alibi', card: { kind: 'polaroid', scene: 'car' },
     hint: 'Ignore the upload time. Use the camera\'s time (EXIF) and take off seven hours. 02:54 UTC on the 13th is 7:54pm on the 12th — the 6pm to 8pm block. Do the same for the other two.',
     summary: 'Corey Marsh\'s own photos put him at the body shop in Tigard on both nights. The forum spent a year on the wrong man.',
@@ -90,13 +90,13 @@ export const LEAD_META = {
     summary: 'Her notebook, November: she found Lena\'s case and noticed one account knew too much. She was on to him four months before she disappeared.',
   },
   B2: {
-    brief: [{ fact: 'Maya thought stillwater_m knew things about Lena that were never public.', from: 'her notebook, November' }, { fact: 'The police press release on 18 April gave Lena\'s name, age and what she was wearing — not where she\'d been.', from: 'the police appeal' }],
+    brief: [{ fact: 'Maya thought stillwater_m knew things about Lena that were never public.', from: 'her notebook, November' }, { fact: 'The police appeal on 18 April gave Lena\'s name, age and clothes. Not where she\'d been.', from: 'the police appeal' }],
     clue: 'no_source', card: { kind: 'index', scene: 'forum' },
     hint: 'For each of his posts, ask where he could have learned that, and link it to the source. Two posts have a public source. Two don\'t — both of those go to "Nowhere public".',
     summary: 'He spent months pushing the forum toward Corey Marsh — and twice he mentioned things that weren\'t public anywhere.',
   },
   B4: {
-    brief: [{ fact: 'Priya, Lena\'s flatmate, gave Maya her own copy of what she told the police. It was never released.', from: 'Maya\'s notebook, December' }],
+    brief: [{ fact: 'Priya, Lena\'s flatmate, gave Maya a copy of her police statement. It was never released.', from: 'Maya\'s notebook, December' }],
     clue: 'sealed', card: { kind: 'index', scene: 'forum' },
     hint: 'Pick one of his posts, then the line in Priya\'s statement that says the same thing. Start with her name, then the words in quotation marks.',
     summary: 'He knew Priya\'s name and quoted her exact words to the police months before anyone published either. He also knew the hall\'s exits.',
@@ -138,7 +138,7 @@ export const LEAD_META = {
     summary: 'Her corkboard. In red: a table ringed in the arts night photo, a map with three places joined by string, and Lena\'s last post pinned next to a photo of the same brick wall.',
   },
   C2: {
-    brief: [{ fact: 'On her corkboard Maya ringed the table by the door in this photo and wrote: whose is this?', from: 'Maya\'s corkboard' }],
+    brief: [{ fact: 'Maya ringed the table by the door and wrote: whose is this?', from: 'Maya\'s corkboard' }],
     clue: 'table_sign', card: { kind: 'photo', scene: 'photo' },
     hint: 'Zoom in on the table by the door: the sign on it, the cards under it, and what\'s playing on the screen.',
     summary: 'Up close, the table has a sign saying STILLWATER MEDIA, a stack of business cards, and a screen playing the same landscapes stillwater_m posts.',

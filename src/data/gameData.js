@@ -24,7 +24,7 @@ export const GAME_DATA = {
         title: "Maya's Laptop — File System",
         tool: 'File Browser',
         timestamp: { text: 'Maya\'s files — November to March', urgent: false },
-        monologue: "Her laptop was still on, and unlocked. She never leaves it like that. She'd lecture me if I did.",
+        monologue: "Her laptop was on and unlocked. She never leaves it like that.",
         osintTip: {
           id: 'file-metadata',
           title: 'File Metadata Analysis',
@@ -95,7 +95,7 @@ export const GAME_DATA = {
         title: "Reddit — u/stillwater_m",
         tool: 'Reddit',
         timestamp: { text: 'Maya\'s research — December', urgent: false },
-        monologue: "Nothing he wrote sounds strange on its own. Maya was looking for the details nobody could have told him.",
+        monologue: "Maya was looking for things he couldn't have known.",
         osintTip: {
           id: 'insider-knowledge',
           title: 'What Only an Insider Could Know',
@@ -290,7 +290,7 @@ export const GAME_DATA = {
         title: "Twitter Archive — stillwater_m, Two Captures",
         tool: 'Wayback Machine',
         timestamp: { text: 'Maya\'s research — February', urgent: false },
-        monologue: "An internet archive saved his Twitter page twice — once in September, once in November. Maya put them side by side.",
+        monologue: "An archive saved his Twitter page twice. Maya compared them.",
         osintTip: {
           id: 'wayback-diff',
           title: 'Reading an Archive Against Itself',
@@ -349,7 +349,7 @@ export const GAME_DATA = {
         title: "WHOIS Lookup — stillwater-media.net",
         tool: 'WHOIS',
         timestamp: { text: 'Maya\'s research — January 22', urgent: false },
-        monologue: "Maya looked up who owns stillwater-media.net. This is what came back.",
+        monologue: "Maya looked up who owns his website.",
         osintTip: {
           id: 'whois',
           title: 'WHOIS Records',
@@ -390,7 +390,7 @@ export const GAME_DATA = {
         title: "WHOIS Cross-Reference",
         tool: 'WHOIS Lookup',
         timestamp: { text: 'Maya\'s research — February 1', urgent: false },
-        monologue: 'The registration names a company. The newspaper named everyone who worked the arts night. Put the two lists together.',
+        monologue: 'His website names a company. The paper named the arts night staff.',
         content: {
           recordsLabel: 'Two records, side by side',
           records: [
@@ -440,7 +440,7 @@ export const GAME_DATA = {
         title: "@nightwatch_rc — Against stillwater_m",
         tool: 'Twitter Archive',
         timestamp: { text: 'Maya\'s research — January', urgent: false },
-        monologue: "He follows forty-seven accounts. One of them has never posted a single word. Maya opened that one.",
+        monologue: "He follows 47 accounts. One has never posted. Maya opened it.",
         osintTip: {
           id: 'sock-puppets',
           title: 'Tying a Quiet Account to a Loud One',
@@ -531,7 +531,7 @@ export const GAME_DATA = {
         title: "WHOIS History — stillwater-media.net",
         tool: 'WHOIS History',
         timestamp: { text: 'now — Maya\'s apartment', urgent: true },
-        monologue: "He hid the registration in November. But a copy was saved in September, before he did.",
+        monologue: "He hid the registration in November. A September copy survived.",
         osintTip: {
           id: 'whois-history',
           title: 'Historic WHOIS',
@@ -596,7 +596,7 @@ export const GAME_DATA = {
         title: "Flickr — c_marsh_pdx",
         tool: 'Flickr Archive · timeline',
         timestamp: { text: 'Maya\'s research — January', urgent: false },
-        monologue: 'The forum spent a year blaming the ex-boyfriend. His own camera says where he was.',
+        monologue: 'The forum blamed the ex-boyfriend. His own camera says where he was.',
         osintTip: null,
         content: {
           prompt: 'Put each photograph in the two-hour block it was really taken',
@@ -724,7 +724,7 @@ export const GAME_DATA = {
         title: "PDXmissing Forum — What He Should Not Have Known",
         tool: 'Forum Archive',
         timestamp: { text: 'December into January', urgent: false },
-        monologue: "She read that forum the way I used to read court files: every post, every date. Then she asked one question of each: where could he have learned this?",
+        monologue: "Maya went through the forum post by post, like a court file.",
         osintTip: {
           id: 'forum-archive',
           title: 'Reading an Account Against the Public Record',
@@ -777,7 +777,7 @@ export const GAME_DATA = {
         title: "Forum Posts — Against Priya's Statement",
         tool: 'Cross-reference',
         timestamp: { text: 'February — Maya refining her research', urgent: false },
-        monologue: "Priya gave Maya her own copy of what she told the police. It was never released. Maya put it next to his posts.",
+        monologue: "Maya put Priya's statement next to his posts.",
         content: {
           prompt: 'Link what he wrote to what only the police had',
           left: {
@@ -821,7 +821,7 @@ export const GAME_DATA = {
         title: "Pattern Analysis — stillwater_m Knowledge Sources",
         tool: 'Analysis',
         timestamp: { text: 'February', urgent: false },
-        monologue: 'Maya wrote two things in the margin next to his posts. I want to know where each one came from.',
+        monologue: 'Maya wrote two notes beside his posts. Where did each come from?',
         content: {
           questions: [
             {
@@ -853,7 +853,7 @@ export const GAME_DATA = {
         title: "stillwater-media.net — Cached Version",
         tool: 'Wayback Machine',
         timestamp: { text: 'February', urgent: false },
-        monologue: "The site's still up. But there's an older copy saved online, from before he cleaned it.",
+        monologue: "Maybe the old copy still shows what he removed.",
         osintTip: {
           id: 'page-source',
           title: 'HTML Source Code Inspection',
@@ -901,7 +901,7 @@ export const GAME_DATA = {
         title: "Source Code — Author Confirmation",
         tool: 'HTML Inspection',
         timestamp: { text: 'February', urgent: false },
-        monologue: "His website doesn't show a single name. But a website's code carries notes that visitors never see.",
+        monologue: "His site shows no names. Its code might.",
         content: {
           questions: [
             {
@@ -1079,7 +1079,7 @@ export const GAME_DATA = {
         title: "Arts Night Photo — Detail Analysis",
         tool: 'Photo Analysis',
         timestamp: { text: 'tracing the photo', urgent: false },
-        monologue: "She printed the arts night photo big and pinned it up. She'd ringed the table by the door.",
+        monologue: "She printed the arts night photo big and pinned it up.",
         content: {
           prompt: 'Find the three things that say who worked this room',
           plate: 'gallery',
@@ -1109,7 +1109,7 @@ export const GAME_DATA = {
         title: "Event Search — Millhaven Arts Night",
         tool: 'Event Records Search',
         timestamp: { text: 'verifying the venue', urgent: false },
-        monologue: "The building in Lena's last post and the building in Maya's photo look the same. I want its name.",
+        monologue: "I need to know what that building is called.",
         osintTip: {
           id: 'event-search',
           title: 'Event & Permit Record Research',
@@ -1150,7 +1150,7 @@ export const GAME_DATA = {
         title: "Millhaven Courier — Archive Search",
         tool: 'Newspaper Archive',
         timestamp: { text: 'verifying through press records', urgent: false },
-        monologue: "Small-town papers keep everything. Maya found three pieces in the Courier's archive. On their own, none of them means much.",
+        monologue: "Maya found three pieces in the Courier's archive.",
         osintTip: {
           id: 'newspaper-archive',
           title: 'Local Newspaper Archive Research',
@@ -1243,7 +1243,7 @@ export const GAME_DATA = {
         title: "Oregon Business Registry — Stillwater Media",
         tool: 'Business Registry',
         timestamp: { text: 'verifying the business', urgent: false },
-        monologue: 'The website registration gave a company name and a postbox. Companies have to register with the state — under a real name.',
+        monologue: 'Companies must register with the state, under a real name.',
         osintTip: {
           id: 'business-registry',
           title: 'Business Registry Research',
@@ -1283,7 +1283,7 @@ export const GAME_DATA = {
         title: "Marion County Court — Case MH-2021-0384",
         tool: 'Court Records',
         timestamp: { text: 'pulling the court record', urgent: true },
-        monologue: "The Courier printed a short summary and left the names out. The court's own copy leaves nothing out.",
+        monologue: "The paper left the names out. The court's copy doesn't.",
         osintTip: {
           id: 'court-records',
           title: 'Public Court Record Access',

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────
-// PROLOGUE — seven screens, one fact each.
+// PROLOGUE — seven screens, one fact each, two short lines at most.
 //
 // Each beat shows the thing Thomas was looking at — his texts, the call,
 // the voicemail, the police receipt, Ray's call, his photos of her flat,
@@ -21,8 +21,8 @@ export const PROLOGUE_BEATS = [
     art: 'messages',
     stamp: 'Tuesday · 8:20 pm',
     lines: [
-      { text: 'Maya asked me to dinner. She said she had something to tell me.' },
-      { text: "She picked the place. She's an hour late, and she's never late. Not for me." },
+      { text: 'Maya asked me to dinner. She had something to tell me.' },
+      { text: "She's an hour late. She's never late." },
     ],
   },
   {
@@ -31,7 +31,7 @@ export const PROLOGUE_BEATS = [
     stamp: 'Tuesday · 8:21 pm',
     lines: [
       { text: 'I called. It rang out.' },
-      { text: "Then I saw it. A voicemail from her, from Monday morning. I'd missed it." },
+      { text: "Then I saw a voicemail from her. Monday morning. I'd missed it." },
     ],
   },
   {
@@ -47,8 +47,7 @@ export const PROLOGUE_BEATS = [
       transcript: "Hey Dad, it's me. Okay. I need to tell you something, and I should've told you weeks ago. I'm sorry. It's about the thing I've been working on. I'm okay. I want you to hear me say that first. I'm okay. But if I don't call you back tonight, I need you to go to the— Hang on. Someone's at the door. One sec.",
     },
     lines: [
-      { text: 'I thought it was about dinner. It was the last thing she said to anyone.' },
-      { text: '"I\'m okay. I want you to hear me say that first."', voice: 'maya' },
+      { text: 'It was the last thing she said to anyone.' },
       { text: '"Hang on. Someone\'s at the door."', voice: 'maya' },
     ],
   },
@@ -57,9 +56,8 @@ export const PROLOGUE_BEATS = [
     art: 'police',
     stamp: 'Wednesday · 9:10 am',
     lines: [
-      { text: 'Wednesday morning I reported her missing.' },
-      { text: "The officer was kind about it. She's twenty-four, he said. Adults switch their phones off. Give it a few days." },
-      { text: "I don't have a few days. I used to do this for a living. I'll do it myself." },
+      { text: 'I reported her missing. They said give it a few days.' },
+      { text: "I used to do this for a living. I'll look myself." },
     ],
   },
   {
@@ -67,9 +65,8 @@ export const PROLOGUE_BEATS = [
     art: 'ray',
     stamp: 'Wednesday · 12:04 pm',
     lines: [
-      { text: "Ray. My best friend for thirty years. He's Maya's godfather." },
-      { text: "He'd heard before I could tell him." },
-      { text: '"Tom. Whatever you need, buddy. I mean it. Anything."', voice: 'ray' },
+      { text: "Ray, my oldest friend and Maya's godfather. He'd already heard." },
+      { text: '"Tom. Whatever you need, buddy. Anything."', voice: 'ray' },
     ],
   },
   {
@@ -77,9 +74,8 @@ export const PROLOGUE_BEATS = [
     art: 'apartment',
     stamp: 'Wednesday · 6:30 pm — my photos',
     lines: [
-      { text: "I've got a key to her place. I photographed everything, the way I used to at a scene." },
-      { text: 'Her keys were in the bowl by the door. Her wallet was on the counter, cards still in it.' },
-      { text: "She didn't walk out of here. And somebody had tried to burn her notebook." },
+      { text: 'Her keys and wallet were still in her flat.' },
+      { text: 'And someone had tried to burn her notebook.' },
     ],
   },
   {
@@ -87,9 +83,8 @@ export const PROLOGUE_BEATS = [
     art: 'laptop',
     stamp: 'Wednesday · 6:40 pm — her laptop',
     lines: [
-      { text: 'Her laptop was open. Seventeen tabs, all about the same woman.' },
-      { text: "Lena Vasquez. Missing since last April. I'd never heard her name." },
-      { text: "Whatever Maya was working on, she was doing it on her own. I'm going to find out what it was." },
+      { text: 'Her laptop was open. Every tab was about one woman.' },
+      { text: "Lena Vasquez. Missing since last April. I'd never heard of her." },
     ],
   },
 ]

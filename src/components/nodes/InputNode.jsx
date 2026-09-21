@@ -123,6 +123,7 @@ export function InputNode({ content, onComplete, nodeId = null }) {
     const text = `${clue.title} ${clue.detail}`.toLowerCase()
     return accepted.some(a => a.length > 4 && text.includes(a))
   }
+  const [openNote, setOpenNote] = useState(null)
   const notes = [...clues].reverse().map(id => CLUES[id]).filter(c => c && !givesItAway(c))
 
   return (
@@ -322,12 +323,19 @@ export function InputNode({ content, onComplete, nodeId = null }) {
         <aside className="inp-notes" aria-label="What you have found so far" tabIndex={0}>
           <div className="inp-notes-head">Your notes</div>
           {notes.length === 0 && <p className="inp-notes-empty">Nothing in the drawer yet.</p>}
+          {/* Titles only; tap one to read it. Printing every note in full
+              put up to a hundred extra words beside a one-line question. */}
           <ul>
             {notes.map(n => (
-              <li key={n.title}>
-                <span className="t">{n.title}</span>
-                <span className="d">{n.detail}</span>
-                <span className="s">{n.source}</span>
+              <li key={n.title} className={openNote === n.title ? 'open' : ''}>
+                <button type="button" className="t" aria-expanded={openNote === n.title}
+                  onClick={() => setOpenNote(o => (o === n.title ? null : n.title))}>{n.title}</button>
+                {openNote === n.title && (
+                  <>
+                    <span className="d">{n.detail}</span>
+                    <span className="s">{n.source}</span>
+                  </>
+                )}
               </li>
             ))}
           </ul>

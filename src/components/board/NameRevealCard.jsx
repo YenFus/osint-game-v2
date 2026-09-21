@@ -27,13 +27,11 @@ export function NameRevealCard({ onDone }) {
         <div className="nr-eyebrow">I've read it three times</div>
         <div className="nr-name">Raymond T. Callahan</div>
         <p className="nr-body">
-          Ray held my hand at the hospital the night Carmen died. He taught Maya to drive. He's
-          her godfather, he has a key to my house — and his name is on the paperwork behind the
-          man who took her.
+          Ray held my hand the night Carmen died. He taught Maya to drive. And his name is on the
+          paperwork behind the man who took her.
         </p>
         <p className="nr-body quiet">
-          There has to be an explanation. I'm going to sit here for a minute. Then I'm going to
-          find it, because a name on a form isn't proof.
+          A name on a form isn't proof. I need to know why it's there.
         </p>
         <div className="row"><span /><span /><button disabled={!armed} onClick={onDone}>Keep working</button></div>
       </div>

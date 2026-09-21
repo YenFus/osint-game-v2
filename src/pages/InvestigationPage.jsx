@@ -93,19 +93,21 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
   const buyHint = useGameStore(s => s.buyHint)
   const [hintShown, setHintShown] = useState(false)
   const [manualOpen, setManualOpen] = useState(false)
-  // On a phone the brief opens when you arrive, so you read it before you
-  // start, and folds itself away the first time you touch the puzzle, which
-  // gives the puzzle its screen back. One tap on the summary brings it back.
-  // (It used to start folded, which hid the sources behind a tap nobody made.)
-  const [narrow] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches)
-  const [briefOpen, setBriefOpen] = useState(true)
-  const briefAutoFolded = useRef(false)
-  const foldBriefOnWork = () => {
-    if (!narrow || briefAutoFolded.current) return
-    briefAutoFolded.current = true
-    setBriefOpen(false)
-  }
+  // Every lead opens on a short briefing: what you already know, where each
+  // fact came from, and what you're about to do. Then the puzzle gets the
+  // whole screen. The player said each screen asked them to read too much at
+  // once. The header used to stack Thomas's line, the task and every fact
+  // above a puzzle that needs reading of its own. A lead you've finished, or
+  // one you've already started, goes straight to the work.
+  const hasProgress = useGameStore(s => !!s.nodeProgress?.[node.id])
+  const [stage, setStage] = useState(() => (isReviewing || hasProgress ? 'work' : 'brief'))
+  const [factsOpen, setFactsOpen] = useState(false)
+  // focus Start without scrolling it into view: autoFocus scrolled a short
+  // phone's briefing and pushed "← Board" off the top
+  const startRef = useRef(null)
+  useEffect(() => { if (stage === 'brief') startRef.current?.focus({ preventScroll: true }) }, [stage])
   const Renderer = NODE_RENDERERS[node.type]
+  const task = node.content?.prompt ?? NODE_INSTRUCTIONS[node.type]
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') { if (manualOpen) setManualOpen(false); else onClose() } }
@@ -119,68 +121,90 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
     setHintShown(true)
   }
 
+  const facts = node.brief?.length > 0 && (
+    <ol className="lob-facts">
+      {node.brief.map((b, i) => (
+        <li key={i}><span className="f">{b.fact}</span><span className="s">from {b.from}</span></li>
+      ))}
+    </ol>
+  )
+
   return (
     <div ref={dialogRef} className="lo-root" role="dialog" aria-modal="true" aria-label={node.title}>
       <div className={`lo-panel skin-${pathKey}`} data-label={PANEL_LABEL[pathKey]}>
-        <div className="lo-head">
-          <div className="lo-card hidden sm:block"><PolaroidArt scene={node.card?.scene ?? 'document'} /></div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <button onClick={onClose} className="lo-back font-mono text-xs text-[#a09888] hover:text-[#f0e0c0] uppercase tracking-[0.15em]">← Board</button>
-              <span className="hidden sm:inline font-mono text-[12px] tracking-[0.2em] uppercase" style={{ color: node.timestamp?.urgent ? '#e04a3a' : '#8a7a60' }}>
-                {THREADS[pathKey].title} · {node.timestamp?.text}
-              </span>
+        {stage === 'brief' ? (
+          <div className="lob">
+            <button onClick={onClose} className="lo-back lob-back font-mono text-xs text-[#a09888] hover:text-[#f0e0c0] uppercase tracking-[0.15em]">← Board</button>
+            <div className="lob-inner">
+              <div className="lob-top">
+                <div className="lob-card"><PolaroidArt scene={node.card?.scene ?? 'document'} /></div>
+                <div className="min-w-0">
+                  <div className="lob-k" style={{ color: node.timestamp?.urgent ? '#e04a3a' : undefined }}>
+                    {THREADS[pathKey].title}{node.timestamp?.text ? ` · ${node.timestamp.text}` : ''}
+                  </div>
+                  <h2 className="lob-title">{node.title}</h2>
+                </div>
+              </div>
+              {node.monologue && <p className="lob-mono">{node.monologue}</p>}
+              {facts && (
+                <section className="lob-sec" aria-label="What you know">
+                  <div className="lob-sub">What you know</div>
+                  {facts}
+                </section>
+              )}
+              <div className="lob-go">
+                <div className="lob-task"><span>Your job</span>{task}</div>
+                <button type="button" className="lob-start" onClick={() => setStage('work')} ref={startRef}>Start</button>
+              </div>
             </div>
-            <h2 className="text-lg sm:text-2xl font-semibold leading-tight mt-1" style={{ fontFamily: "'Crimson Pro', Georgia, serif", color: '#ecdfc4' }}>
-              {node.title}
-            </h2>
-            {node.monologue && (
-              <p className="hidden sm:block text-base mt-1 italic" style={{ fontFamily: "'Crimson Pro', serif", color: '#b0a088' }}>{node.monologue}</p>
-            )}
-            {/* a lead can name its own objective; otherwise the verb does */}
-            <div className="font-mono text-[12px] tracking-[0.14em] uppercase mt-1 text-[#d4a84b]">▸ {node.content?.prompt ?? NODE_INSTRUCTIONS[node.type]}</div>
-            {/* What this lead relies on, and where each fact came from. After a
-                full playthrough the player said facts turned up with no source —
-                A13 asked them to rule Corey out against Lena's hours before
-                anything had shown them Lena's hours. Threads can be played in
-                any order, so every lead carries its own sources. */}
-            {node.brief?.length > 0 && (
-              <details className="lo-brief" open={briefOpen} onToggle={(e) => setBriefOpen(e.currentTarget.open)}>
-                <summary>What you're working from <span className="n">{node.brief.length}</span></summary>
-                <ul>
-                  {node.brief.map((b, i) => (
-                    <li key={i}><span className="f">{b.fact}</span> <span className="s">{b.from}</span></li>
-                  ))}
-                </ul>
-              </details>
-            )}
           </div>
-          <div className="lo-tools">
-            {node.osintTip && (
-              <button className="cb-btn" style={{ color: '#8ab0e0', borderColor: '#2a3a5a' }} onClick={() => setManualOpen(o => !o)}>Field manual</button>
-            )}
-            {node.hint && (
-              <button className="cb-btn" style={{ color: hintShown ? '#6a6050' : '#e8c870', borderColor: '#4a3a18' }} onClick={takeHint} disabled={hintShown}>
-                {hintShown ? 'Hint shown' : isReviewing ? 'Hint' : `Hint · +${HINT_COST} min`}
-              </button>
-            )}
-          </div>
-        </div>
-        {hintShown && <div className="lo-hint" role="status"><span className="lo-hint-k">Hint</span> {node.hint}</div>}
-        <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative" onPointerDownCapture={foldBriefOnWork}>
-          {Renderer && (
-            <Renderer
-              key={`${node.id}-${isReviewing ? 'review' : 'active'}`}
-              content={node.content}
-              nodeId={isReviewing ? null : node.id}
-              onComplete={onComplete}
-              onJournalistUnlock={onJournalistUnlock}
-              onCinematicTrigger={() => {}}
-              isReviewing={isReviewing}
-            />
-          )}
-          {manualOpen && node.osintTip && <FieldManual tip={node.osintTip} onClose={() => setManualOpen(false)} />}
-        </div>
+        ) : (
+          <>
+            <div className="lo-head">
+              <div className="lo-card hidden sm:block"><PolaroidArt scene={node.card?.scene ?? 'document'} /></div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button onClick={onClose} className="lo-back font-mono text-xs text-[#a09888] hover:text-[#f0e0c0] uppercase tracking-[0.15em]">← Board</button>
+                </div>
+                <h2 className="text-lg sm:text-2xl font-semibold leading-tight mt-1" style={{ fontFamily: "'Crimson Pro', Georgia, serif", color: '#ecdfc4' }}>
+                  {node.title}
+                </h2>
+                <div className="font-mono text-[12px] tracking-[0.14em] uppercase mt-1 text-[#d4a84b]">▸ {task}</div>
+              </div>
+              <div className="lo-tools">
+                {facts && (
+                  <button className="cb-btn" aria-expanded={factsOpen} onClick={() => setFactsOpen(o => !o)}>
+                    {factsOpen ? 'Hide what you know' : `What you know · ${node.brief.length}`}
+                  </button>
+                )}
+                {node.osintTip && (
+                  <button className="cb-btn" style={{ color: '#8ab0e0', borderColor: '#2a3a5a' }} onClick={() => setManualOpen(o => !o)}>Field manual</button>
+                )}
+                {node.hint && (
+                  <button className="cb-btn" style={{ color: hintShown ? '#6a6050' : '#e8c870', borderColor: '#4a3a18' }} onClick={takeHint} disabled={hintShown}>
+                    {hintShown ? 'Hint shown' : isReviewing ? 'Hint' : `Hint · +${HINT_COST} min`}
+                  </button>
+                )}
+              </div>
+            </div>
+            {factsOpen && facts && <div className="lo-facts" role="region" aria-label="What you know">{facts}</div>}
+            {hintShown && <div className="lo-hint" role="status"><span className="lo-hint-k">Hint</span> {node.hint}</div>}
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
+              {Renderer && (
+                <Renderer
+                  key={`${node.id}-${isReviewing ? 'review' : 'active'}`}
+                  content={node.content}
+                  nodeId={isReviewing ? null : node.id}
+                  onComplete={onComplete}
+                  onJournalistUnlock={onJournalistUnlock}
+                  onCinematicTrigger={() => {}}
+                  isReviewing={isReviewing}
+                />
+              )}
+              {manualOpen && node.osintTip && <FieldManual tip={node.osintTip} onClose={() => setManualOpen(false)} />}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
@@ -296,7 +320,7 @@ export default function InvestigationPage() {
           was covered by a text message. */}
       {/* then the note the lead just gave you, then Ray */}
       {!node && !revealPending && clueQueue.length > 0 && (
-        <ClueCard key={clueQueue[0]} clueId={clueQueue[0]} offerQuiet={st.clues.length >= 4} onDone={() => setClueQueue(q => q.slice(1))} />
+        <ClueCard key={clueQueue[0]} clueId={clueQueue[0]} offerQuiet={st.clues.length >= 4} showHow={st.clues.length <= 2} onDone={() => setClueQueue(q => q.slice(1))} />
       )}
       {!node && st.rayBeatPending && !revealPending && clueQueue.length === 0 && (
         <RayPhone

@@ -486,10 +486,10 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues, unread = []
 
 // ── Tutorial ──────────────────────────────────────────────────────
 const TUT = [
-  { h: 'Your wall.', p: 'I covered crime for twenty-three years. Every story started like this: a wall, some pins, some string. This is Maya\'s case now. It\'s mine too.' },
-  { h: 'Leads.', p: 'Each card on the board is a lead from her flat: her laptop, her burned notebook, her corkboard. Open one to look into it. Finishing a lead can open new ones.' },
-  { h: 'Theories.', p: 'Each lead you finish gives you a note. Each thread has three questions. Pin a note under each question, then test your theory. The board only tells you how many pins are right. Not every note answers something.' },
-  { h: 'The clock.', p: 'Maya has been gone almost 59 hours. Wrong answers, failed theories and hints all cost time. Every minute counts.' },
+  { h: 'Your wall.', p: 'Maya\'s case is on this wall now. I\'ll work it the way I used to.' },
+  { h: 'Leads.', p: 'Each card is a lead from her flat. Open one to look into it. Finishing it can open more.' },
+  { h: 'Theories.', p: 'Each lead gives you a note. Pin notes under a thread\'s three questions, then test your theory. It tells you how many are right.' },
+  { h: 'The clock.', p: 'Maya\'s been gone almost 59 hours. Wrong answers, failed theories and hints cost time.' },
 ]
 function BoardTutorial({ onDone }) {
   const [i, setI] = useState(0)

@@ -26,16 +26,8 @@ import { useGameStore } from '../../store/gameStore'
 import { useLeadProgress } from '../../hooks/useLeadProgress'
 import { BUTTON_PRIMARY } from '../../styles/nodeStyles'
 import { wrongCost } from '../../data/caseData'
+import { norm, matchSelection } from '../../data/phraseMatch'
 
-// Words are compared the way a reader compares them: case, punctuation and
-// the difference between a hyphen and a dash don't decide whether two
-// phrases are the same phrase.
-const norm = (s) => s
-  .toLowerCase()
-  .replace(/[‘’]/g, "'")
-  .replace(/[^a-z0-9'\s]+/g, ' ')
-  .replace(/\s+/g, ' ')
-  .trim()
 
 // A token is selectable if it has something to read in it. Bare punctuation
 // — the em dashes around a name, a lone question mark — is scenery: it can
@@ -93,7 +85,11 @@ function Post({ post, tokens, sel, hits, disabled, onPick, onClear, onMark }) {
               disabled={disabled || hit}
               onFocus={() => setActive(t.i)}
               onClick={() => onPick(t.i)}>
-              {t.text}
+              {/* The highlight paints on this inline span, not on the button:
+                  a <button> is always inline-block in Chrome, so its box and a
+                  space span's box never quite agree, and the stripe came out
+                  notched at every gap. Two inline spans in the same font do. */}
+              <span className="ph-ink">{t.text}</span>
             </button>
           )
         })}
@@ -154,18 +150,26 @@ export function PhraseNode({ content, onComplete, nodeId = null }) {
 
   const mark = (post) => {
     if (!sel || sel.postId !== post.id) return
-    const text = norm(post.tokens.slice(sel.from, sel.to + 1).map(t => t.text).join(''))
-    const hit = phrases.find(ph => ph.norm === text && !found.includes(ph.id))
+    const raw = post.tokens.slice(sel.from, sel.to + 1).map(t => t.text).join('')
+    const text = norm(raw)
     setSel(null)
-    if (hit) {
-      const next = [...found, hit.id]
+    // Judged on whether the selection holds the words that give him away, not
+    // on where the drag started — see phraseMatch.js.
+    const m = matchSelection(raw, phrases)
+    if (m && found.includes(m.phrase.id)) {
+      setFeedback({ type: 'info', text: 'You have already put that one up.' })
+      return
+    }
+    if (m?.status === 'hit') {
+      const next = [...found, m.phrase.id]
       setFound(next)
-      setFeedback({ type: 'correct', text: hit.correctFeedback ?? 'Nobody published that.' })
+      setFeedback({ type: 'correct', text: m.phrase.correctFeedback ?? 'Nobody published that.' })
       triggerDiscovery(phrases.every(ph => next.includes(ph.id)) ? 'major' : 'minor')
       return
     }
-    if (phrases.some(ph => ph.norm === text)) {
-      setFeedback({ type: 'info', text: 'You have already put that one up.' })
+    if (m?.status === 'loose') {
+      // Right words, too many of them. Not a wrong reading, so not charged.
+      setFeedback({ type: 'info', text: content.looseFeedback ?? "It's in there — but so is a lot else. Narrow it to the words that give him away." })
       return
     }
     const nth = wrongCount + 1

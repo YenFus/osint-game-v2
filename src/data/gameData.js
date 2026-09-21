@@ -128,7 +128,9 @@ export const GAME_DATA = {
               text: 'Cold but clear for cycling the waterfront today.' },
           ],
           phrases: [
-            { id: 'p-route', text: 'her Tuesday route', correctFeedback: "Her Tuesday route. She walked it every week and never once posted about it. Her flatmate knew. Her mother knew. Nobody else had any business knowing." },
+            // "Tuesday" alone is the private fact — a weekly routine. "route"
+            // alone is not, so it is not a core.
+            { id: 'p-route', text: 'her Tuesday route', cores: ['Tuesday route', 'Tuesday'], correctFeedback: "Her Tuesday route. She walked it every week and never once posted about it. Her flatmate knew. Her mother knew. Nobody else had any business knowing." },
             { id: 'p-class', text: 'Her class schedule', correctFeedback: "Her class schedule. Not in the paper, not on her profile. And he is the one asking for it to be taken down." },
             { id: 'p-priya', text: 'Priya', correctFeedback: "He uses her flatmate's first name in December, like it is common knowledge. It was in one police statement and no newspaper." },
           ],

@@ -1654,11 +1654,19 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
    element paints without touching layout or line-breaking, so the spaces are
    padded up to the same band: (1.75em − 1.118em) / 2. */
 .ph-gap { border-radius: 0; padding: 0.316em 0; }
+/* The word's own ink carries the same padding as a space span, so a word and
+   the space beside it are the same kind of box in the same font. That was
+   only approximately true with the band on the button: measured, the spaces
+   sat 0.4px high on desktop and ended 1.75px short on a phone, which is the
+   notch at every gap in a marked phrase. */
+.ph-ink { padding: 0.316em 0; }
 /* a hover must not out-specify a selection and dim the word you just chose */
 .ph-w:hover:not(:disabled):not(.sel):not(.hit) { background: rgba(212,168,75,0.14); }
 .ph-w:focus-visible { outline: 2px solid #d4a84b; outline-offset: 1px; }
-.ph-w.sel, .ph-gap.sel { background: rgba(212,168,75,0.32); color: #f6e9cc; border-radius: 0; }
-.ph-w.hit, .ph-gap.hit { background: rgba(90,180,110,0.22); color: #eaf5e6; box-shadow: inset 0 -2px 0 #4caf6a; border-radius: 0; }
+.ph-w.sel, .ph-w.hit { color: #f6e9cc; border-radius: 0; }
+.ph-w.hit { color: #eaf5e6; }
+.ph-w.sel .ph-ink, .ph-gap.sel { background: rgba(212,168,75,0.32); color: #f6e9cc; }
+.ph-w.hit .ph-ink, .ph-gap.hit { background: rgba(90,180,110,0.22); color: #eaf5e6; box-shadow: inset 0 -2px 0 #4caf6a; }
 .ph-w:disabled { cursor: default; }
 
 /* what you are holding, and the two things you can do with it */

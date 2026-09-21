@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────
 // RAY'S PHONE — Ray Callahan texts Thomas mid-investigation.
-// The player picks a reply; some replies make Ray nervous.
+// The player picks a reply. What it does to Ray is never shown.
 // mode 'beat'  → a RAY_BEATS message with reply options
 // mode 'final' → Ray is outside the building (no options; onDone)
 // ─────────────────────────────────────────────────────────────────
@@ -11,11 +11,11 @@ import { RAY_BEATS, RAY_FINAL } from '../../data/caseData'
 import { PolaroidArt } from './PolaroidArt'
 import { useAudio } from '../../hooks/useAudio'
 
-const MOOD_LINE = (delta) =>
-  delta >= 20 ? { text: 'That was a mistake. He\'s paying attention now.', color: '#e04a3a' }
-    : delta >= 10 ? { text: 'He\'s uneasy. Careful.', color: '#d4a84b' }
-      : delta > 0 ? { text: 'He noticed something. Maybe.', color: '#c8b890' }
-        : { text: 'He bought it.', color: '#6a9a70' }
+// There used to be a verdict under every reply — "He bought it", "He's
+// uneasy. Careful." — which told the player, from the first text, that their
+// father's oldest friend was a man to be handled. Replies still move his
+// suspicion (it decides how the ending plays out); the game just doesn't
+// narrate it. A reader should find him out, not be told by a gauge.
 
 export function RayPhone({ beatId, mode = 'beat', onAnswer, onDone }) {
   const dialogRef = useRef(null)
@@ -71,7 +71,6 @@ export function RayPhone({ beatId, mode = 'beat', onAnswer, onDone }) {
   }
 
   if (!beat) return null
-  const mood = picked !== null ? MOOD_LINE(beat.options[picked].suspicion) : null
 
   return (
     <div ref={dialogRef} className="rp-root" role="dialog" aria-modal="true" aria-label="Text messages from Ray">
@@ -94,7 +93,6 @@ export function RayPhone({ beatId, mode = 'beat', onAnswer, onDone }) {
         )}
         {stage === 'done' && (
           <>
-            {mood && <div className="rp-mood" style={{ color: mood.color }}>{mood.text}</div>}
             {mode === 'final' && <div className="rp-note">He's downstairs. He's never once been late.</div>}
             <button className="rp-done" onClick={finish}>{mode === 'final' ? 'Put the phone down' : 'Back to the board'}</button>
           </>

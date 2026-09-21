@@ -44,6 +44,8 @@ const freshRun = () => ({
   // Case board
   clues: [],
   lastClue: null,
+  // notes the player hasn't looked at in the drawer yet
+  unreadClues: [],
   theory: {},       // tentative pins { dedId: clueId }
   deductions: {},   // confirmed pins
   theoryTests: 0,
@@ -155,11 +157,16 @@ export const useGameStore = create(
         return {
           clues: [...state.clues, clueId],
           lastClue: { id: clueId, at: Date.now() },
+          unreadClues: [...(state.unreadClues ?? []), clueId],
           // the surname stops the game wherever it is found, not only in the
           // records viewer that happened to implement it first
           namePending: state.nameRevealSeen ? false : (NAME_CLUES.includes(clueId) || state.namePending),
         }
       }),
+
+      readClue: (clueId) => set((state) => ({
+        unreadClues: (state.unreadClues ?? []).filter(id => id !== clueId),
+      })),
 
       // Tentative pin — no feedback. clueId null clears the slot.
       // Paired questions hold two pins; pinning a third pushes the oldest out.

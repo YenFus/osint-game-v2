@@ -1881,3 +1881,75 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   .nv-idle-body { margin-top: 18px; padding: 14px 14px 2px; }
   .nv-idle-body p { font-size: 15px; }
 }
+
+/* ── the clue card: a finished lead hands you a note ─────────────
+   Replaces the corner toast that faded before the player had read it.
+   An index card in front of the board, with where the note came from. */
+.cc-root {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  background: rgba(6, 5, 4, 0.62);
+  animation: cc-fade 0.25s ease-out;
+}
+.cc-card {
+  position: relative; width: min(520px, 100%); max-height: calc(100dvh - 40px); overflow-y: auto;
+  background: #efe7d4; color: #1f1a13;
+  padding: 26px 26px 22px; border-radius: 2px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.4) inset;
+  transform: rotate(-0.6deg);
+  animation: cc-in 0.35s cubic-bezier(.2,.8,.2,1);
+}
+.cc-pin {
+  position: absolute; top: -9px; left: 50%; width: 18px; height: 18px; margin-left: -9px;
+  border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e25a4a, #8d1c12);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.45);
+}
+.cc-k {
+  font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.24em;
+  text-transform: uppercase; color: #9c1c13; margin-bottom: 12px;
+}
+.cc-body { display: flex; gap: 16px; align-items: flex-start; }
+.cc-img { flex: 0 0 104px; height: 104px; background: #1b1814; box-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+.cc-text { min-width: 0; }
+.cc-title { font-family: 'Crimson Pro', Georgia, serif; font-size: 25px; line-height: 1.2; font-weight: 600; margin: 0 0 8px; color: #17120b; }
+.cc-detail { font-family: 'Crimson Pro', Georgia, serif; font-size: 18px; line-height: 1.55; margin: 0; color: #2c251b; }
+.cc-src {
+  margin-top: 16px; padding: 10px 12px; background: #e4d9c0; border-left: 3px solid #8a7a54;
+  font-family: 'Crimson Pro', Georgia, serif; font-size: 16px; color: #2c251b;
+}
+.cc-src span {
+  display: block; font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #6b5c3c; margin-bottom: 3px;
+}
+.cc-how { font-family: 'Crimson Pro', Georgia, serif; font-size: 15.5px; line-height: 1.5; color: #4a4030; margin: 14px 0 18px; }
+.cc-take {
+  display: block; width: 100%; min-height: 48px; padding: 12px 16px; cursor: pointer;
+  background: #8d1c12; color: #fbeee0; border: 0; border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+}
+.cc-take:hover { background: #a3241a; }
+.cc-take:focus-visible { outline: 3px solid #d4a84b; outline-offset: 2px; }
+/* on the way out it drops toward the drawer rather than just vanishing */
+.cc-root.leaving { animation: cc-fade-out 0.42s ease-in forwards; }
+.cc-root.leaving .cc-card { animation: cc-out 0.42s cubic-bezier(.6,0,.8,.4) forwards; }
+@keyframes cc-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes cc-fade-out { to { background: rgba(6,5,4,0) } }
+@keyframes cc-in { from { opacity: 0; transform: translateY(18px) rotate(-2deg) scale(0.96) } to { opacity: 1; transform: rotate(-0.6deg) } }
+@keyframes cc-out { to { opacity: 0; transform: translate(34vw, 40vh) rotate(8deg) scale(0.25) } }
+@media (max-width: 760px) {
+  @keyframes cc-out { to { opacity: 0; transform: translate(0, 50vh) scale(0.3) } }
+  .cc-card { padding: 22px 18px 18px; }
+  .cc-img { flex-basis: 76px; height: 76px; }
+  .cc-title { font-size: 22px; }
+  .cc-detail { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cc-root, .cc-card { animation: none; }
+}
+/* and in the drawer, a note you haven't looked at yet */
+.clue-card.unread { box-shadow: 0 0 0 2px #c0392b inset; }
+.new-dot {
+  display: inline-block; margin-right: 6px; padding: 1px 5px; vertical-align: 2px;
+  background: #a01814; color: #fff; border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+}

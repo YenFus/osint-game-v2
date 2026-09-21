@@ -18,7 +18,7 @@ import { GAME_DATA } from '../../data/gameData'
 import { LEAD_META, withMeta } from '../../data/leadMeta'
 import {
   CLUES, DEDUCTIONS, FINAL_SLOTS, suspectsFor, THREAD_INFO as THREADS, WRONG_THEORY_COST,
-  clockLabel, missingLabel, durationLabel, effectiveSuspicion, rayMood, rayDeadline, pinComplete, HINT_COST,
+  clockLabel, missingLabel, durationLabel, effectiveSuspicion, rayDeadline, pinComplete, HINT_COST,
   NAME_CLUES,
 } from '../../data/caseData'
 import { PolaroidArt } from './PolaroidArt'
@@ -74,19 +74,20 @@ function ClockHUD({ clock, lastTimeDelta }) {
 // Until a record puts a surname to the handle, this chip is a deadline and
 // nothing more. Naming the man in the HUD from minute one gave the case away
 // before the player had worked anything out.
-function RayChip({ suspicion, active, minutesLeft, gone, named }) {
+// It also used to carry Ray's mood — CALM, UNEASY — and turn red when your
+// texts had rattled him. That was a gauge on a suspect the player is meant to
+// find for themselves. Only the time is shown now.
+function RayChip({ active, minutesLeft, gone, named }) {
   if (!active) return null
-  const mood = rayMood(suspicion)
-  const alarm = minutesLeft < 90 || (named && suspicion >= 50)
+  const alarm = minutesLeft < 90
   return (
     <div className={`ray-chip ${alarm ? 'alarm' : ''}`}
       title={named
-        ? "Ray says he's leaving for Seattle. The more nervous he gets, the sooner he goes."
+        ? "Ray says he's driving up to Seattle tonight."
         : 'Whoever he is, he is watching this case too. He will not sit still all night.'}>
-      <span className="dot" style={{ background: named ? mood.color : '#b0a070', color: named ? mood.color : '#b0a070' }} />
+      <span className="dot" style={{ background: '#b0a070', color: '#b0a070' }} />
       <span>
-        {/* once he's gone his mood is not news */}
-        {named ? (gone ? 'Ray' : `Ray · ${mood.label}`) : 'Tonight'}
+        {named ? 'Ray' : 'Tonight'}
         <span className="dl">
           {gone
             ? (named ? 'has left town' : 'he has moved')
@@ -435,12 +436,12 @@ function YarnLayer({ edges }) {
 }
 
 // ── The drawer of everything you have found ───────────────────────
-function ClueDrawer({ clues, selected, onSelect, freshId, usedClues }) {
+function ClueDrawer({ clues, selected, onSelect, freshId, usedClues, unread = [] }) {
   const [open, setOpen] = useState(false)
   return (
     <aside className={`cb-drawer ${open ? 'open' : ''}`} aria-label="Clues">
       <button className="drawer-toggle" onClick={() => setOpen(o => !o)}>
-        <span>Clues ({clues.length}){selected ? ' · 1 selected' : ''}</span>
+        <span>Clues ({clues.length}){unread.length ? ` · ${unread.length} new` : ''}{selected ? ' · 1 selected' : ''}</span>
         <span style={{ fontFamily: 'Share Tech Mono', fontSize: 14 }}>{open ? '▾' : '▴'}</span>
       </button>
       <div className="drawer-head">
@@ -459,7 +460,7 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues }) {
           const sel = selected === id
           return (
             <button key={id}
-              className={`clue-card ${sel ? 'sel' : ''} ${freshId === id ? 'fresh' : ''}`}
+              className={`clue-card ${sel ? 'sel' : ''} ${freshId === id ? 'fresh' : ''} ${unread.includes(id) ? 'unread' : ''}`}
               draggable
               onDragStart={(e) => { e.dataTransfer.setData('text/plain', id); onSelect(id) }}
               onClick={() => onSelect(sel ? null : id)}
@@ -467,7 +468,7 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues }) {
             >
               <div className="th"><PolaroidArt scene={clue.scene} /></div>
               <div style={{ minWidth: 0 }}>
-                <div className="tt">{clue.title}</div>
+                <div className="tt">{unread.includes(id) && <span className="new-dot">new</span>}{clue.title}</div>
                 <div className="src">{clue.source}</div>
                 {sel && <div className="dt">{clue.detail}</div>}
                 {usedClues.has(id) && <div className="used">on the board</div>}
@@ -562,7 +563,9 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
     finalCase: st.finalCase, clock: st.clock, lastTimeDelta: st.lastTimeDelta,
     raySuspicion: st.raySuspicion, rayLog: st.rayLog, activePath: st.activePath,
     seenBoardTutorial: st.seenBoardTutorial, rayGoneSeen: st.rayGoneSeen, nameRevealSeen: st.nameRevealSeen,
+    unreadClues: st.unreadClues ?? [],
   })))
+  const readClue = useGameStore(st => st.readClue)
   const pinTheory = useGameStore(st => st.pinTheory)
   const testTheory = useGameStore(st => st.testTheory)
   const setFinalSuspect = useGameStore(st => st.setFinalSuspect)
@@ -732,7 +735,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
           <h1 className="hand" style={{ font: 'inherit', margin: 0 }}>Where is Maya?</h1>
           <div className="type">Case board · {closedCount}/3 threads closed</div>
         </div>
-        <RayChip suspicion={suspicion} active={s.rayLog.length > 0} minutesLeft={minutesLeft} gone={gone} named={named} />
+        <RayChip active={s.rayLog.length > 0} minutesLeft={minutesLeft} gone={gone} named={named} />
         <ClockHUD clock={s.clock} lastTimeDelta={s.lastTimeDelta} />
         <button className="cb-btn" onClick={onJournal}>Journal</button>
         <button className="cb-btn" onClick={onSave} title="Save (Ctrl/Cmd+S)">Save</button>
@@ -820,9 +823,10 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
         <ClueDrawer
           clues={s.clues}
           selected={selectedClue}
-          onSelect={(id) => { if (id) playSFX('click'); setSelectedClue(id) }}
+          onSelect={(id) => { if (id) { playSFX('click'); readClue(id) } setSelectedClue(id) }}
           freshId={clueToast}
           usedClues={usedClues}
+          unread={s.unreadClues}
         />
       </div>
 
@@ -844,14 +848,8 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
         </div>
       )}
 
-      {clueToast && CLUES[clueToast] && !(named && !s.nameRevealSeen) && (
-        <div key={s.lastClue.at} className="clue-toast" role="status">
-          <div className="k">New clue</div>
-          <div className="lead-img"><PolaroidArt scene={CLUES[clueToast].scene} /></div>
-          <div className="tt">{CLUES[clueToast].title}</div>
-          <div className="hand">In your drawer. It may answer something — or nothing.</div>
-        </div>
-      )}
+      {/* A new clue used to be a toast here that faded on its own. It is a
+          card in front of the board now (ClueCard.jsx), shown by the page. */}
 
       {!s.seenBoardTutorial && <BoardTutorial onDone={markBoardTutorialSeen} />}
       {s.seenBoardTutorial && gone && !s.rayGoneSeen && s.nameRevealSeen && <RayGoneCard onDone={markRayGoneSeen} />}

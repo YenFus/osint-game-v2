@@ -25,6 +25,7 @@ import { CaseBoard } from '../components/board/CaseBoard'
 import { RayPhone } from '../components/board/RayPhone'
 import { PolaroidArt } from '../components/board/PolaroidArt'
 import { NameRevealCard } from '../components/board/NameRevealCard'
+import { ClueCard } from '../components/board/ClueCard'
 
 const NODE_RENDERERS = {
   navigate: NavigateNode, tag: TagNode, input: InputNode,
@@ -176,6 +177,8 @@ export default function InvestigationPage() {
   const { playSFX } = useAudio()
 
   const [systemAlertTrigger, setSystemAlertTrigger] = useState(0)
+  // notes waiting to be shown, in the order the leads gave them
+  const [clueQueue, setClueQueue] = useState([])
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [showJournal, setShowJournal] = useState(false)
 
@@ -213,6 +216,7 @@ export default function InvestigationPage() {
     actions.addTime(LEAD_TIME_COST[node.type] ?? 15, 'lead')
     if (node.clue && !st.clues.includes(node.clue)) {
       actions.addClue(node.clue)
+      setClueQueue(q => [...q, node.clue])
       setTimeout(() => playSFX('pin'), 500)
     }
     if (node.raySuspicion) {
@@ -262,7 +266,11 @@ export default function InvestigationPage() {
       {/* One overlay at a time, and the name goes first: Ray's phone used to
           render on top of the reveal card, so the biggest beat in the game
           was covered by a text message. */}
-      {!node && st.rayBeatPending && !revealPending && (
+      {/* then the note the lead just gave you, then Ray */}
+      {!node && !revealPending && clueQueue.length > 0 && (
+        <ClueCard key={clueQueue[0]} clueId={clueQueue[0]} onDone={() => setClueQueue(q => q.slice(1))} />
+      )}
+      {!node && st.rayBeatPending && !revealPending && clueQueue.length === 0 && (
         <RayPhone
           key={st.rayBeatPending}
           beatId={st.rayBeatPending}

@@ -978,3 +978,27 @@ part of what it did, but not its assertions. Rebuilding it belongs in `harness/`
 §14.4 stands, minus the two fixed above: C2's rest-legible sign, the beds having
 no events, `playSFX` still oscillators, B4/B12/B1/B11/A9/C5 density, A8
 over-signposted, P5 — now restated as §16.2, which is the sharper version of it.
+
+---
+
+## 17. The playthrough round: presentation only
+
+After a full laptop playthrough the player said to **keep every puzzle, clue,
+hint and unlock rule exactly as it is**, and to change only how information is
+given. Their notes, and what each became:
+
+| Note | Change |
+|---|---|
+| Facts appear without a source (A13 asked about Lena's hours and never showed them) | `brief: [{fact, from}]` on 21 leads in `leadMeta.js`, shown as "What you're working from" under the prompt (collapsed on phones). Timeline facts take `from`. |
+| New clues were easy to miss (a toast off to the side) | `ClueCard.jsx`: a modal in front of the board with the title, the detail and "Where it came from". It waits for "Add to my notes". The drawer marks it new (`unreadClues`) until opened. |
+| Every voice sounds AI-written, and the noir tone is cringe | `docs/story-bible.md` sets the voices. Every player-facing string is rewritten in plain first person. Thomas is a frightened, practical father, not a hardboiled narrator. |
+| Ray's mood chip tips the player off | The mood, colour and alarm are gone from RayChip and RayPhone. Suspicion still runs underneath, unchanged. |
+| The prologue voicemail sounds robotic | Kokoro-82M (Apache-2.0, local), voice `af_heart`, built line by line with a knock and a phone-line filter: `scripts/gen_voicemail.py`. Whisper confirmed the transcript word for word. |
+| The prologue images look bad | Local FLUX.1-schnell photos (`gen_art.py` seeds, `prologue_bg.py` picks, blurs and crops) plus blurred backdrops. Seven beats, one fact each. |
+
+Harness addition: `harness/cluecard.cjs` finishes A3 and shoots the card on
+both viewports; `shotall.cjs` never completes a lead, so it can't see the card.
+
+The artifact was missing all prologue art and the new voicemail until
+version 34. That publish also removed 189 stale hashed bundles, since the
+artifact caps out at 255 files.

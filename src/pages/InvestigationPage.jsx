@@ -93,6 +93,8 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
   const buyHint = useGameStore(s => s.buyHint)
   const [hintShown, setHintShown] = useState(false)
   const [manualOpen, setManualOpen] = useState(false)
+  // the brief starts folded on a phone, where the header already takes a third of the screen
+  const [narrow] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches)
   const Renderer = NODE_RENDERERS[node.type]
 
   useEffect(() => {
@@ -127,6 +129,21 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
             )}
             {/* a lead can name its own objective; otherwise the verb does */}
             <div className="font-mono text-[12px] tracking-[0.14em] uppercase mt-1 text-[#d4a84b]">▸ {node.content?.prompt ?? NODE_INSTRUCTIONS[node.type]}</div>
+            {/* What this lead relies on, and where each fact came from. After a
+                full playthrough the player said facts turned up with no source —
+                A13 asked them to rule Corey out against Lena's hours before
+                anything had shown them Lena's hours. Threads can be played in
+                any order, so every lead carries its own sources. */}
+            {node.brief?.length > 0 && (
+              <details className="lo-brief" open={!narrow}>
+                <summary>What you're working from <span className="n">{node.brief.length}</span></summary>
+                <ul>
+                  {node.brief.map((b, i) => (
+                    <li key={i}><span className="f">{b.fact}</span> <span className="s">{b.from}</span></li>
+                  ))}
+                </ul>
+              </details>
+            )}
           </div>
           <div className="lo-tools">
             {node.osintTip && (
@@ -221,17 +238,17 @@ export default function InvestigationPage() {
     }
     if (node.raySuspicion) {
       actions.addSuspicion(node.raySuspicion)
-      actions.addNotification('A court-records search on his name. Maya said he watches for that.', 'warning')
+      actions.addNotification('You searched court records for his name. Maya\'s notes say he gets told when someone does that.', 'warning')
     }
     if (node.journalistUnlock) {
       actions.unlockJournalist()
-      actions.addNotification('Rosa Velasquez. Maya trusted her. "She\'ll understand."', 'info')
+      actions.addNotification('Rosa Velasquez, the reporter Maya trusted, is now an option when you make the final call.', 'info')
     }
     if (node.systemAlertAfter && !st.systemAlertShown) {
       setSystemAlertTrigger(n => n + 1)
       actions.markSystemAlert()
       actions.addSuspicion(8)
-      setTimeout(() => actions.addNotification('Someone just tried to get into her laptop. From outside. He\'s watching.', 'warning'), 3600)
+      setTimeout(() => actions.addNotification('Her laptop just logged a sign-in attempt from another computer. Someone is watching it.', 'warning'), 3600)
     }
 
     actions.completeNode(pathKey, node.id, node.unlocks || [])

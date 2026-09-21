@@ -1953,3 +1953,30 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   background: #a01814; color: #fff; border-radius: 2px;
   font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
 }
+/* where each fact on A13's timeline came from — the player asked, fairly,
+   how they were meant to know Lena's hours before any lead had shown them */
+.tl-from { color: #8f8a78; font-style: italic; }
+
+/* ── "What you're working from" — the sources a lead relies on ──── */
+.lo-brief {
+  margin-top: 8px; max-width: 760px;
+  border-left: 2px solid #6b5a38; background: rgba(40, 32, 20, 0.35);
+  padding: 6px 12px 8px;
+}
+.lo-brief summary {
+  cursor: pointer; list-style: none;
+  font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #b9a67c;
+}
+.lo-brief summary::-webkit-details-marker { display: none; }
+.lo-brief summary::before { content: '▸ '; }
+.lo-brief[open] summary::before { content: '▾ '; }
+.lo-brief summary .n { color: #7d6f52; }
+.lo-brief ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.lo-brief li { font-family: 'Crimson Pro', Georgia, serif; font-size: 15.5px; line-height: 1.45; color: #e2d6bd; }
+.lo-brief li .s {
+  display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 11.5px;
+  letter-spacing: 0.04em; color: #9d8c68;
+}
+.lo-brief li .s::before { content: '— from '; color: #7d6f52; }
+.lo-brief summary:focus-visible { outline: 2px solid #d4a84b; outline-offset: 2px; }

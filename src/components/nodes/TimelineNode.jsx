@@ -144,7 +144,10 @@ export function TimelineNode({ content, onComplete, nodeId = null }) {
               {day.facts && (
                 <ol className="tl-facts">
                   {day.facts.map(f => (
-                    <li key={f.at}><span className="tl-at">{f.at}</span><span className="tl-fact">{f.text}</span></li>
+                    <li key={f.at}>
+                      <span className="tl-at">{f.at}</span>
+                      <span className="tl-fact">{f.text}{f.from && <span className="tl-from"> — {f.from}</span>}</span>
+                    </li>
                   ))}
                 </ol>
               )}

@@ -63,11 +63,13 @@ export const LEAD_META = {
     clue: 'nightwatch', card: { kind: 'index', scene: 'phone' },
     hint: 'Pick a detail on one side, then the matching one on the other. Three match exactly: a date, a picture and a follow list. The bio and the hours back it up.',
     summary: 'A silent second account, @nightwatch_rc, made the same day he hid his name. It uses a crop of his own photo and follows Corey Marsh.',
+    brief: [{ fact: 'He hid his website registration on 9 November, five days after Maya\'s first forum post.', from: 'Maya\'s WHOIS lookup, saved on her laptop' }, { fact: 'Maya logged all 104 of his forum posts. 91 went up between 11pm and 2am.', from: 'Maya\'s post log, on her laptop' }],
   },
   A11: {
     clue: 'postbox', card: { kind: 'index', scene: 'yarn' },
     hint: 'Start from the website. Its name matches the handle, its registration names a business, and that business is what the second account follows.',
     summary: 'The handle, the website, the company and the postbox all lead to one person — but none of them gives a name. He hid the record in November.',
+    brief: [{ fact: 'His website is registered to a company, Stillwater Media, at PO Box 441, Millhaven.', from: 'the WHOIS lookup' }, { fact: 'A silent Twitter account, @nightwatch_rc, follows the company\'s page.', from: 'his archived Twitter follows' }],
   },
   A12: {
     brief: [{ fact: 'The registration was hidden on 9 November — five days after Maya\'s first forum post.', from: 'the WHOIS lookup' }],
@@ -153,6 +155,7 @@ export const LEAD_META = {
     clue: 'courier', card: { kind: 'index', scene: 'newspaper' },
     hint: 'Link each newspaper cutting to the thing it confirms: the photo credit to the website registration, Lena\'s attendance to her last post, and the case number to the court website.',
     summary: 'The Courier credits Stillwater Media as the photographer that night, confirms Lena was there, and prints a court case number from four years ago — without the name.',
+    brief: [{ fact: 'Maya pinned his website\'s registration printout to her board: Stillwater Media, PO Box 441.', from: 'Maya\'s corkboard' }],
   },
   C9: {
     brief: [{ fact: 'Maya pinned the printed programme from the arts night next to this photo.', from: 'Maya\'s corkboard' }],

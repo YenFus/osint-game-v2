@@ -313,7 +313,8 @@ export default function EndingPage() {
             {ending.status}
           </h1>
           {afterLabel && (
-            <div className="font-mono text-xs tracking-[0.3em] uppercase text-[#8a8a88] mb-3">{afterLabel}</div>
+            // every good ending says FOUND ALIVE; how long it took is the difference, so it's big
+            <div className="font-mono text-lg sm:text-2xl tracking-[0.2em] uppercase mb-4" style={{ color: '#e8dcc0' }}>{afterLabel}</div>
           )}
           <div className="font-mono text-sm tracking-[0.2em] uppercase text-[#9a9a98]">
             {totalHours === null ? 'Missing since Monday' : `Missing ${totalHours} hours in total`} · {evaluation.suspect === 'ray' ? 'Ray Callahan' : 'The man who took her'}: <span style={{ color: ending.color }}>{ending.ray}</span>

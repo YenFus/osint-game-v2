@@ -169,6 +169,7 @@ export function CorkPlate() {
         <text x={p.x + 10} y={p.y + 18} fontFamily={mono} fontSize="10" fill="#5a5248">MILLHAVEN</text>
       </>)}</Sheet>
 
+
       {/* cp-05 — Lena's last post, the same facade as the venue */}
       <Sheet id="cp-05" u={u}>{p => (<>
         <rect x={p.x + 8} y={p.y + 22} width={p.w - 16} height={p.h - 56} fill="#151b24" />
@@ -212,23 +213,24 @@ export function CorkPlate() {
       <Sheet id="cp-07" tint="#f0ece2" u={u}>{p => (<>
         <text x={p.x + 10} y={p.y + 26} fontFamily={mono} fontSize="11" fill="#2a3a5a">$ whois stillwater-media.net</text>
         <text x={p.x + 10} y={p.y + 48} fontFamily={mono} fontSize="5.6" fill="#4a453c">Registrar: NameCheap</text>
-        <text x={p.x + 10} y={p.y + 60} fontFamily={mono} fontSize="5.6" fill="#4a453c">Privacy: ENABLED 14 Nov</text>
+        <text x={p.x + 10} y={p.y + 60} fontFamily={mono} fontSize="5.6" fill="#4a453c">Privacy: ENABLED 9 Nov</text>
         <text x={p.x + 10} y={p.y + 72} fontFamily={mono} fontSize="5.6" fill="#4a453c">Registrant: REDACTED</text>
         <rect x={p.x + 10} y={p.y + 88} width={p.w - 24} height="13" fill="#e8d24a" opacity="0.5" />
         <text x={p.x + 13} y={p.y + 98} fontFamily={mono} fontSize="9" fill="#2a2418">PO Box 441, Millhaven OR</text>
         <MicroText x={p.x + 10} y={p.y + 112} size={6.8} gap={9} family={mono} color="#4a453c" lines={[
-          'Created: 28 Oct, five years ago',
-          'Updated: 14 Nov — five days after',
+          'Created: 11 May, four years ago',
+          'Updated: 9 Nov — five days after',
           'her first message to the forum',
         ]} />
       </>)}</Sheet>
 
-      {/* cp-08 — a sticky note, pushed right out to the edge */}
+      {/* cp-08 — the corner of a sticky note poking out from BEHIND the
+          board. C8 finds the whole note on the back; the front only ever
+          showed this torn edge (it used to show the full note, which made
+          C8's "on the back" a contradiction). */}
       <Sheet id="cp-08" tint="#e4d98a" u={u}>{p => (<>
-        <text x={p.x + 8} y={p.y + 26} fontFamily={hand} fontSize="15" fill="#2a2414">Rosa Velasquez</text>
-        <text x={p.x + 8} y={p.y + 42} fontFamily={mono} fontSize="6.5" fill="#3f3a1e">Pacific Reporter</text>
-        <text x={p.x + 8} y={p.y + 54} fontFamily={mono} fontSize="5.4" fill="#3f3a1e">rvelasquez@pacificreporter.org</text>
-        <text x={p.x + 8} y={p.y + 66} fontFamily={mono} fontSize="5.4" fill="#544d29">digital safety beat</text>
+        <path d={`M${p.x} ${p.y + p.h} L${p.x + p.w} ${p.y + p.h} L${p.x + p.w} ${p.y + p.h * 0.35} L${p.x + p.w * 0.55} ${p.y + p.h * 0.5} Z`} fill="#0f0c08" opacity="0.28" />
+        <text x={p.x + 8} y={p.y + 30} fontFamily={hand} fontSize="15" fill="#2a2414">Rosa V—</text>
       </>)}</Sheet>
 
       {/* the red string: the three map pins, joined */}
@@ -238,6 +240,12 @@ export function CorkPlate() {
       {[[40, 70], [120, 120], [56, 180]].map(([dx, dy]) => (
         <Pin key={`${dx}`} x={map.x + dx} y={map.y + dy} u={u} />
       ))}
+      {/* her labels on the three pins: C3 sends the player here for the hall's name */}
+      <g fontFamily={hand} fill="#8d1c12" fontSize="15">
+        <text x={map.x + 50} y={map.y + 66}>Alder Hall</text>
+        <text x={map.x + 62} y={map.y + 146}>PO Box 441</text>
+        <text x={map.x + 66} y={map.y + 196}>Courthouse</text>
+      </g>
     </svg>
   )
 }

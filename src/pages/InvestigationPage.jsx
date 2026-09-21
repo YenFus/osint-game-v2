@@ -172,22 +172,27 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
                 <div className="font-mono text-[12px] tracking-[0.14em] uppercase mt-1 text-[#d4a84b]">▸ {task}</div>
               </div>
               <div className="lo-tools">
-                {facts && (
+                {(facts || node.monologue) && (
                   <button className="cb-btn" aria-expanded={factsOpen} onClick={() => setFactsOpen(o => !o)}>
-                    {factsOpen ? 'Hide what you know' : `What you know · ${node.brief.length}`}
+                    {factsOpen ? 'Hide briefing' : 'Briefing'}
                   </button>
                 )}
                 {node.osintTip && (
-                  <button className="cb-btn" style={{ color: '#8ab0e0', borderColor: '#2a3a5a' }} onClick={() => setManualOpen(o => !o)}>Field manual</button>
+                  <button className="cb-btn" style={{ color: '#8ab0e0', borderColor: '#2a3a5a' }} onClick={() => setManualOpen(o => !o)}><span className="lo-long">Field </span>manual</button>
                 )}
                 {node.hint && (
                   <button className="cb-btn" style={{ color: hintShown ? '#6a6050' : '#e8c870', borderColor: '#4a3a18' }} onClick={takeHint} disabled={hintShown}>
-                    {hintShown ? 'Hint shown' : isReviewing ? 'Hint' : `Hint · +${HINT_COST} min`}
+                    {hintShown ? 'Hint shown' : isReviewing ? 'Hint' : <>Hint · +{HINT_COST}<span className="lo-long"> min</span></>}
                   </button>
                 )}
               </div>
             </div>
-            {factsOpen && facts && <div className="lo-facts" role="region" aria-label="What you know">{facts}</div>}
+            {factsOpen && (
+              <div className="lo-facts" role="region" aria-label="Briefing">
+                {node.monologue && <p className="lo-facts-mono">{node.monologue}</p>}
+                {facts}
+              </div>
+            )}
             {hintShown && <div className="lo-hint" role="status"><span className="lo-hint-k">Hint</span> {node.hint}</div>}
             <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
               {Renderer && (

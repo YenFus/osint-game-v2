@@ -113,6 +113,7 @@ export function SettingsPanel({ onClose }) {
     fontSize, setFontSize,
     screenReaderMode, setScreenReaderMode,
     graphicsQuality, setGraphicsQuality,
+    quietClues, setQuietClues,
   } = useAccessibilityStore()
 
   const {
@@ -212,6 +213,13 @@ export function SettingsPanel({ onClose }) {
                 checked={highContrast}
                 onChange={setHighContrast}
                 description="Increase contrast for better visibility"
+              />
+
+              <Toggle
+                label="Short banners for new notes"
+                checked={quietClues}
+                onChange={setQuietClues}
+                description="Show each new note as a banner at the top of the board instead of a card you have to close. Handy on a replay."
               />
 
               <Toggle

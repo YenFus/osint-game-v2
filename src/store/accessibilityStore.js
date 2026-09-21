@@ -10,6 +10,8 @@ export const useAccessibilityStore = create(
       fontSize: 'normal',        // 'normal' | 'large' | 'larger'
       screenReaderMode: false,
       graphicsQuality: 'auto',   // 'auto' | 'high' | 'low'
+      // new notes as a banner instead of a card that stops play (opt-in, for replays)
+      quietClues: false,
 
       // Actions
       setReducedMotion: (val) => set({ reducedMotion: val }),
@@ -17,6 +19,7 @@ export const useAccessibilityStore = create(
       setFontSize: (size) => set({ fontSize: size }),
       setScreenReaderMode: (val) => set({ screenReaderMode: val }),
       setGraphicsQuality: (q) => set({ graphicsQuality: q }),
+      setQuietClues: (val) => set({ quietClues: val }),
 
       // Computed: should reduce motion based on user setting OR system preference
       shouldReduceMotion: () => {

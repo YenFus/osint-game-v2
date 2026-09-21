@@ -7,34 +7,78 @@
 // they had come from. So a finished lead now puts the card in front of
 // you: what it says, in plain words, and where it came from. It waits for
 // you to take it, and stays marked as new in the drawer until you look.
+//
+// A card that stops play after every lead is right the first time through
+// and slow on a replay. So once a player has seen a few, the card offers a
+// quieter version: the same title and source in a banner at the top of the
+// board that doesn't block anything and goes away by itself. It's the
+// player's choice, it's in Settings to undo, and nothing is ever quiet by
+// default.
 // ─────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
 import { useModalFocus } from '../../hooks/useModalFocus'
+import { useAccessibilityStore } from '../../store/accessibilityStore'
 import { CLUES } from '../../data/caseData'
 import { PolaroidArt } from './PolaroidArt'
 
-export function ClueCard({ clueId, onDone }) {
+// how long the banner stays when nobody is pointing at or focused on it
+const BANNER_MS = 9000
+
+export function ClueCard({ clueId, onDone, offerQuiet = false }) {
   const clue = CLUES[clueId]
+  const quiet = useAccessibilityStore(s => s.quietClues)
+  const setQuiet = useAccessibilityStore(s => s.setQuietClues)
+  // decided once per card, so ticking the box doesn't restyle the card you're reading
+  const [banner] = useState(quiet)
   const dialogRef = useRef(null)
-  useModalFocus(dialogRef)
+  useModalFocus(dialogRef, { active: !banner })
   const [leaving, setLeaving] = useState(false)
+  const [held, setHeld] = useState(false)
 
   const take = () => {
     if (leaving) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) { onDone(); return }
     setLeaving(true)
-    setTimeout(onDone, 420)
+    setTimeout(onDone, banner ? 260 : 420)
   }
 
   useEffect(() => {
+    // The banner doesn't own the keyboard; only the full card answers Escape.
+    if (banner) return undefined
     const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); take() } }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
 
+  // the banner leaves by itself, but never while someone is reading it
+  useEffect(() => {
+    if (!banner || held || leaving) return undefined
+    const t = setTimeout(take, BANNER_MS)
+    return () => clearTimeout(t)
+  })
+
   if (!clue) return null
+
+  if (banner) {
+    return (
+      <div
+        className={`cc-banner ${leaving ? 'leaving' : ''}`}
+        role="status" aria-live="polite"
+        onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)}
+        onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
+      >
+        <div className="cc-banner-text">
+          <span className="cc-k">New note</span>
+          <strong className="cc-banner-title">{clue.title}</strong>
+          <span className="cc-banner-src">from {clue.source}</span>
+        </div>
+        <button type="button" className="cc-banner-ok" onClick={take}>Got it</button>
+      </div>
+    )
+  }
+
   return (
     <div className={`cc-root ${leaving ? 'leaving' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) take() }}>
       <div ref={dialogRef} className="cc-card" role="dialog" aria-modal="true" aria-labelledby="cc-title" aria-describedby="cc-detail">
@@ -53,6 +97,12 @@ export function ClueCard({ clueId, onDone }) {
           Not every note answers something.
         </p>
         <button type="button" className="cc-take" onClick={take} autoFocus>Add to my notes</button>
+        {offerQuiet && (
+          <label className="cc-quiet">
+            <input type="checkbox" checked={quiet} onChange={(e) => setQuiet(e.target.checked)} />
+            From now on, show new notes as a short banner instead
+          </label>
+        )}
       </div>
     </div>
   )

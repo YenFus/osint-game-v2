@@ -93,8 +93,18 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
   const buyHint = useGameStore(s => s.buyHint)
   const [hintShown, setHintShown] = useState(false)
   const [manualOpen, setManualOpen] = useState(false)
-  // the brief starts folded on a phone, where the header already takes a third of the screen
+  // On a phone the brief opens when you arrive, so you read it before you
+  // start, and folds itself away the first time you touch the puzzle, which
+  // gives the puzzle its screen back. One tap on the summary brings it back.
+  // (It used to start folded, which hid the sources behind a tap nobody made.)
   const [narrow] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches)
+  const [briefOpen, setBriefOpen] = useState(true)
+  const briefAutoFolded = useRef(false)
+  const foldBriefOnWork = () => {
+    if (!narrow || briefAutoFolded.current) return
+    briefAutoFolded.current = true
+    setBriefOpen(false)
+  }
   const Renderer = NODE_RENDERERS[node.type]
 
   useEffect(() => {
@@ -135,7 +145,7 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
                 anything had shown them Lena's hours. Threads can be played in
                 any order, so every lead carries its own sources. */}
             {node.brief?.length > 0 && (
-              <details className="lo-brief" open={!narrow}>
+              <details className="lo-brief" open={briefOpen} onToggle={(e) => setBriefOpen(e.currentTarget.open)}>
                 <summary>What you're working from <span className="n">{node.brief.length}</span></summary>
                 <ul>
                   {node.brief.map((b, i) => (
@@ -157,7 +167,7 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
           </div>
         </div>
         {hintShown && <div className="lo-hint" role="status"><span className="lo-hint-k">Hint</span> {node.hint}</div>}
-        <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative" onPointerDownCapture={foldBriefOnWork}>
           {Renderer && (
             <Renderer
               key={`${node.id}-${isReviewing ? 'review' : 'active'}`}
@@ -271,6 +281,7 @@ export default function InvestigationPage() {
 
       {node && (
         <LeadOverlay
+          key={node.id}
           node={node}
           pathKey={pathKey}
           isReviewing={isReviewing}
@@ -285,7 +296,7 @@ export default function InvestigationPage() {
           was covered by a text message. */}
       {/* then the note the lead just gave you, then Ray */}
       {!node && !revealPending && clueQueue.length > 0 && (
-        <ClueCard key={clueQueue[0]} clueId={clueQueue[0]} onDone={() => setClueQueue(q => q.slice(1))} />
+        <ClueCard key={clueQueue[0]} clueId={clueQueue[0]} offerQuiet={st.clues.length >= 4} onDone={() => setClueQueue(q => q.slice(1))} />
       )}
       {!node && st.rayBeatPending && !revealPending && clueQueue.length === 0 && (
         <RayPhone

@@ -67,7 +67,7 @@ const ENDINGS = {
   tipoff: {
     stamp: 'OPEN', label: 'Too Close', color: '#c04040', afterCall: 6 * 24,
     status: 'FOUND ALIVE', ray: 'FLED — ARRESTED LATER',
-    sub: 'You needed him to know you knew. He did.',
+    sub: 'You wanted to see his face when you asked. He saw yours first.',
     outcome: 'He reads your face before you finish the sentence. Forty minutes later the storage unit is empty. Maya is found six days later, near the Nevada line.',
     coda: '"She wrote it in capitals: don\'t call him. I understand why you went down those stairs. I\'d have wanted to as well."',
     attrib: '— Detective Dana Okafor, Millhaven PD',
@@ -121,7 +121,7 @@ const ENDINGS = {
   wrongman: {
     stamp: 'NO CHARGES', label: 'The Wrong Man', color: '#8a4a4a', afterCall: 11 * 24,
     status: 'FOUND ALIVE', ray: 'FREE — FOR NOW',
-    sub: 'Someone wanted you chasing the wrong man. It worked twice.',
+    sub: 'Someone spent a year pointing people at the wrong man. It worked on you too.',
     outcome: 'Police spend two days on a man the records had already cleared. Maya is found eleven days later, after an anonymous tip.',
     coda: '"Somebody spent a year pushing that forum at other men. Your daughter saw through it. We didn\'t."',
     attrib: '— Detective Dana Okafor, case review',
@@ -171,7 +171,7 @@ function buildCall(type, evaluation, choice, gone) {
   you(evaluation.suspect
     ? '"Detective Okafor. This is Thomas Reyes. Maya Reyes is my daughter. I know who took her."'
     : '"Detective Okafor. This is Thomas Reyes. Maya Reyes is my daughter. I have been working all night and I need somebody to look at what I have."')
-  ok(evaluation.suspect ? '"Go ahead, Mr. Reyes."' : '"I am listening, Mr. Reyes. Take it slowly."')
+  ok(evaluation.suspect ? '"Go ahead, Mr. Reyes."' : '"I\'m listening, Mr. Reyes. Take it slowly."')
   if (evaluation.suspect === 'corey') {
     you('"Corey Marsh. Lena Vasquez\'s ex. He was stalking her — Maya had it on file."')
     ok('"Corey Marsh was cleared last year. Timestamped photos from his shop in Tigard, both nights. Who pointed you at him?"')
@@ -190,7 +190,7 @@ function buildCall(type, evaluation, choice, gone) {
     pause('You don\'t say it. Thirty years. You can\'t make yourself say it.')
   } else if (!evaluation.suspect) {
     // Nobody circled. He has a phone in his hand and nothing to say into it.
-    you('"I have been at this all night and I do not have a name for you."')
+    you('"I\'ve been at this all night and I don\'t have a name for you."')
     ok('"Then tell me what you do have, Mr. Reyes, and let me decide what it is worth."')
   } else {
     you(gone ? '"Ray Callahan. He left town a few hours ago. He said Seattle. I don\'t believe him."' : '"Ray Callahan. He\'s outside my daughter\'s building right now."')
@@ -207,9 +207,9 @@ function buildCall(type, evaluation, choice, gone) {
     before: 'I don\'t have anything showing he\'s done this before.',
   }
   const EMPTY_LINES = [
-    '"Nothing on who. All right."',
+    '"Nothing on who runs the account. All right."',
     '"And nothing putting him at the hall."',
-    '"And nothing showing a pattern. Mr. Reyes — I believe you. I cannot act on belief."',
+    '"And nothing showing he\'s done it before. Mr. Reyes, I believe you. But I can\'t act on belief."',
   ]
   evaluation.perSlot.forEach((p, i) => {
     // `spoken`, not `title` — see caseData's CLUES
@@ -250,7 +250,7 @@ function lessons(type, evaluation, suspicion, clues) {
         : `${p.slot.label}: you never found ${best.map(id => `"${CLUES[id].title}"`).join(' or ')}.`)
     })
   }
-  if (type === 'gone' || type === 'lost') out.push('Ray left before you made the call. Failed theories, hints and careless texts all brought his departure closer.')
+  if (type === 'gone' || type === 'lost') out.push('Ray left before you made the call. Wrong answers, hints and careless replies to his texts all made him leave sooner.')
   else if (suspicion >= RAY_ALARM_THRESHOLD) out.push('Ray was alarmed. What you texted him told him you were close.')
   if (type === 'tipoff') out.push('Maya\'s draft said it plainly: "Please don\'t call anyone."')
   return out

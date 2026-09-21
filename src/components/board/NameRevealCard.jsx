@@ -24,16 +24,16 @@ export function NameRevealCard({ onDone }) {
   return (
     <div ref={ref} className="cb-tut name-reveal" role="alertdialog" aria-modal="true" aria-label="A name">
       <div className="card">
-        <div className="nr-eyebrow">I have read it three times</div>
+        <div className="nr-eyebrow">I've read it three times</div>
         <div className="nr-name">Raymond T. Callahan</div>
         <p className="nr-body">
-          Ray held my hand at the hospital the night Elena died. He taught Maya to drive. He is
-          godfather to my daughter and he has a key to my house, and I have just found his name
-          on the paperwork behind the man who took her.
+          Ray held my hand at the hospital the night Carmen died. He taught Maya to drive. He's
+          her godfather, he has a key to my house — and his name is on the paperwork behind the
+          man who took her.
         </p>
         <p className="nr-body quiet">
-          There will be an explanation. I am going to sit here a minute, and then I am going to
-          go and find it, because a name is not a case.
+          There has to be an explanation. I'm going to sit here for a minute. Then I'm going to
+          find it, because a name on a form isn't proof.
         </p>
         <div className="row"><span /><span /><button disabled={!armed} onClick={onDone}>Keep working</button></div>
       </div>

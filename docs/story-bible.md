@@ -53,7 +53,7 @@ his sixties: full sentences, occasional "..." and no emoji except a thumbs-up.
 **He must be likeable.** Nothing he says before the reveal may read as sinister.
 The horror is that he is exactly as kind as he seems *and* he did this.
 
-**Det. Grace Okafor** — Millhaven PD. Blunt, tired, fair. Short plain sentences.
+**Det. Dana Okafor** — Millhaven PD. Blunt, tired, fair. Short plain sentences.
 Never cruel. Tells Thomas exactly what a piece of evidence is and isn't worth.
 
 **stillwater_m** — Ray's forum persona. Sounds like a concerned local. Polite,

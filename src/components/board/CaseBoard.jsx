@@ -486,10 +486,10 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues, unread = []
 
 // ── Tutorial ──────────────────────────────────────────────────────
 const TUT = [
-  { h: 'Your wall.', p: 'Twenty-three years of stories, and every one started like this: a wall, some pins, some string. This is Maya\'s case now. Yours too.' },
-  { h: 'Leads.', p: 'Each pinned card is a lead from her apartment — her laptop, her burned notebook, her corkboard. Open one to investigate. Finishing a lead can uncover new ones.' },
-  { h: 'Theories.', p: 'Leads drop clues into the drawer. Pencil a clue under each of a thread\'s three questions, then test the theory. The board only tells you how many pins hold. Not every clue is an answer.' },
-  { h: 'The clock.', p: 'Maya has been gone almost 59 hours. Wrong flags, failed theories and hints all cost time. And your oldest friend will be texting. Choose your words.' },
+  { h: 'Your wall.', p: 'I covered crime for twenty-three years. Every story started like this: a wall, some pins, some string. This is Maya\'s case now. It\'s mine too.' },
+  { h: 'Leads.', p: 'Each card on the board is a lead from her flat: her laptop, her burned notebook, her corkboard. Open one to look into it. Finishing a lead can open new ones.' },
+  { h: 'Theories.', p: 'Each lead you finish gives you a note. Each thread has three questions. Pin a note under each question, then test your theory. The board only tells you how many pins are right. Not every note answers something.' },
+  { h: 'The clock.', p: 'Maya has been gone almost 59 hours. Wrong answers, failed theories and hints all cost time. Every minute counts.' },
 ]
 function BoardTutorial({ onDone }) {
   const [i, setI] = useState(0)
@@ -724,7 +724,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
   const handleSuspect = (id) => {
     playSFX('pin')
     setFinalSuspect(id)
-    if (id === 'ray') say('Ray. Thirty years. He held my hand at the hospital the night Elena died.', 'good')
+    if (id === 'ray') say('Ray. Thirty years. He held my hand at the hospital the night Carmen died.', 'good')
   }
 
   return (

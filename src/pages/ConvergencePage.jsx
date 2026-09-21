@@ -47,31 +47,31 @@ export default function ConvergencePage() {
   const OPTIONS = [
     {
       id: 'police',
-      label: suspect?.id !== 'ray' && suspect ? `Call Detective Okafor about ${suspect.name}.` : gone ? 'Call Detective Okafor. Now.' : 'Call Detective Okafor. Let the buzzer ring.',
-      sub: 'Maya\'s last written words: go straight to the police.',
+      label: suspect?.id !== 'ray' && suspect ? `Call Detective Okafor about ${suspect.name}.` : gone ? 'Call Detective Okafor. Now.' : 'Ignore the door. Call Detective Okafor.',
+      sub: 'The last thing Maya wrote in her notebook: if anything happens, go to the police.',
       color: '#6a9a70',
     },
     canRosa && {
       id: 'journalist',
-      label: 'Send everything to Rosa Velasquez — and the police — at the same time.',
-      sub: 'Maya trusted her. A published story is hard to bury.',
+      label: 'Send everything to Rosa Velasquez and the police at the same time.',
+      sub: 'Maya trusted her. Once it\'s in the paper, nobody can quietly make it go away.',
       color: '#6a8ad0',
     },
     !gone && {
       id: 'confront',
-      label: 'Go downstairs. Look him in the eye.',
-      sub: 'Thirty years. You\'d know if he was lying.',
+      label: 'Go downstairs and ask him yourself.',
+      sub: 'You\'ve known him thirty years. You think you\'d know if he was lying.',
       color: '#d04a3a',
     },
   ].filter(Boolean)
 
   const leavingText = gone ? {
     police: 'You dial. Your hand is shaking now.',
-    journalist: 'Two emails. One phone call. Your hand is shaking now.',
+    journalist: 'You send two emails, then make the call. Your hand is shaking now.',
   } : {
     police: 'You dial. The buzzer goes again. You let it ring.',
-    journalist: 'Two emails. One phone call. The buzzer goes again. You let it ring.',
-    confront: 'You take the stairs two at a time.',
+    journalist: 'You send two emails, then make the call. The buzzer goes again. You let it ring.',
+    confront: 'You go down the stairs two at a time.',
   }
 
   return (
@@ -117,17 +117,17 @@ export default function ConvergencePage() {
         {stage === 'review' && (
           <div className="text-center mt-8 fade-in">
             <p className="text-lg italic text-[#b0a088] max-w-xl mx-auto" style={{ fontFamily: "'Crimson Pro', serif" }}>
-              Maya wanted three independent sources before she said a word. You're about to say it for her.
+              Maya wouldn't name anyone until she had three separate sources. Now you're about to name someone for her.
             </p>
             {/* You can still make the call with an empty file. You should know
                 that is what you are doing before you do it. */}
             {(!finalCase.suspect || filled === 0) && (
               <p className="text-base max-w-xl mx-auto mt-4" style={{ fontFamily: "'Crimson Pro', serif", color: '#e0a090' }}>
                 {!finalCase.suspect && filled === 0
-                  ? 'You have circled nobody and pinned nothing. Okafor will have a name-less case and a tired man on the phone. Both are fixed on the board.'
+                  ? 'You haven\'t circled a suspect or pinned any evidence. Okafor will get a worried father and no name. You can fix both on the board.'
                   : !finalCase.suspect
-                    ? 'You have not circled anybody. Whatever you read out, he will ask you who you are accusing.'
-                    : 'You have pinned nothing under the three questions. He will ask what you have, and you will have to say nothing.'}
+                    ? 'You haven\'t circled a suspect. Whatever you tell Okafor, the first thing she\'ll ask is who you think did it.'
+                    : 'You haven\'t pinned any evidence under the three questions. When Okafor asks what you have, you\'ll have nothing to show her.'}
               </p>
             )}
             <div className="flex gap-3 justify-center flex-wrap mt-6">
@@ -142,7 +142,7 @@ export default function ConvergencePage() {
         {(stage === 'choose' || stage === 'leaving') && (
           <div className="mt-10 fade-in">
             <p className="text-center text-xl italic text-[#e8d8b8]" style={{ fontFamily: "'Crimson Pro', serif" }}>
-              {gone ? 'You try Ray first, without meaning to. Straight to voicemail.' : 'The buzzer goes. Once. Then again.'}
+              {gone ? 'Out of habit, you call Ray first. It goes straight to voicemail.' : 'The door buzzer goes. Then it goes again.'}
             </p>
             <p className="text-center hand text-[26px] text-[#e04a3a] mt-1">{gone ? 'Ray is already gone.' : 'Ray is downstairs.'}</p>
             <div className="grid gap-3 mt-6 max-w-2xl mx-auto">

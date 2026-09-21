@@ -430,7 +430,7 @@ export const FINAL_SLOTS = [
       deleted: 'People delete accounts every day.',
       no_source: 'You sourced every claim he made and two of them come from nowhere a member of the public could reach — and in between them he handed the thread a suspect. That is not a man following a case. That is a man steering one.',
       priya_words: 'He used the flatmate\'s own words before anybody outside the station had them. That is not a coincidence, that is access.',
-      burned_page: 'Your daughter flagged the account in November and she was eight months ahead of all of us. That is her judgement, and I will take it seriously. It is still not his conduct.',
+      burned_page: 'Your daughter flagged that account in November, before anyone else looked at it twice. I take her judgement seriously. It\'s still not proof of what he did.',
       postbox: 'Renting a mailbox is not a pattern of behaviour.',
       chain_sheet: 'The diagram shows me the structure. I need the history.',
       arts_domain: 'Registering a company is not conduct.',

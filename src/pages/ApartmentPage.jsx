@@ -10,8 +10,8 @@ const ITEMS = [
     id: 'laptop',
     label: "Maya's Laptop",
     path: 'A',
-    desc: 'Screen still on. A folder is open — she was in the middle of something.',
-    hint: 'On the desk, still open. The screen is still lit.',
+    desc: 'Still switched on. She was in the middle of something.',
+    hint: 'On her desk. Still switched on.',
     // position in the room
     style: { bottom: '28%', right: '19%' },
     // Path preview info
@@ -25,8 +25,8 @@ const ITEMS = [
     id: 'notebook',
     label: 'Burned Notebook',
     path: 'B',
-    desc: "Under the papers on her desk. Someone tried to burn it. Not everything is gone.",
-    hint: 'On the chest by the bed, under a stack of paper. Partially charred.',
+    desc: "Under a pile of papers by her bed. Somebody tried to burn it. Not all of it's gone.",
+    hint: 'By the bed, under a pile of papers. Half burned.',
     style: { bottom: '22%', left: '12%' },
     preview: {
       focus: 'Private Notes',
@@ -38,8 +38,8 @@ const ITEMS = [
     id: 'board',
     label: "Maya's Corkboard",
     path: 'C',
-    desc: "A corkboard covered in photos and red string. This wasn't here last time you visited.",
-    hint: 'On the wall beside the desk. Photographs, string, notes.',
+    desc: "Photos and red string all over it. It wasn't here the last time I visited.",
+    hint: 'On the wall by her desk. Photos, string, notes.',
     style: { top: '14%', right: '14%' },
     preview: {
       focus: 'Public Record',
@@ -123,14 +123,14 @@ export default function ApartmentPage() {
             </h1>
             <div className="font-mono text-sm text-[#908878] leading-relaxed">
               14B Marlowe St, 3rd floor<br />
-              You let yourself in with the key she gave you.
+              I let myself in with the key she gave me.
             </div>
           </div>
 
           {/* Scene note */}
           <div className="px-4 sm:px-8 py-3 sm:py-6 border-b border-[#1a1a28]">
             <p className="text-[#a09888] text-base italic leading-relaxed" style={{ fontFamily: "'Crimson Pro', serif" }}>
-              "I haven't been inside since she painted it. The bed is not made. There is a lamp still on over the desk, and a window she never closes properly. Her books are where she left them. Everything is exactly as ordinary as it should be, and she is not in it."
+              "I haven't been here since she painted it. The bed's unmade. The lamp over her desk is still on, and the window she never shuts properly is open a crack. It all looks completely normal. She's just not in it."
             </p>
           </div>
 

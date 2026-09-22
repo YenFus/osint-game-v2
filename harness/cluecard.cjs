@@ -49,7 +49,7 @@ async function finishA3(p, quiet) {
     await snap('1-brief-arrive')
     await p.locator('.lob-start').click(); await p.waitForTimeout(500)
     await snap('2-work')
-    await p.getByRole('button', { name: /what you know/i }).click(); await p.waitForTimeout(300)
+    await p.getByRole('button', { name: /^briefing$/i }).click(); await p.waitForTimeout(300)
     await snap('2b-work-facts')
 
     await finishA3(p, false)

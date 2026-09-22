@@ -1002,3 +1002,40 @@ both viewports; `shotall.cjs` never completes a lead, so it can't see the card.
 The artifact was missing all prologue art and the new voicemail until
 version 34. That publish also removed 189 stale hashed bundles, since the
 artifact caps out at 255 files.
+
+---
+
+## 18. The sound-and-presentation round (2026-09-22/23)
+
+A full review of my own (docs/review-2026-09-22-claude.md, 7.4) found the
+puzzles and writing ready and the *look, sound and staging* not. Everything
+below is presentation; no answer, hint, clue id or unlock changed.
+
+| Area | What changed | Where |
+|---|---|---|
+| Sound effects | Recorded CC0 foley, cut and level-matched; synth kept as fallback | `scripts/build_sfx.py`, `public/audio/sfx/`, `useAudio.js` (`SAMPLE_SFX`) |
+| Music | Five cues written note by note, rendered on VSCO-2 CE piano/strings (CC0). Loops per phase, ducks under the voicemail/reveal/call, switches to the pulse cue in the last 2h before Ray leaves | `scripts/compose_score.py`, `scripts/score_lib.py`, `public/audio/mus-*.mp4`, `AudioManager.jsx` |
+| Voicemail | On-screen captions timed with Whisper | `prologueData.js` `captions` |
+| Source skins | Reddit, Wayback/Twitter, WHOIS terminal, scanner, sealed statement, court docket | `src/styles/skins.css`, `leadMeta.js` `skin`/`sourceLabel` |
+| Burned notebook | Photo of a scorched page; ink fades in near the target | `public/art/burned-page.jpg`, `SliderNode.jsx`, `.rec-*` in board.css |
+| Plot hole | Laptop locked (3 wrong passwords, Mon 8:04); smoke alarm pulled down | apartment text, A1 monologue + brief, B1 monologue, story bible |
+| Board spoilers | Questions sealed until earned; open early if you hold an answering clue | `caseData.js` `opensAfter`, `dedOpen()`; `SealedSlot` in CaseBoard |
+| Ray tells | Cast line without key/WiFi; journal border red only once named | `castData.js`, `CaseNotes.jsx` |
+| Okafor | Contracted, shorter reactions | `caseData.js` FINAL_SLOTS, `EndingPage.jsx` |
+| Climax | Full-screen typed name reveal; the call plays live before the verdict | `NameRevealCard.jsx`, `LiveCall.jsx` |
+| Flow | Clue card lists new leads, offers "open it now" for a single one; spotlight tutorial; endings tracker | `ClueCard.jsx`, `BoardTutorial`, `store/endingsFound.js` |
+| Apartment | Re-rolled photo (seed 417) whose corkboard matches the text; hotspots re-measured | `gen_art.py`, `ApartmentArt.jsx` |
+
+**Listening without ears.** I can't hear audio, so every clip and cue was
+checked with CLAP (laion/clap-htsat-unfused, via `.venv-tts`): labels such as
+"a rubber stamp hitting paper" or "a sad solo piano piece" scored against the
+file. It agreed with intent on every music cue and most clips; it is
+unreliable on clips under ~0.2 s. Loop seams were checked by decoding in
+Chrome (AAC priming is trimmed; `SCORE_LOOP_SECONDS` sets exact loop ends).
+
+**Sources of third-party audio** are in `docs/CREDITS.md`. One clip (tack
+into cork, pfranzen) is CC BY 4.0 and is credited on the About screen.
+
+**Harness:** `harness/peek.cjs` shoots chosen leads or `reveal`/`call`/`board`.
+`shotall.cjs` now shoots the live call before each ending. `cluecard.cjs`
+clicks "Briefing" (it was "What you know").

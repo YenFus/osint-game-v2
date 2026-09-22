@@ -2183,3 +2183,10 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 .cb-tut.card-high { align-items: flex-start; padding-top: 6vh; }
 .cb-tut .card { z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .tut-spot { transition: none; } }
+.cc-next {
+  display: block; width: 100%; margin-top: 8px; min-height: 44px; padding: 10px 14px; cursor: pointer;
+  background: transparent; color: #6a1810; border: 1px solid #b89a78; border-radius: 2px;
+  font-family: 'Crimson Pro', Georgia, serif; font-size: 16px; text-align: center;
+}
+.cc-next:hover { background: rgba(141,28,18,0.07); border-color: #8d1c12; }
+.cc-next:focus-visible { outline: 2px solid #8d1c12; outline-offset: 2px; }

@@ -284,7 +284,7 @@ export default function InvestigationPage() {
       })
     if (node.clue && !st.clues.includes(node.clue)) {
       actions.addClue(node.clue)
-      setClueQueue(q => [...q, { clueId: node.clue, opened }])
+      setClueQueue(q => [...q, { clueId: node.clue, opened, path: pathKey }])
       setTimeout(() => playSFX('pin'), 500)
     }
     if (node.raySuspicion) {
@@ -337,7 +337,9 @@ export default function InvestigationPage() {
           was covered by a text message. */}
       {/* then the note the lead just gave you, then Ray */}
       {!node && !revealPending && clueQueue.length > 0 && (
-        <ClueCard key={clueQueue[0].clueId} clueId={clueQueue[0].clueId} opened={clueQueue[0].opened} offerQuiet={st.clues.length >= 4} showHow={st.clues.length <= 2} onDone={() => setClueQueue(q => q.slice(1))} />
+        <ClueCard key={clueQueue[0].clueId} clueId={clueQueue[0].clueId} opened={clueQueue[0].opened}
+          onOpenLead={clueQueue.length === 1 && !st.rayBeatPending ? (id) => setTimeout(() => actions.openNode(clueQueue[0].path, id), 440) : undefined}
+          offerQuiet={st.clues.length >= 4} showHow={st.clues.length <= 2} onDone={() => setClueQueue(q => q.slice(1))} />
       )}
       {!node && st.rayBeatPending && !revealPending && clueQueue.length === 0 && (
         <RayPhone

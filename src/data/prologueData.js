@@ -22,7 +22,7 @@ export const PROLOGUE_BEATS = [
     stamp: 'Tuesday · 8:20 pm',
     lines: [
       { text: 'Maya asked me to dinner. She had something to tell me.' },
-      { text: "She's an hour late. She's never late." },
+      { text: "She's over an hour late. She's never late." },
     ],
   },
   {
@@ -31,7 +31,7 @@ export const PROLOGUE_BEATS = [
     stamp: 'Tuesday · 8:21 pm',
     lines: [
       { text: 'I called. It rang out.' },
-      { text: "Then I saw a voicemail from her. Monday morning. I'd missed it." },
+      { text: "Then I saw a voicemail from her, from Monday morning. Nobody leaves me voicemails. I never check." },
     ],
   },
   {

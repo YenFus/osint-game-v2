@@ -43,7 +43,7 @@ function Opened({ opened }) {
   )
 }
 
-export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true, opened = [] }) {
+export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true, opened = [], onOpenLead }) {
   const clue = CLUES[clueId]
   const quiet = useAccessibilityStore(s => s.quietClues)
   const setQuiet = useAccessibilityStore(s => s.setQuietClues)
@@ -119,6 +119,16 @@ export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true, o
           </p>
         )}
         <button type="button" className={`cc-take ${showHow ? '' : 'cc-take-gap'}`} onClick={take} autoFocus>Add to my notes</button>
+        {/* one new lead and nothing in its way: go straight to it rather than
+            back to the board to find it */}
+        {(() => {
+          const next = opened.filter(o => !o.waits)
+          return onOpenLead && next.length === 1 && (
+            <button type="button" className="cc-next" onClick={() => { onOpenLead(next[0].id); take() }}>
+              Add it, and open “{next[0].title}” →
+            </button>
+          )
+        })()}
         {offerQuiet && (
           <label className="cc-quiet">
             <input type="checkbox" checked={quiet} onChange={(e) => setQuiet(e.target.checked)} />

@@ -24,7 +24,7 @@ export const GAME_DATA = {
         title: "Maya's Laptop — File System",
         tool: 'File Browser',
         timestamp: { text: 'Maya\'s files — November to March', urgent: false },
-        monologue: "Her laptop was on and unlocked. She never leaves it like that.",
+        monologue: "I got in first try. Her password's still her mum's birthday.",
         osintTip: {
           id: 'file-metadata',
           title: 'File Metadata Analysis',
@@ -94,7 +94,7 @@ export const GAME_DATA = {
         path: 'A',
         title: "Reddit — u/stillwater_m",
         tool: 'Reddit',
-        timestamp: { text: 'Maya\'s research — December', urgent: false },
+        timestamp: { text: 'Maya\'s research — December to February', urgent: false },
         monologue: "Maya was looking for things he couldn't have known.",
         osintTip: {
           id: 'insider-knowledge',
@@ -147,7 +147,7 @@ export const GAME_DATA = {
             { text: 'Good crowd, bad light', feedback: "A photographer moaning about the lighting. It tells you he was working there, not that he was watching her." },
           ],
           missFeedback: 'That was in the news the first week. Anyone could have known it.',
-          completionNote: "Three details in four months: her route, her timetable, her flatmate's name. You'd only know those by watching her. He posted them like small talk.",
+          completionNote: "Three details in under three months: her route, her timetable, her flatmate's name. You'd only know those by watching her. He posted them like small talk.",
         },
         unlocks: ['A3'],
       },
@@ -672,7 +672,7 @@ export const GAME_DATA = {
         title: "Burned Notebook — Pages 1–3",
         tool: 'Document Recovery',
         timestamp: { text: 'November — the beginning', urgent: false },
-        monologue: "Somebody tried to burn her notebook. They didn't finish the job.",
+        monologue: "Somebody set fire to her notebook and pulled the smoke alarm down. They didn't stay to watch it burn.",
         osintTip: {
           id: 'document-recovery',
           title: 'Physical Document Recovery',

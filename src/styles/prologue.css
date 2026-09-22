@@ -74,6 +74,13 @@
 .pro-play.on { border-color: #d8443a; color: #f3d8d4; }
 .pro-play .glyph { font-size: 15px; line-height: 1; color: #8fb6ea; }
 .pro-play.on .glyph { color: #d8443a; }
+/* her words as she says them, beside the button */
+.pro-audio { align-items: center; gap: 18px; flex-wrap: wrap; }
+.pro-cc {
+  margin: 0; flex: 1 1 260px; min-height: 1.4em; color: #f1e3c4;
+  font-family: 'Crimson Pro', Georgia, serif; font-style: italic; font-size: clamp(17px, 2.1vw, 22px);
+  line-height: 1.35; text-shadow: 0 1px 3px #000;
+}
 @media (max-width: 820px) {
   .pro-audio { padding: 0 7vw 14px; }
   .pro-play { padding: 10px 18px; font-size: 12px; letter-spacing: 0.14em; }

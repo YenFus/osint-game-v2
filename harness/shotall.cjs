@@ -221,6 +221,13 @@ async function sections(p, vp, want) {
       await load(p, S.base({ phase:'ending', prevPhase:'convergence', paths:done, clues:S.ALL_CLUES,
         endingChoice:c.choice, evidenceScore:3, journalistUnlocked:true, theoryTests:1,
         raySuspicion:c.susp, clock:c.clock, finalCase:{suspect:c.suspect, slots:c.slots} }), 1100)
+      // the call plays live first (LiveCall.jsx): shoot it mid-call, skip, hang up
+      await p.waitForTimeout(8500)
+      await shot(p, `ending-${name}-call`, vp)
+      await p.click('.lc-skip', { timeout: 3000 }).catch(() => {})
+      await p.waitForTimeout(600)
+      await p.click('.lc-go', { timeout: 3000 }).catch(() => {})
+      await p.waitForTimeout(1100)
       await shot(p, `ending-${name}-reveal`, vp)
       await p.keyboard.press('Enter'); await p.waitForTimeout(1100)
       await shot(p, `ending-${name}-file`, vp)

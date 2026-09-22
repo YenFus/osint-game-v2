@@ -15,6 +15,8 @@ import { GAME_DATA } from '../data/gameData'
 // the ending is built out of the board's material, so it needs its styles
 import '../styles/board.css'
 import { assetCssUrl } from '../assetUrl'
+import { LiveCall } from '../components/LiveCall'
+import { recordEnding, endingsFound, ENDING_IDS } from '../store/endingsFound'
 
 const LENA = 'In a storage unit Ray rented off Route 9, investigators found Lena Vasquez\'s camera and phone. Eleven months after she vanished, her family finally had an answer. Not the one they had prayed for.'
 
@@ -114,7 +116,7 @@ const ENDINGS = {
     status: 'FOUND ALIVE', ray: 'ARRESTED',
     sub: 'You couldn\'t say his name. The paperwork said it for you.',
     outcome: 'You hand over everything and let Okafor draw the line you wouldn\'t. The registrar confirms it inside two hours. They take him at a motel outside Grants Pass.',
-    coda: '"You had all of it. You just couldn\'t make yourself say the name — and I have seen that before, Mr. Reyes. It cost you a night."',
+    coda: '"You had all of it. You just couldn\'t make yourself say the name — and I\'ve seen that before, Mr. Reyes. It cost you a night."',
     attrib: '— Detective Dana Okafor, Millhaven PD',
     lena: true,
   },
@@ -180,7 +182,7 @@ function buildCall(type, evaluation, choice, gone) {
   }
   if (evaluation.suspect === 'pryce') {
     you('"Owen Pryce. He ran that arts night. He wouldn\'t give anyone the guest list."')
-    ok('"Mr. Pryce was on a stage in front of four hundred people at a quarter to eight, introducing her. It is in the programme you have in your hand. Who has been pointing you at these men?"')
+    ok('"Mr. Pryce was on stage in front of four hundred people at a quarter to eight, introducing her. It\'s in the programme in your hand. Who keeps pointing you at these men?"')
     pause('You don\'t have an answer.')
     return lines
   }
@@ -191,7 +193,7 @@ function buildCall(type, evaluation, choice, gone) {
   } else if (!evaluation.suspect) {
     // Nobody circled. He has a phone in his hand and nothing to say into it.
     you('"I\'ve been at this all night and I don\'t have a name for you."')
-    ok('"Then tell me what you do have, Mr. Reyes, and let me decide what it is worth."')
+    ok('"Then tell me what you have, Mr. Reyes. I\'ll decide what it\'s worth."')
   } else {
     you(gone ? '"Ray Callahan. He left town a few hours ago. He said Seattle. I don\'t believe him."' : '"Ray Callahan. He\'s outside my daughter\'s building right now."')
     ok('"...Callahan. What do you have?"')
@@ -218,7 +220,7 @@ function buildCall(type, evaluation, choice, gone) {
     ok(p.clueId ? `"${p.reaction}"` : EMPTY_LINES[i] ?? `"${p.reaction}"`)
   })
   if (evaluation.suspect === 'unknown') {
-    ok('"All of this is real work, Mr. Reyes. But you have handed me an account, not a man. One of those records has a name printed on it."')
+    ok('"This is real work, Mr. Reyes. But you\'ve given me an account, not a man. One of those records has a name on it."')
     if (evaluation.namesSomeone) pause('You look down at the registrar printout in your hand. You cannot make yourself say it.')
   } else if (WRONG_SUSPECTS.includes(evaluation.suspect)) {
     ok(`"And none of it points at ${SUSPECT_NAME[evaluation.suspect]}. It points at whoever registered that domain."`)
@@ -280,8 +282,13 @@ export default function EndingPage() {
   const deds = Object.keys(st.deductions).length
   const totalDeds = Object.values(DEDUCTIONS).flat().length
 
-  const [showCall, setShowCall] = useState(true)
-  const [phase, setPhase] = useState('reveal')
+  // you've just heard it; the transcript is there to go back to
+  const [showCall, setShowCall] = useState(false)
+  // this ending counts as found once you've heard how it went
+  useEffect(() => { recordEnding(type) }, [type])
+  const found = endingsFound()
+  // the call plays first, live; then the verdict; then the file
+  const [phase, setPhase] = useState('call')
   useEffect(() => {
     if (phase !== 'reveal') return undefined
     const go = () => setPhase('details')
@@ -295,6 +302,10 @@ export default function EndingPage() {
   const restart = () => {
     useGameStore.getState().resetGame()
     useGameStore.setState({ phase: 'menu' })
+  }
+
+  if (phase === 'call') {
+    return <LiveCall lines={call} confront={st.endingChoice === 'confront'} onDone={() => setPhase('reveal')} />
   }
 
   if (phase === 'reveal') {
@@ -451,7 +462,7 @@ export default function EndingPage() {
               {tips.map((t, i) => <li key={i} className="text-base text-[#b8b0a0]" style={{ fontFamily: "'Crimson Pro', serif" }}>— {t}</li>)}
             </ul>
             {/* The letter grades are gone — this line used to advertise them. */}
-            <p className="font-mono text-[12px] text-[#6a6a78] mt-4">{Object.keys(ENDINGS).length} endings. Two of them get her home the same night.</p>
+            <p className="font-mono text-[12px] text-[#6a6a78] mt-4">You've found {Math.max(1, found.length)} of {ENDING_IDS.length} endings. Two of them get her home the same night.</p>
           </div>
         )}
 

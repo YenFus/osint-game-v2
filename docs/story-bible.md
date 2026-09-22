@@ -109,6 +109,7 @@ his guest list. Not involved.
 | Thu Mar 6 | Maya emails Rosa | B12 |
 | Sun Mar 9, 11:47pm | The unsent draft to Dad | B12 |
 | **Mon Mar 10, 7:52am** | Maya's voicemail. Someone at the door. Taken. | Prologue |
+| Mon Mar 10, 8:04am | Three wrong passwords on her laptop. He set fire to her notebook, pulled the smoke alarm down and left in a hurry, leaving the laptop (locked, and traceable) and the board | Apartment, A1 brief |
 | Tue Mar 11, 8:20pm | Maya doesn't show for dinner | Prologue |
 | Wed Mar 12, morning | Police take a report and shrug | Prologue |
 | Wed Mar 12, 12:04pm | Ray calls | Prologue |

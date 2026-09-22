@@ -90,75 +90,36 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
 
       {/* Page content */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div className="rec-layout">
+        {/* A photograph of the page, not a black box. The sliders act on the
+            photo the way an editing app would, and her ink comes up out of
+            the char as you close in on the right settings — faint and soft
+            while you're near, sharp when you're there. It used to flip to
+            white text on black, which read as a UI, not a page. */}
         <div
-          className="rec-page"
+          className="rec-sheet"
           style={{
-            position: 'relative',
-            // A flex item shrinks below its content by default, and this one
-            // has no overflow of its own — so on a short viewport the page
-            // squashed and the recovered handwriting spilled out of the
-            // notebook and across the brightness slider. The column above
-            // already scrolls; let it.
-            flexShrink: 0,
             filter: `brightness(${brightness}%) contrast(${contrast}%)`,
-            background: '#1a0e06',
-            padding: '28px 32px',
-            minHeight: 200,
             opacity: transitioning ? 0 : 1,
-            transition: 'opacity 0.35s ease',
+            '--page': `url(${import.meta.env.BASE_URL}art/burned-page.jpg)`,
           }}
         >
-          {/* Paper texture lines */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} style={{
-              position: 'absolute', left: 32, right: 32,
-              top: 52 + i * 24,
-              height: 1, background: 'rgba(90, 60, 30, 0.18)',
-              pointerEvents: 'none',
-            }} />
-          ))}
-
           {page.date && (
-            <div style={{
-              fontFamily: 'Crimson Pro, serif', fontStyle: 'italic',
-              fontSize: 12, color: readable ? '#8a6040' : '#3a1808',
-              marginBottom: 14, letterSpacing: '0.05em',
-              transition: 'color 0.4s',
-            }}>
+            <div className="rec-date" style={{ opacity: readable ? 0.9 : Math.max(0, readabilityProgress - 0.5) * 0.5 }}>
               {page.date}
             </div>
           )}
-
-          <p style={{
-            fontFamily: 'Crimson Pro, serif',
-            fontStyle: 'italic',
-            fontSize: 15,
-            lineHeight: 1.85,
-            color: readable ? '#c8b888' : '#2a1206',
-            margin: 0,
-            transition: 'color 0.4s ease',
-            position: 'relative', zIndex: 1,
-            userSelect: readable ? 'text' : 'none',
-          }} aria-hidden={!readable}>
+          <p
+            className={`rec-ink ${readable ? 'on' : ''}`}
+            style={{ opacity: readable ? 1 : Math.pow(Math.max(0, (readabilityProgress - 0.55) / 0.45), 2) * 0.22 }}
+            aria-hidden={!readable}
+          >
             {page.text}
           </p>
           {/* until the ink lifts, a screen reader gets no more than the eye does */}
           {!readable && <p className="sr-only">The ink is still too faint to read. Adjust brightness and contrast.</p>}
-
-          {/* Burn vignette */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.65) 100%)',
-            pointerEvents: 'none',
-          }} />
-
-          {/* Edge char marks */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, transparent 8%, transparent 92%, rgba(0,0,0,0.5) 100%)',
-            pointerEvents: 'none',
-          }} />
         </div>
+        <div className="rec-controls">
 
         {/* Controls - Mobile-friendly sliders */}
         <div style={{
@@ -282,6 +243,8 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
               <span>Text recovered</span>
             </span>
           )}
+        </div>
+        </div>
         </div>
       </div>
     </div>

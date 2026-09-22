@@ -19,7 +19,7 @@ import { LEAD_META, withMeta } from '../../data/leadMeta'
 import {
   CLUES, DEDUCTIONS, FINAL_SLOTS, suspectsFor, THREAD_INFO as THREADS, WRONG_THEORY_COST,
   clockLabel, missingLabel, durationLabel, effectiveSuspicion, rayDeadline, pinComplete, HINT_COST,
-  NAME_CLUES,
+  NAME_CLUES, dedOpen,
 } from '../../data/caseData'
 import { PolaroidArt } from './PolaroidArt'
 import { GalleryPlate } from './ScenePlate'
@@ -207,11 +207,27 @@ function DedSlot({ ded, confirmed, pencilled, armed, onPin, hintShown, onHint })
   )
 }
 
+// A question the player hasn't earned yet. It holds its place on the board
+// without saying what it is.
+const SEALED_LINE = {
+  A: 'A question for later. Keep working her laptop.',
+  B: 'A question for later. Keep reading her notebook.',
+  C: 'A question for later. Keep going through her board.',
+}
+function SealedSlot({ pathKey }) {
+  return (
+    <div className="ded-slot sealed" aria-label="A question you haven't reached yet">
+      <div className="ded-q hand">?</div>
+      <div className="ded-empty">{SEALED_LINE[pathKey]}</div>
+    </div>
+  )
+}
+
 // ── A thread ──────────────────────────────────────────────────────
 // Leads are laid out in rows by how deep they sit in the trail, so the board
 // reads as a branching trail rather than a list. A closed thread folds itself
 // away: what it proved stays on the board, the leads tuck out of sight.
-function ThreadColumn({ pathKey, paths, deductions, theory, selectedClue, shaking, focused, zoomingId, hintedDeds, onOpenLead, onPin, onTest, onDedHint }) {
+function ThreadColumn({ pathKey, paths, clues, deductions, theory, selectedClue, shaking, focused, zoomingId, hintedDeds, onOpenLead, onPin, onTest, onDedHint }) {
   const nodes = GAME_DATA[pathKey].nodes.map(withMeta)
   const st = paths[pathKey]
   const unlocked = st.unlockedNodes.map(id => nodes.find(n => n.id === id)).filter(Boolean)
@@ -271,7 +287,7 @@ function ThreadColumn({ pathKey, paths, deductions, theory, selectedClue, shakin
 
       <div className="thread-deds" id={`theory-${pathKey}`}>
         <div className="ded-title hand">{st.completed ? 'What this thread proves' : 'Your theory'}</div>
-        {deds.map(ded => (
+        {deds.map(ded => !dedOpen(ded, paths, clues, theory, deductions) ? <SealedSlot key={ded.id} pathKey={pathKey} /> : (
           <DedSlot key={ded.id} ded={ded}
             confirmed={deductions[ded.id]}
             pencilled={theory[ded.id]}
@@ -485,19 +501,45 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues, unread = []
 }
 
 // ── Tutorial ──────────────────────────────────────────────────────
+// Each card points at the thing it's about. They used to float over an evenly
+// dimmed board, so "each card is a lead" pointed at nothing in particular.
 const TUT = [
   { h: 'Your wall.', p: 'Maya\'s case is on this wall now. I\'ll work it the way I used to.' },
-  { h: 'Leads.', p: 'Each card is a lead from her flat. Open one to look into it. Finishing it can open more.' },
-  { h: 'Theories.', p: 'Each lead gives you a note. Pin notes under a thread\'s three questions, then test your theory. It tells you how many are right.' },
-  { h: 'The clock.', p: 'Maya\'s been gone almost 59 hours. Wrong answers, failed theories and hints cost time.' },
+  { h: 'Leads.', p: 'Each card is a lead from her flat. Open one to look into it. Finishing it can open more.', target: '[data-yarn^="lead-"]' },
+  { h: 'Theories.', p: 'Each lead gives you a note. Pin notes under a thread\'s questions, then test your theory. It tells you how many are right. Some questions only appear once you\'ve read enough.', target: '.thread-deds' },
+  { h: 'The clock.', p: 'Maya\'s been gone almost 59 hours. Wrong answers, failed theories and hints cost time.', target: '.hud-clock' },
 ]
+function useSpot(selector) {
+  const [rect, setRect] = useState(null)
+  useLayoutEffect(() => {
+    const el = selector ? document.querySelector(selector) : null
+    if (!el) { const r = requestAnimationFrame(() => setRect(null)); return () => cancelAnimationFrame(r) }
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollIntoView({ block: 'center', inline: 'center', behavior: still ? 'auto' : 'smooth' })
+    let raf = 0
+    const measure = () => {
+      const r = el.getBoundingClientRect()
+      setRect({ x: r.left - 8, y: r.top - 8, w: r.width + 16, h: r.height + 16 })
+    }
+    // follow it while the board scrolls it into place
+    const follow = (n) => { measure(); if (n > 0) raf = requestAnimationFrame(() => follow(n - 1)) }
+    raf = requestAnimationFrame(() => follow(45))
+    window.addEventListener('resize', measure)
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', measure) }
+  }, [selector])
+  return rect
+}
 function BoardTutorial({ onDone }) {
   const [i, setI] = useState(0)
   const step = TUT[i]
   const ref = useRef(null)
   useModalFocus(ref)
+  const spot = useSpot(step.target)
+  // the card sits on the far side of the screen from what it points at
+  const low = spot && spot.y + spot.h / 2 < window.innerHeight / 2
   return (
-    <div ref={ref} className="cb-tut" role="dialog" aria-modal="true" aria-label="How the board works">
+    <div ref={ref} className={`cb-tut ${spot ? 'spotlit' : ''} ${low ? 'card-low' : spot ? 'card-high' : ''}`} role="dialog" aria-modal="true" aria-label="How the board works">
+      {spot && <div className="tut-spot" aria-hidden="true" style={{ left: spot.x, top: spot.y, width: spot.w, height: spot.h }} />}
       <div className="card">
         <span className="pin" />
         <div className="hand">{step.h}</div>
@@ -791,6 +833,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
                     key={k}
                     pathKey={k}
                     paths={s.paths}
+                    clues={s.clues}
                     deductions={s.deductions}
                     theory={s.theory}
                     selectedClue={selectedClue}

@@ -64,6 +64,109 @@ class AudioEngine {
     this.bedBuffers = new Map()
     this.bedPending = new Map()
     this.initialized = false
+    // recorded foley, keyed by SFX name; see loadSamples
+    this.samples = new Map()
+    this.samplesRequested = false
+    // the score: one cue at a time, crossfaded (scripts/compose_score.py)
+    this.score = null          // { name, src, gain }
+    this.scoreBuffers = new Map()
+    this.scoreWanted = null
+    this.scoreVolume = 1
+    this.duckLevel = 1
+  }
+
+  async loadScore(name) {
+    if (this.scoreBuffers.has(name)) return this.scoreBuffers.get(name)
+    const res = await fetch(`${import.meta.env.BASE_URL}audio/mus-${name}.mp4`)
+    if (!res.ok) throw new Error(`${res.status}`)
+    const buf = await this.ctx.decodeAudioData(await res.arrayBuffer())
+    this.scoreBuffers.set(name, buf)
+    return buf
+  }
+
+  // AAC puts a few thousand samples of silence in front of the music, and a
+  // loop that includes them ticks at the seam. Start the loop at the first
+  // real sample and end it exactly one written loop later.
+  scoreLoop(buf, name) {
+    const d = buf.getChannelData(0)
+    let first = 0
+    while (first < d.length && Math.abs(d[first]) < 1e-5 && first < buf.sampleRate) first++
+    const start = first / buf.sampleRate
+    const len = SCORE_LOOP_SECONDS[name] ?? (buf.duration - start)
+    return { start, end: Math.min(buf.duration, start + len) }
+  }
+
+  playScore(name, volume = this.scoreVolume) {
+    this.scoreVolume = volume
+    this.scoreWanted = name
+    if (!this.ctx) return
+    if (this.score?.name === name) return
+    this.fadeOutScore(2.5)
+    if (!name) return
+    this.loadScore(name).then(buf => {
+      if (this.scoreWanted !== name || this.score?.name === name) return
+      const { start, end } = this.scoreLoop(buf, name)
+      const src = this.ctx.createBufferSource()
+      src.buffer = buf
+      src.loop = true
+      src.loopStart = start
+      src.loopEnd = end
+      const gain = this.ctx.createGain()
+      gain.gain.value = 0
+      src.connect(gain); gain.connect(this.masterGain)
+      src.start(0, start)
+      gain.gain.setTargetAtTime(this.scoreTarget(), this.ctx.currentTime, 1.4)
+      this.score = { name, src, gain }
+    }).catch(() => { /* no score for this room; the bed carries it */ })
+  }
+
+  scoreTarget() { return this.scoreVolume * SCORE_LEVEL * this.duckLevel }
+
+  fadeOutScore(seconds = 2) {
+    const old = this.score
+    if (!old) return
+    this.score = null
+    old.gain.gain.setTargetAtTime(0, this.ctx.currentTime, seconds / 3)
+    setTimeout(() => { try { old.src.stop() } catch { /* already stopped */ } }, seconds * 1000 + 500)
+  }
+
+  // Pull the music down under something the player needs to hear — her voicemail.
+  duckScore(on) {
+    this.duckLevel = on ? 0.18 : 1
+    if (this.score) this.score.gain.gain.setTargetAtTime(this.scoreTarget(), this.ctx.currentTime, on ? 0.25 : 1.2)
+  }
+
+  // Every effect used to be an oscillator or a filtered noise burst. They're
+  // recordings now (scripts/build_sfx.py). Loaded once, after the first
+  // gesture; until a file has decoded, the synthesised version stands in.
+  loadSamples() {
+    if (this.samplesRequested || !this.ctx) return
+    this.samplesRequested = true
+    for (const name of SAMPLE_SFX) {
+      fetch(`${import.meta.env.BASE_URL}audio/sfx/${name}.wav`)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer() })
+        .then(b => this.ctx.decodeAudioData(b))
+        .then(buf => this.samples.set(name, buf))
+        .catch(() => { /* the synth fallback carries it */ })
+    }
+  }
+
+  playSample(name, volume, { rate = 1, room = 0 } = {}) {
+    const buf = this.samples.get(name)
+    if (!buf) return false
+    const src = this.ctx.createBufferSource()
+    src.buffer = buf
+    src.playbackRate.value = rate
+    const g = this.ctx.createGain()
+    g.gain.value = volume
+    src.connect(g); g.connect(this.masterGain)
+    if (room > 0) {
+      const wet = this.ctx.createGain()
+      wet.gain.value = volume * room
+      src.connect(wet); wet.connect(this.reverbNode)
+    }
+    src.start()
+    return src
   }
 
   init() {
@@ -93,6 +196,7 @@ class AudioEngine {
     reverbOut.connect(this.masterGain)
 
     this.initialized = true
+    this.loadSamples()
   }
 
   resume() {
@@ -314,6 +418,12 @@ class AudioEngine {
 
   playSFX(type, volume = 1) {
     if (!this.ctx) return
+    // A recording if we have one. Small things a hand does over and over get
+    // a touch of pitch drift so twenty pins in a row aren't one pin twenty times.
+    if (SAMPLE_SFX.has(type)) {
+      const drift = SAMPLE_DRIFT.has(type) ? 0.94 + Math.random() * 0.12 : 1
+      if (this.playSample(type, volume, { rate: drift, room: SAMPLE_ROOM[type] ?? 0 })) return
+    }
     const now = this.ctx.currentTime
 
     switch (type) {
@@ -583,6 +693,8 @@ class AudioEngine {
   // into, so dragging it while one was playing appeared to do nothing.
   setAmbientVolume(volume) {
     if (!this.ctx) return
+    this.scoreVolume = volume
+    if (this.score) this.score.gain.gain.setTargetAtTime(this.scoreTarget(), this.ctx.currentTime, 0.25)
     for (const nodes of this.ambientNodes.values()) {
       // once a produced bed is playing it is the ambient layer, and the
       // oscillator track under it stays at zero
@@ -619,8 +731,21 @@ class AudioEngine {
 // Rooms with a produced bed in public/audio. The beds sit a little louder than
 // the oscillator tracks did: they are room tone rather than a drone, so they
 // need to be audible to do anything at all.
-const BED_LEVEL = 0.34
+// With a score on top, the room tone steps back to being a room.
+const BED_LEVEL = 0.22
+const SCORE_LEVEL = 0.62
+// the written length of each cue, so the loop ignores the encoder's padding
+const SCORE_LOOP_SECONDS = { theme: 80, apartment: 55.3846, investigation: 153.6, convergence: 75.7895, ending: 85.7143 }
 const BED_TRACKS = new Set(['investigation', 'apartment', 'convergence', 'ending'])
+
+// Recorded effects in public/audio/sfx, built by scripts/build_sfx.py
+const SAMPLE_SFX = new Set([
+  'click', 'pin', 'stamp', 'buzz', 'notification', 'discovery', 'nodeComplete', 'pageTurn',
+  'error', 'deduction', 'tick', 'heartbeat', 'typewriterKey', 'typewriterKey2', 'pickup', 'hangup', 'ringback',
+])
+const SAMPLE_DRIFT = new Set(['click', 'pin', 'typewriterKey', 'typewriterKey2', 'pageTurn', 'notification'])
+// how much of each goes to the shared room reverb
+const SAMPLE_ROOM = { stamp: 0.25, deduction: 0.2, discovery: 0.15, heartbeat: 0.1 }
 
 // Single shared engine instance
 const audioEngine = new AudioEngine()
@@ -658,11 +783,18 @@ export function useAudio() {
     }
   }, [])
 
+  const playScore = useCallback((cue) => {
+    engineRef.current.init()
+    engineRef.current.playScore(cue, musicVolume)
+  }, [musicVolume])
+
+  const duckScore = useCallback((on) => engineRef.current.duckScore(on), [])
+
   const playSFX = useCallback((name) => {
     if (muted) return
     engineRef.current.init()
     engineRef.current.playSFX(name, sfxVolume)
   }, [sfxVolume, muted])
 
-  return { initAudio, playAmbient, stopAmbient, playSFX }
+  return { initAudio, playAmbient, stopAmbient, playSFX, playScore, duckScore }
 }

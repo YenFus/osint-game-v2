@@ -1,0 +1,161 @@
+/* ─────────────────────────────────────────────────────────────────
+   SOURCE SKINS — every lead used to be the same dark panel in the same
+   monospace, whether it was a Reddit thread, an archived Twitter page, a
+   WHOIS record or a court filing. You're meant to feel you're reading the
+   internet and then a courthouse. A lead names its skin in leadMeta.js;
+   the puzzle's markup doesn't change, only how it's dressed.
+
+   The inline styles in TagNode are overridden here with !important. That's
+   deliberate and scoped: nothing outside a .skin-* wrapper is touched.
+   ───────────────────────────────────────────────────────────────── */
+
+/* The address of what you're looking at, above it, like a browser would show. */
+.src-skin[data-source]::before {
+  content: attr(data-source);
+  display: block; flex: 0 0 auto; position: relative; z-index: 3;
+  padding: 7px 14px 7px 36px;
+  font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.04em;
+  color: #a7afbd; background: #1a1c22; border-bottom: 1px solid #07080a;
+  background-image: radial-gradient(circle at 18px 50%, #5a6272 0 4px, transparent 4.5px);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── Reddit: a user's post history, white cards on grey ── */
+.skin-reddit[data-source]::before { background-color: #f6f7f8; color: #57606a; border-bottom-color: #d4d7db; background-image: radial-gradient(circle at 18px 50%, #ff4500 0 5px, transparent 5.5px); }
+.skin-reddit .ph-root { background: #dae0e6; color: #1c1c1c; }
+.skin-reddit .mp-bar { background: #fff; border-bottom: 1px solid #ccd0d4; color: #57606a; }
+.skin-reddit .mp-bar > span:first-child { color: #b35900; }
+.skin-reddit .mp-bar-hint { color: #57606a; }
+.skin-reddit .ph-post {
+  position: relative; background: #fff; border: 1px solid #ccd0d4; border-left: 1px solid #ccd0d4; border-radius: 4px;
+  padding: 10px 16px 12px 54px; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+.skin-reddit .ph-post::before {
+  content: '▲\A ·\A▼'; white-space: pre; position: absolute; left: 0; top: 0; bottom: 0; width: 40px;
+  background: #f8f9fa; border-radius: 4px 0 0 4px; color: #878a8c; font: 12px/1.5 Arial, sans-serif; text-align: center; padding-top: 10px;
+}
+.skin-reddit .ph-who, .skin-reddit .ph-when { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; letter-spacing: 0; font-size: 12px; }
+.skin-reddit .ph-who { color: #1a1a1b; font-weight: 700; }
+.skin-reddit .ph-when { color: #6b6f72; }
+.skin-reddit .ph-text { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; color: #1c1c1c; font-size: 16px; }
+.skin-reddit .ph-w:hover:not(:disabled):not(.sel):not(.hit) { background: rgba(0,121,211,0.12); }
+.skin-reddit .ph-w.sel, .skin-reddit .ph-w.hit { color: #1c1c1c; }
+.skin-reddit .ph-w.sel .ph-ink, .skin-reddit .ph-gap.sel { background: rgba(255,176,0,0.42); color: #1c1c1c; }
+.skin-reddit .ph-w.hit .ph-ink, .skin-reddit .ph-gap.hit { background: rgba(70,170,90,0.26); color: #0d2a12; box-shadow: inset 0 -2px 0 #2e8b47; }
+.skin-reddit .ph-w:focus-visible { outline-color: #0079d3; }
+.skin-reddit .ph-sel-bar { border-top-color: #d4d7db; }
+.skin-reddit .ph-sel-t { color: #1c1c1c; }
+.skin-reddit .ph-mark-btn { color: #fff; background: #0079d3; border-color: #0079d3; border-radius: 999px; }
+.skin-reddit .ph-mark-btn:hover { background: #1484d6; }
+.skin-reddit .ph-clear-btn { color: #0079d3; border-color: #0079d3; border-radius: 999px; }
+.skin-reddit .mp-done { background: #fff; color: #1c1c1c; border-top: 1px solid #ccd0d4; }
+.skin-reddit .mp-done p { color: #2a2a2a; }
+
+/* ── Wayback Machine: two captures of a Twitter profile ── */
+.skin-wayback .df-root { background: #e9ebee; color: #0f1419; }
+.skin-wayback .mp-bar { background: #fff; border-bottom: 1px solid #d0d4d9; color: #536471; }
+.skin-wayback .mp-bar > span:first-child { color: #1d6fb8; }
+.skin-wayback .mp-bar-hint { color: #536471; }
+.skin-wayback .df-col { background: #fff; border: 1px solid #cfd9de; border-radius: 4px; overflow: hidden; }
+.skin-wayback .df-head { background: #1f1f1f; border-bottom: 3px solid #ab2e33; padding: 9px 12px 10px; }
+.skin-wayback .df-head::before {
+  content: 'INTERNET ARCHIVE · WAYBACK MACHINE'; font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 0.14em; color: #f2f2f2;
+}
+.skin-wayback .df-when { color: #f6c26b; }
+.skin-wayback .df-label { color: #fff; font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; font-weight: 700; font-size: 16px; }
+.skin-wayback .df-list { padding: 0; gap: 0; }
+.skin-wayback .df-line {
+  background: #fff; color: #0f1419; border: none; border-bottom: 1px solid #eff3f4; border-radius: 0;
+  font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 15px; padding: 11px 34px 11px 62px;
+}
+.skin-wayback .df-line::before {
+  content: ''; position: absolute; left: 14px; top: 12px; width: 36px; height: 36px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #9aa7b1 0 26%, transparent 27%), radial-gradient(circle at 50% 100%, #9aa7b1 0 44%, #cfd8de 45%);
+}
+.skin-wayback .df-meta { color: #536471; font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; text-transform: none; letter-spacing: 0; font-size: 13px; }
+.skin-wayback .df-meta::before { content: 'stillwater_m · '; font-weight: 700; color: #0f1419; }
+.skin-wayback .df-line:hover:not(:disabled) { background: #f7f9f9; border-color: #eff3f4; }
+.skin-wayback .df-line.got { background: #e7f5ec; }
+.skin-wayback .df-line:focus-visible { outline-color: #1d9bf0; outline-offset: -2px; }
+.skin-wayback .df-merged { background: #e9ebee; }
+.skin-wayback .df-row { background: #fff; border-color: #cfd9de; }
+.skin-wayback .df-rowmeta { color: #1d6fb8; }
+.skin-wayback .df-side { color: #536471; }
+.skin-wayback .df-merged .df-line { padding-left: 11px; }
+.skin-wayback .df-merged .df-line::before { display: none; }
+.skin-wayback .mp-done { background: #fff; color: #0f1419; border-top: 1px solid #cfd9de; }
+.skin-wayback .mp-done p { color: #26323b; }
+
+/* ── WHOIS: a terminal readout ── */
+.skin-whois[data-source]::before { background-color: #0a0d0a; color: #6fbf73; border-bottom-color: #173017; background-image: none; padding-left: 14px; }
+.skin-whois[data-source]::before { content: '$ ' attr(data-source); }
+.skin-whois .df-root, .skin-whois .tg-list { background: #050805 !important; }
+.skin-whois .df-col { background: #070b07; border-color: #173017; }
+.skin-whois .df-head { background: #0a110a; border-bottom-color: #173017; }
+.skin-whois .df-when { color: #9fe0a3; }
+.skin-whois .df-label { color: #cfeccf; font-family: 'Share Tech Mono', monospace; font-size: 14px; }
+.skin-whois .df-line { background: transparent; border-color: #122612; color: #b8f0b8; font-family: 'Share Tech Mono', monospace; }
+.skin-whois .df-line:hover:not(:disabled) { background: #0c180c; border-color: #2e5a2e; }
+.skin-whois .df-line.got { background: #10240f; border-color: #5aa05a; color: #e2ffe2; }
+.skin-whois .df-meta { color: #5f9a62; }
+.skin-whois .df-meta::after { content: ':'; }
+.skin-whois .df-row { background: #070b07; border-color: #173017; }
+.skin-whois .df-rowmeta { color: #9fe0a3; }
+.skin-whois .df-side { color: #5f9a62; }
+.skin-whois .tg-row { border-bottom-color: #0f1f0f !important; }
+.skin-whois .tg-row.got { background: rgba(90,200,90,0.07) !important; border-left-color: #6fcf73 !important; }
+.skin-whois .tg-text { font-family: 'Share Tech Mono', monospace !important; font-size: 15px !important; color: #b8f0b8 !important; }
+.skin-whois .tg-row.miss .tg-text { color: #4f7a52 !important; }
+.skin-whois .tg-flag { font-family: 'Share Tech Mono', monospace !important; }
+.skin-whois .mp-bar { background: #0a0d0a; color: #6fbf73; border-bottom-color: #173017; }
+
+/* ── The username scanner: tool output, read before it's asked about ── */
+.skin-scanner .inp-rec { background: #06090d; border-color: #1b2a3a; }
+.skin-scanner .inp-rec dd, .skin-scanner .inp-rec dt { font-family: 'Share Tech Mono', monospace; }
+.skin-scanner .inp-rec-label::before { content: '> '; color: #6a9ad8; }
+
+/* Records first, then the question about them. The question used to sit on
+   top and the records below the fold, so you were asked before you'd read. */
+.inp-stack .inp-records { order: -1; margin-top: 0; margin-bottom: 22px; border-top: none; padding-top: 0; }
+
+/* ── The sealed police statement: typed, carbon, stamped ── */
+.skin-statement .cp-paper {
+  position: relative; background: #f4f1e8; color: #1a1712;
+  background-image: repeating-linear-gradient(0deg, transparent 0 27px, rgba(40,60,120,0.08) 27px 28px);
+  font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+}
+.skin-statement .cp-paper .cp-h { font-family: 'Courier Prime', 'Courier New', Courier, monospace; letter-spacing: 0.02em; text-transform: uppercase; font-size: 16px; }
+.skin-statement .cp-paper .cp-item { font-family: 'Courier Prime', 'Courier New', Courier, monospace; font-size: 14px; }
+.skin-statement .cp-paper::after {
+  content: 'SEALED'; position: absolute; top: 12px; right: 14px; transform: rotate(-9deg);
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: 0.16em;
+  color: rgba(170,28,20,0.72); border: 3px solid rgba(170,28,20,0.6); padding: 0 8px; pointer-events: none;
+}
+
+/* ── The court record: the paper's summary against the clerk's copy ── */
+.skin-court .df-root { background: #1a1612; }
+.skin-court .df-before { background: #efe7d2; border-color: #c9bb95; color: #1d1810; }
+.skin-court .df-before .df-head { background: #e4d9bd; border-bottom: 2px solid #1d1810; }
+.skin-court .df-before .df-head::before { content: 'THE MILLHAVEN COURIER'; font-family: 'Playfair Display', 'Times New Roman', serif; font-weight: 900; font-size: 18px; letter-spacing: 0.02em; color: #1d1810; }
+.skin-court .df-before .df-when, .skin-court .df-before .df-label { color: #4a3e28; }
+.skin-court .df-before .df-line { background: transparent; border-color: #d6caa8; color: #1d1810; font-family: 'Crimson Pro', Georgia, serif; font-size: 15px; }
+.skin-court .df-before .df-meta { color: #6b5a36; }
+.skin-court .df-after { background: #fbfbf7; border-color: #bfc3c9; color: #111; }
+.skin-court .df-after .df-head { background: #eef0f2; border-bottom: 2px solid #2a3a58; }
+.skin-court .df-after .df-head::before { content: 'MARION COUNTY CIRCUIT COURT · CLERK\2019S COPY'; font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.12em; color: #2a3a58; }
+.skin-court .df-after .df-when, .skin-court .df-after .df-label { color: #2a3a58; }
+.skin-court .df-after .df-line { background: transparent; border-color: #dfe2e6; color: #111; font-family: 'Courier Prime', 'Courier New', Courier, monospace; font-size: 14px; }
+.skin-court .df-after .df-meta { color: #4a5670; }
+.skin-court .df-line:hover:not(:disabled) { border-color: #8a6a38; background: rgba(138,106,56,0.08); }
+.skin-court .df-line.got { background: #e3efdc; border-color: #4c8a55; }
+.skin-court .df-row { background: #f4efe0; border-color: #c9bb95; color: #1d1810; }
+.skin-court .df-rowmeta { color: #6b5a36; }
+.skin-court .df-side { color: #6b5a36; }
+.skin-court .df-merged .df-line { color: #1d1810; border-color: #d6caa8; background: #fbf8ef; }
+.skin-statement .cp-paper .cp-h { padding-right: 124px; }
+
+/* The address bar takes a row, so the puzzle under it has to take the rest
+   rather than a full 100% of the column — TagNode and InputNode size their
+   roots to 100%, which pushed their last 35px out of reach on a phone. */
+.src-skin[data-source] > * { flex: 1 1 auto; min-height: 0; height: auto !important; }

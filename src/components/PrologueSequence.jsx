@@ -20,6 +20,7 @@ const LINE_DELAY = 1500
 // play on it yourself is the beat.
 function useVoicemail(audio, active) {
   const el = useRef(null)
+  const { duckScore } = useAudio()
   const { muted, masterVolume } = useAudioStore()
   const [state, setState] = useState({ playing: false, progress: 0, duration: 0, played: false })
 
@@ -31,7 +32,7 @@ function useVoicemail(audio, active) {
     const tick = () => setState(s => ({
       ...s, progress: a.duration ? a.currentTime / a.duration : 0, duration: a.duration || 0,
     }))
-    const onEnd = () => setState(s => ({ ...s, playing: false, progress: 1, played: true }))
+    const onEnd = () => { duckScore(false); setState(s => ({ ...s, playing: false, progress: 1, played: true })) }
     a.addEventListener('timeupdate', tick)
     a.addEventListener('loadedmetadata', tick)
     a.addEventListener('ended', onEnd)
@@ -40,9 +41,10 @@ function useVoicemail(audio, active) {
       a.removeEventListener('loadedmetadata', tick)
       a.removeEventListener('ended', onEnd)
       a.pause()
+      duckScore(false)
       el.current = null
     }
-  }, [audio, active])
+  }, [audio, active, duckScore])
 
   // leaving the beat, or muting mid-message, stops it
   useEffect(() => {
@@ -56,13 +58,15 @@ function useVoicemail(audio, active) {
     if (!a) return
     if (a.paused) {
       a.volume = muted ? 0 : masterVolume
+      duckScore(true)
       a.play().then(() => setState(s => ({ ...s, playing: true, played: true })))
-        .catch(() => setState(s => ({ ...s, playing: false })))
+        .catch(() => { duckScore(false); setState(s => ({ ...s, playing: false })) })
     } else {
       a.pause()
+      duckScore(false)
       setState(s => ({ ...s, playing: false }))
     }
-  }, [muted, masterVolume])
+  }, [muted, masterVolume, duckScore])
 
   return [state, toggle]
 }
@@ -152,6 +156,12 @@ export function PrologueSequence({ beats, onComplete }) {
             <span className="lbl">{vm.playing ? 'Playing' : vm.played ? 'Play again' : 'Play message'}</span>
           </button>
           <p className="sr-only">Transcript: {current.audio.transcript}</p>
+          {/* what she's saying, as she says it — for anyone with the sound off */}
+          {vm.played && current.audio.captions && (() => {
+            const t = vm.progress * vm.duration
+            const line = [...current.audio.captions].reverse().find(([at]) => t >= at)
+            return <p className="pro-cc" aria-hidden="true">{line ? line[1] : '…'}</p>
+          })()}
         </div>
       )}
 

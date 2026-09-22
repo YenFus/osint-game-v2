@@ -281,18 +281,21 @@ export const DEDUCTIONS = {
   A: [
     {
       id: 'dA1',
+      opensAfter: ['A1'],
       question: 'Maya dropped her first suspect, Corey. Was she right to?',
       answer: ['corey_alibi'],
       reveal: 'Yes. Corey was at work in Tigard both nights. Somebody pointed the forum at him.',
     },
     {
       id: 'dA2',
+      opensAfter: ['A1'],
       question: 'Where was stillwater_m the night Lena disappeared?',
       answer: ['flickr_gps'],
       reveal: 'His own photos put him near her flat on the 12th, and inside the hall on the 13th.',
     },
     {
       id: 'dA3',
+      opensAfter: ['A1'],
       question: 'stillwater_m is just a username. What puts a real name to it?',
       pairAnswer: ['domain_tweet', 'whois'],
       // Other pairs that genuinely name the account holder.
@@ -304,6 +307,7 @@ export const DEDUCTIONS = {
   B: [
     {
       id: 'dB1',
+      opensAfter: ['B1'],
       question: 'He says he\'s just a worried stranger following the case. What did he know that a stranger couldn\'t?',
       pairAnswer: ['insider', 'sealed'],
       hintLine: 'Two notes: things only her friends knew, and words only the police had.',
@@ -311,6 +315,7 @@ export const DEDUCTIONS = {
     },
     {
       id: 'dB2',
+      opensAfter: ['A6', 'A7', 'B7'],
       question: 'He built his website himself. What did he leave in its code?',
       answer: ['html_author'],
       reveal: 'His name. The code says it was built by Ray Callahan, login rcallahan_admin.',
@@ -325,6 +330,7 @@ export const DEDUCTIONS = {
   C: [
     {
       id: 'dC1',
+      opensAfter: ['C1'],
       question: 'Who was working in that side room all evening?',
       pairAnswer: ['table_sign', 'courier'],
       alsoAccept: [['courier', 'same_room'], ['table_sign', 'same_room']],
@@ -333,6 +339,7 @@ export const DEDUCTIONS = {
     },
     {
       id: 'dC2',
+      opensAfter: ['C1', 'A7'],
       question: 'Two records use the same postbox. Which two?',
       pairAnswer: ['map_three', 'registry'],
       hintLine: 'Two notes: the box she marked on her map, and the records registered to it.',
@@ -340,11 +347,27 @@ export const DEDUCTIONS = {
     },
     {
       id: 'dC3',
+      opensAfter: ['C4'],
       question: 'Has he done this to a woman before?',
       answer: ['court'],
       reveal: 'Yes. Raymond T. Callahan, 2021: fake accounts, her email, turning up where she\'d only told friends she\'d be.',
     },
   ],
+}
+
+// A question stays sealed until the player has read far enough to ask it.
+// All nine used to be printed from the first second, which read as a list
+// of the story's beats ("Has he done this to a woman before?") before the
+// player had met the man. Sealing is presentation only: a question also
+// opens the moment the player holds any clue that answers it, so it can
+// never stand between a player and a correct pin.
+export function dedOpen(ded, paths, clues = [], theory = {}, deductions = {}) {
+  if (!ded.opensAfter) return true
+  if (deductions?.[ded.id] || theory?.[ded.id]) return true
+  const done = new Set(Object.values(paths ?? {}).flatMap(p => p?.completedNodes ?? []))
+  if (ded.opensAfter.some(id => done.has(id))) return true
+  const answers = [...(ded.answer ?? []), ...(ded.pairAnswer ?? []), ...(ded.alsoAccept ?? []).flat()]
+  return answers.some(id => (clues ?? []).includes(id))
 }
 
 // ── THE FINAL CASE ─────────────────────────────────────────────────
@@ -371,23 +394,23 @@ export const FINAL_SLOTS = [
     question: 'Prove who is behind stillwater_m',
     weights: { whois: 1, registry: 1, html_author: 1, nightwatch: 0.5, draft: 0.5, shield: 0.5, postbox: 0.5, chain_sheet: 0.5, domain_tweet: 0.25, priya_words: 0.25, burned_page: 0.25 },
     reactions: {
-      whois: 'A WHOIS record with no privacy shield. The registrar can confirm it in an hour.',
-      registry: 'State registry — Stillwater Media LLC, Raymond T. Callahan. That\'s your username, filed with the state. That\'s clean.',
-      html_author: 'His name in the site\'s own source code, archived by a third party. Good.',
-      nightwatch: 'Initials in a Twitter handle. It\'s a pointer, Mr. Reyes, not an identity.',
-      draft: 'She says she knew. She doesn\'t say the name. Give me what she had.',
-      shield: 'He paid to hide that registration five days after your daughter started asking. That is not a name — but it is a man behaving like one with something to lose.',
+      whois: 'An open WHOIS record. The registrar can confirm that in an hour.',
+      registry: 'State registry. Stillwater Media LLC, Raymond T. Callahan. That\'s your username, filed with the state. That\'s clean.',
+      html_author: 'His name in his own site\'s code, saved by an archive. Good.',
+      nightwatch: 'Two initials in a Twitter handle. That\'s a pointer, Mr. Reyes. Not a name.',
+      draft: 'She says she knew. She doesn\'t say who. I need what she had.',
+      shield: 'He paid to hide that record five days after your daughter started asking. That\'s not a name. It\'s a man with something to lose.',
       domain_tweet: 'So the account owns a website. Who owns the website?',
-      postbox: 'Handle, domain, company, mailbox — four records and they all end at the same slot in the same post office. That is one man, Mr. Reyes. It is not yet a name.',
-      chain_sheet: 'Your daughter drew the same diagram I would have drawn. It is good work and it is not a document. Bring me one of the records on it.',
-      priya_words: 'Two letters in the margin of a notebook. I know what she meant by them. A judge will ask me how I know.',
-      burned_page: 'She wrote that she had found him. She did not write down who he was. I need what she had, not what she concluded.',
-      corey_flickr: 'That is a file on a different man, and your daughter stopped believing it before you did.',
-      corey_alibi: 'That clears Marsh. Clearing one man does not name another.',
-      arts_domain: 'A company is not a person. Who files the paperwork for it?',
-      map_three: 'Three pins and a piece of string. It tells me where. It does not tell me who.',
-      wayback_index: 'Capture dates tell me when a page changed. They do not tell me whose page it was.',
-      rosa: 'A reporter\'s details. That is a phone call you can make, not evidence I can act on.',
+      postbox: 'Four records, one post office box. That\'s one man. It\'s not a name yet.',
+      chain_sheet: 'Your daughter drew the diagram I\'d have drawn. It\'s good work. It\'s not a document. Give me one of the records on it.',
+      priya_words: 'Two letters in the margin of a notebook. I know what she meant. A judge will ask how.',
+      burned_page: 'She wrote that she\'d found him. She didn\'t write who. I need what she had.',
+      corey_flickr: 'That\'s a file on a different man. Your daughter stopped believing it before you did.',
+      corey_alibi: 'That clears Marsh. Clearing one man doesn\'t name another.',
+      arts_domain: 'A company isn\'t a person. Who files its paperwork?',
+      map_three: 'Three pins and some string. That\'s where. Not who.',
+      wayback_index: 'Capture dates tell me when a page changed. Not whose page it is.',
+      rosa: 'A reporter\'s details. That\'s a call you can make. It\'s not evidence.',
     },
     fallback: 'That doesn\'t tell me who runs the account.',
   },
@@ -397,22 +420,22 @@ export const FINAL_SLOTS = [
     question: 'Put him at Lena\'s last known location',
     weights: { flickr_gps: 1, courier: 1, same_room: 0.75, table_sign: 0.75, arts_domain: 0.5, map_three: 0.5, building_owner: 0.25 },
     reactions: {
-      flickr_gps: 'GPS in his own photos — the venue, eight-eleven, the night she vanished. That\'s placement.',
+      flickr_gps: 'GPS in his own photos. The hall, eight-eleven, the night she vanished. That\'s placement.',
       courier: 'The Courier credits him as the event photographer. Printed, dated, public. That\'s placement.',
-      table_sign: 'A company sign on a table in a photograph. It puts the business in the room. I would want the man.',
-      same_room: 'Seven forty-seven. Everyone in the hall for her talk, and his kit left in an empty room. He wasn\'t photographing the talk. That\'s opportunity.',
+      table_sign: 'A company sign on a table in a photo. That puts the business in the room. I want the man.',
+      same_room: 'Seven forty-seven. Everyone\'s in the hall for her talk, and his kit\'s in an empty room. He wasn\'t shooting the talk. That\'s opportunity.',
       building_owner: 'Owning a building isn\'t being in it.',
-      arts_domain: 'The registry and the paper name the same business, and the paper puts that business in the hall that night. It places the company. Give me the man and I can use it.',
-      map_three: 'Three places, joined in red, and the middle one is the hall. I want to know who put the pins in before I take it to a judge — but it is the right shape.',
-      postbox: 'A post office box is an address for letters. She did not disappear from a post office.',
-      chain_sheet: 'A diagram of what connects to what. None of it is a sighting.',
-      priya_words: 'That is somebody quoting a statement. It does not put him in the room.',
-      no_source: 'He knew things he should not have known. Knowing is not standing there.',
-      burned_page: 'Her notebook puts her on his trail. It does not put him at the venue.',
+      arts_domain: 'The registry and the paper name the same business, and the paper puts it in the hall that night. That places the company. Give me the man.',
+      map_three: 'Three places joined in red, and the middle one\'s the hall. I\'d want to know who put the pins in. But it\'s the right shape.',
+      postbox: 'A PO box is where letters go. She didn\'t vanish from a post office.',
+      chain_sheet: 'A diagram of what connects to what. None of it\'s a sighting.',
+      priya_words: 'That\'s someone quoting a statement. It doesn\'t put him in the room.',
+      no_source: 'He knew things he shouldn\'t have. Knowing isn\'t being there.',
+      burned_page: 'Her notebook puts her on his trail. It doesn\'t put him at the hall.',
       corey_flickr: 'Wrong man, wrong place.',
-      corey_alibi: 'That puts Marsh in a body shop in Tigard. I am asking about the arts night.',
-      wayback_index: 'An archive crawler was there. He is what I need.',
-      rosa: 'A journalist\'s email is not a location.',
+      corey_alibi: 'That puts Marsh in a body shop in Tigard. I\'m asking about the arts night.',
+      wayback_index: 'An archive crawler was there. I need him.',
+      rosa: 'A journalist\'s email isn\'t a location.',
     },
     fallback: 'That doesn\'t put him at the arts night.',
   },
@@ -423,22 +446,22 @@ export const FINAL_SLOTS = [
     weights: { court: 1, sealed: 0.75, insider: 0.75, no_source: 0.75, priya_words: 0.75, key_wifi: 0.5, draft: 0.5, burned_page: 0.25, deleted: 0.25 },
     reactions: {
       court: 'MH-2021-0384. Fake accounts, reading her email, turning up where only her messages said she\'d be. Same playbook. That gets a warrant signed tonight.',
-      sealed: 'He quoted a sealed police statement. That\'s access he should never have had.',
-      insider: 'He knew her roommate\'s name and her routes before anyone published them. That\'s knowledge he shouldn\'t have.',
-      key_wifi: 'He has a key to your house. That\'s access. It isn\'t conduct.',
-      draft: 'A frightened letter. It isn\'t a pattern.',
+      sealed: 'He quoted a sealed police statement. He should never have had that.',
+      insider: 'Her flatmate\'s name and her routes, before anyone printed them. He shouldn\'t have known that.',
+      key_wifi: 'He has a key to your house. That\'s access. It\'s not conduct.',
+      draft: 'A frightened letter. It\'s not a pattern.',
       deleted: 'People delete accounts every day.',
-      no_source: 'You sourced every claim he made and two of them come from nowhere a member of the public could reach — and in between them he handed the thread a suspect. That is not a man following a case. That is a man steering one.',
-      priya_words: 'He used the flatmate\'s own words before anybody outside the station had them. That is not a coincidence, that is access.',
-      burned_page: 'Your daughter flagged that account in November, before anyone else looked at it twice. I take her judgement seriously. It\'s still not proof of what he did.',
-      postbox: 'Renting a mailbox is not a pattern of behaviour.',
-      chain_sheet: 'The diagram shows me the structure. I need the history.',
-      arts_domain: 'Registering a company is not conduct.',
-      map_three: 'Three locations. Show me what he did at them.',
-      corey_flickr: 'That is a file on the ex-boyfriend. It is a pattern of your daughter\'s suspicion, not his.',
-      corey_alibi: 'Marsh was at work. That is the end of Marsh, not the start of anybody else.',
-      wayback_index: 'Four captures of a web page. It is how you prove a change, not a character.',
-      rosa: 'Talk to her by all means. It is not evidence.',
+      no_source: 'You sourced every claim he made. Two come from nowhere the public could reach, and in between he hands the forum a suspect. He wasn\'t following that case. He was steering it.',
+      priya_words: 'He used the flatmate\'s own words before anyone outside the station had them. That\'s not luck. That\'s access.',
+      burned_page: 'Your daughter flagged that account in November, before anyone looked twice. I take her seriously. It\'s still not proof.',
+      postbox: 'Renting a mailbox isn\'t a pattern.',
+      chain_sheet: 'The diagram shows me how it fits. I need his history.',
+      arts_domain: 'Registering a company isn\'t conduct.',
+      map_three: 'Three places. Show me what he did at them.',
+      corey_flickr: 'That\'s a file on the ex. It shows me her suspicion, not his behaviour.',
+      corey_alibi: 'Marsh was at work. That\'s the end of Marsh. It\'s not the start of anyone else.',
+      wayback_index: 'Four captures of a web page. That proves a change, not a character.',
+      rosa: 'Talk to her, by all means. It\'s not evidence.',
     },
     fallback: 'That doesn\'t show me a pattern.',
   },
@@ -446,13 +469,13 @@ export const FINAL_SLOTS = [
 
 // Okafor has something specific to say about the near-misses too
 const DECOY_REACTIONS = {
-  arts_domain: 'That domain belongs to the arts collective, and it\'s privacy-shielded. Dead end.',
-  wayback_index: 'Capture counts tell me a crawler visited a web page. They don\'t tell me who wrote it.',
+  arts_domain: 'That domain\'s the arts collective\'s, and it\'s shielded. Dead end.',
+  wayback_index: 'Capture counts tell me a crawler visited. Not who wrote the page.',
   chain_sheet: 'A diagram she drew for herself. I can\'t take a diagram to a judge.',
   // G-4: these two had no reaction at all — pinning them got a generic
   // shrug, which reads as a bug rather than a dead end.
-  corey_flickr: 'The ex. Your daughter cleared him in January and so did we. Somebody wanted him looked at. That somebody is the case.',
-  rosa: 'A reporter\'s contact details. I have no objection to her, Mr. Reyes, but she is not evidence.',
+  corey_flickr: 'The ex. Your daughter cleared him in January. So did we. Somebody wanted him looked at. That somebody is the case.',
+  rosa: 'A reporter\'s details. Nothing against her, Mr. Reyes. She\'s not evidence.',
 }
 FINAL_SLOTS.forEach(slot => { slot.reactions = { ...DECOY_REACTIONS, ...slot.reactions } })
 

@@ -12,9 +12,19 @@ const PHASE_AUDIO = {
   ending: 'ending',
 }
 
+// The score over the room tone: one theme, five treatments.
+const PHASE_SCORE = {
+  menu: 'theme',
+  story: 'theme',
+  apartment: 'apartment',
+  investigation: 'investigation',
+  convergence: 'convergence',
+  ending: 'ending',
+}
+
 export function AudioManager() {
   const phase = useGameStore(s => s.phase)
-  const { playAmbient, stopAmbient, initAudio } = useAudio()
+  const { playAmbient, stopAmbient, initAudio, playScore } = useAudio()
   const currentTrack = useRef(null)
 
   // Initialize audio on first user interaction
@@ -31,6 +41,19 @@ export function AudioManager() {
       document.removeEventListener('keydown', handleInteraction)
     }
   }, [initAudio])
+
+  // The score follows the phase, and starts on the first gesture if the
+  // browser wouldn't let it start sooner.
+  useEffect(() => {
+    const start = () => playScore(PHASE_SCORE[phase])
+    start()
+    document.addEventListener('pointerdown', start, { once: true })
+    document.addEventListener('keydown', start, { once: true })
+    return () => {
+      document.removeEventListener('pointerdown', start)
+      document.removeEventListener('keydown', start)
+    }
+  }, [phase, playScore])
 
   // Change ambient based on phase
   useEffect(() => {

@@ -119,9 +119,11 @@ export function CaseNotes({ onClose }) {
         <div className="flex-1 overflow-y-scroll px-6 py-5" style={{ WebkitOverflowScrolling: 'touch' }}>
           {tab === 'cast' && (
             <div className="space-y-4">
+              {/* Ray's entry used to be edged in red from the first minute, next to
+                  everyone else's brown. It turns red when a record names him. */}
               {cast.map(person => (
                 <div key={person.id} className="border-l-2 pl-4 py-1"
-                  style={{ borderColor: person.id === 'ray' ? '#8a1410' : '#4a3f2c' }}>
+                  style={{ borderColor: person.namedAs && person.name === person.namedAs ? '#8a1410' : '#4a3f2c' }}>
                   <div className="text-[#ecdfc4] text-lg leading-tight"
                     style={{ fontFamily: "'Crimson Pro', Georgia, serif" }}>{person.name}</div>
                   <div className="font-mono text-[12px] tracking-[0.1em] uppercase text-[#b9a67d] mt-1">

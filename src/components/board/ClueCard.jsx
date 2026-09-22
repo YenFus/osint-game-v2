@@ -25,7 +25,25 @@ import { PolaroidArt } from './PolaroidArt'
 // how long the banner stays when nobody is pointing at or focused on it
 const BANNER_MS = 9000
 
-export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true }) {
+// Finishing a lead used to drop you back on the board with no word on what
+// had changed. The card now says which leads just appeared, and which of them
+// is waiting on another thread first.
+const THREAD_NAME = { A: 'her laptop', B: 'her notebook', C: 'her corkboard' }
+function Opened({ opened }) {
+  if (!opened?.length) return null
+  return (
+    <div className="cc-opened">
+      <span>{opened.length === 1 ? 'New lead on the board' : `${opened.length} new leads on the board`}</span>
+      <ul>
+        {opened.map(o => (
+          <li key={o.id}>{o.title}{o.waits && <em> — after something in {THREAD_NAME[o.waits]}</em>}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true, opened = [] }) {
   const clue = CLUES[clueId]
   const quiet = useAccessibilityStore(s => s.quietClues)
   const setQuiet = useAccessibilityStore(s => s.setQuietClues)
@@ -72,7 +90,7 @@ export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true })
         <div className="cc-banner-text">
           <span className="cc-k">New note</span>
           <strong className="cc-banner-title">{clue.title}</strong>
-          <span className="cc-banner-src">from {clue.source}</span>
+          <span className="cc-banner-src">from {clue.source}{opened.length > 0 && ` · ${opened.length} new lead${opened.length > 1 ? 's' : ''}`}</span>
         </div>
         <button type="button" className="cc-banner-ok" onClick={take}>Got it</button>
       </div>
@@ -92,6 +110,7 @@ export function ClueCard({ clueId, onDone, offerQuiet = false, showHow = true })
           </div>
         </div>
         <div className="cc-src"><span>Where it came from</span>{clue.source}</div>
+        <Opened opened={opened} />
         {/* the how-to is for the first couple of notes; after that it's just more to read */}
         {showHow && (
           <p className="cc-how">

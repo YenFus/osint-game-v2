@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { endingsFound, ENDING_IDS } from '../store/endingsFound'
 import { useGameStore } from '../store/gameStore'
 import OSINTGuide from '../components/OSINTGuide'
 import { SaveLoadModal } from '../components/SaveLoadModal'
@@ -142,6 +143,16 @@ export default function MainMenuPage() {
           ))}
         </div>
 
+        {/* How many of the endings this browser has reached — only once there's one */}
+        {(() => {
+          const n = endingsFound().length
+          return n > 0 && (
+            <div className="fade-in mt-6 font-mono text-xs tracking-[0.18em] uppercase text-[#b8a888] text-center" style={{ animationDelay: '1.3s', opacity: 0 }}>
+              Endings found · {n} of {ENDING_IDS.length}
+            </div>
+          )
+        })()}
+
         {/* Footer */}
         <div className="fade-in mt-8 sm:mt-16 text-center" style={{ animationDelay: '1.4s', opacity: 0 }}>
           <p className="font-mono text-xs text-[#706868] tracking-wide uppercase">
@@ -168,16 +179,21 @@ export default function MainMenuPage() {
             </div>
             <div className="space-y-4 text-[#9a9088] text-sm leading-relaxed">
               <p>
-                <strong className="text-[#d5cdb8]">What Maya Knew</strong> is a noir investigation game about online safety, digital footprints, and what we unknowingly reveal about ourselves on the internet.
+                <strong className="text-[#d5cdb8]">What Maya Knew</strong> is an investigation game about online safety, digital footprints, and what we unknowingly reveal about ourselves on the internet.
               </p>
               <p>
                 You play as Thomas Reyes, a father searching for his missing daughter Maya — and uncovering the secret investigation she left behind.
               </p>
-              <p className="font-mono text-[12px] text-[#5a4848] border-l-2 border-red-900 pl-3">
+              <p className="font-mono text-[12px] text-[#b89a92] border-l-2 border-red-900 pl-3">
                 Content warnings: Missing persons, stalking, online predators, emotional distress. This game is fictional but grounded in real OSINT techniques.
               </p>
               <p>
                 All investigation tools in the game are <strong className="text-[#d5cdb8]">simulated</strong>. No real personal data is accessed or displayed.
+              </p>
+              <p className="text-[12px] text-[#8a8078] border-t border-[#1e1e2a] pt-3">
+                Music written for the game, played on VSCO 2 Community Edition samples (Versilian Studios; piano by Simon Dalzell, Ivy Audio), CC0.
+                Sound effects from Freesound contributors (CC0) and Kenney (CC0); tack into cork by pfranzen, CC BY 4.0.
+                Maya&apos;s voice: Kokoro-82M. Photographs made locally with FLUX.1-schnell.
               </p>
             </div>
           </div>

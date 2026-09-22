@@ -48,3 +48,6 @@ Untitled.blend1
 art/flux-test/
 art/*.blend
 .venv-tts/
+
+# Python bytecode
+__pycache__/

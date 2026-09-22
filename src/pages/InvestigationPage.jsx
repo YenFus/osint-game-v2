@@ -6,6 +6,7 @@ import { GAME_DATA } from '../data/gameData'
 import { withMeta } from '../data/leadMeta'
 import { LEAD_TIME_COST, HINT_COST, THREAD_INFO as THREADS, NAME_CLUES } from '../data/caseData'
 import { useAudio } from '../hooks/useAudio'
+import '../styles/skins.css'
 
 import { NavigateNode } from '../components/nodes/NavigateNode'
 import { TagNode } from '../components/nodes/TagNode'
@@ -91,6 +92,7 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
   const dialogRef = useRef(null)
   useModalFocus(dialogRef)
   const buyHint = useGameStore(s => s.buyHint)
+  const { playSFX } = useAudio()
   const [hintShown, setHintShown] = useState(false)
   const [manualOpen, setManualOpen] = useState(false)
   // Every lead opens on a short briefing: what you already know, where each
@@ -154,7 +156,7 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
               )}
               <div className="lob-go">
                 <div className="lob-task"><span>Your job</span>{task}</div>
-                <button type="button" className="lob-start" onClick={() => setStage('work')} ref={startRef}>Start</button>
+                <button type="button" className="lob-start" onClick={() => { playSFX('pageTurn'); setStage('work') }} ref={startRef}>Start</button>
               </div>
             </div>
           </div>
@@ -194,7 +196,7 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
               </div>
             )}
             {hintShown && <div className="lo-hint" role="status"><span className="lo-hint-k">Hint</span> {node.hint}</div>}
-            <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
+            <div className={`flex-1 min-h-0 flex flex-col overflow-hidden relative src-skin ${node.skin ? `skin-${node.skin}` : ''}`} data-source={node.sourceLabel}>
               {Renderer && (
                 <Renderer
                   key={`${node.id}-${isReviewing ? 'review' : 'active'}`}
@@ -270,9 +272,19 @@ export default function InvestigationPage() {
       source: node.tool,
     })
     actions.addTime(LEAD_TIME_COST[node.type] ?? 15, 'lead')
+    // what finishing this puts on the board, so the card can say where to go next
+    const opened = (node.unlocks || [])
+      .filter(id => !st.paths[pathKey].unlockedNodes.includes(id))
+      .map(id => GAME_DATA[pathKey].nodes.find(n => n.id === id))
+      .filter(Boolean)
+      .map(n => {
+        const req = n.requiresCompleted
+        const waits = req && !st.paths[req.path]?.completedNodes?.includes(req.nodeId)
+        return { id: n.id, title: n.title, waits: waits ? req.path : null }
+      })
     if (node.clue && !st.clues.includes(node.clue)) {
       actions.addClue(node.clue)
-      setClueQueue(q => [...q, node.clue])
+      setClueQueue(q => [...q, { clueId: node.clue, opened }])
       setTimeout(() => playSFX('pin'), 500)
     }
     if (node.raySuspicion) {
@@ -325,7 +337,7 @@ export default function InvestigationPage() {
           was covered by a text message. */}
       {/* then the note the lead just gave you, then Ray */}
       {!node && !revealPending && clueQueue.length > 0 && (
-        <ClueCard key={clueQueue[0]} clueId={clueQueue[0]} offerQuiet={st.clues.length >= 4} showHow={st.clues.length <= 2} onDone={() => setClueQueue(q => q.slice(1))} />
+        <ClueCard key={clueQueue[0].clueId} clueId={clueQueue[0].clueId} opened={clueQueue[0].opened} offerQuiet={st.clues.length >= 4} showHow={st.clues.length <= 2} onDone={() => setClueQueue(q => q.slice(1))} />
       )}
       {!node && st.rayBeatPending && !revealPending && clueQueue.length === 0 && (
         <RayPhone

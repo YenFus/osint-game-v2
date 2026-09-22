@@ -5,6 +5,7 @@
 //   summary: one-line takeaway written into the journal
 //   card:    how the lead is pinned on the Case Board
 //   raySuspicion: unease added when finished (Ray watches for this)
+//   skin:    how its source looks — a Reddit page, a WHOIS terminal (styles/skins.css)
 //   brief:   what the lead relies on, and where each fact came from — shown
 //            in the lead header so no fact arrives without a source
 //
@@ -18,18 +19,20 @@
 export const LEAD_META = {
   // ── THREAD A — the laptop ──
   A1: {
-    brief: [{ fact: 'Lena Vasquez, 29, has been missing since the Millhaven Arts Night on 13 April last year.', from: 'the forum page open on Maya\'s laptop' }],
+    brief: [{ fact: 'Lena Vasquez, 29, has been missing since the Millhaven Arts Night on 13 April last year.', from: 'the forum page open on Maya\'s laptop' }, { fact: 'Someone tried her password three times at 8:04 on Monday, twelve minutes after her voicemail.', from: 'the laptop\'s lock screen' }],
     clue: 'corey_flickr', card: { kind: 'polaroid', scene: 'laptop' },
     hint: 'Open the INVESTIGATION folder. Two files matter: the one about Corey in suspect_research, and the note Maya told herself never to delete.',
     summary: 'Maya was investigating a forum account called stillwater_m. It knew private things about a missing woman, Lena Vasquez. Her first suspect was Lena\'s ex, Corey Marsh. She never said a word to me.',
   },
   A2: {
-    brief: [{ fact: 'Maya wrote that the forum account stillwater_m knew things that were never public.', from: 'NOTES_DO_NOT_DELETE.txt, on Maya\'s laptop' }, { fact: 'Already public: Lena\'s name, the arts night, the coffee-shop sightings, and Corey\'s name.', from: 'the news, and the forum itself' }],
+    skin: 'reddit', sourceLabel: 'reddit.com/user/stillwater_m',
+    brief: [{ fact: 'Maya wrote that the forum account stillwater_m knew things that were never public. He posts under the same name on Reddit, in r/PDXmissing.', from: 'NOTES_DO_NOT_DELETE.txt, and Maya\'s bookmarks' }, { fact: 'Already public: Lena\'s name, the arts night, the coffee-shop sightings, and Corey\'s name.', from: 'the news, and the forum itself' }],
     clue: 'insider', card: { kind: 'index', scene: 'forum' },
     hint: 'Ignore the tone. Look for things only someone close to Lena could know: a weekly routine, a timetable, a first name. There are three.',
-    summary: 'In four months of posts he mentioned her Tuesday route, her class schedule and her flatmate\'s first name. None of that was ever public.',
+    summary: 'In under three months of posts he mentioned her Tuesday route, her class schedule and her flatmate\'s first name. None of that was ever public.',
   },
   A3: {
+    skin: 'scanner', sourceLabel: 'username scan · 6 platforms',
     brief: [{ fact: 'On 31 January Maya asked the forum who stillwater_m really was.', from: 'NOTES_DO_NOT_DELETE.txt' }, { fact: 'Back in December she wrote down what she\'d do if his Flickr went private.', from: 'username_scan_results_OLD.txt, on Maya\'s laptop' }],
     clue: 'deleted', card: { kind: 'index', scene: 'phone' },
     hint: 'Q1: the scan and Maya\'s notes both show which account disappeared completely. Q2: her December scan notes (on her laptop) say what she\'d use if his Flickr went private — the Wayback Machine.',
@@ -42,12 +45,14 @@ export const LEAD_META = {
     summary: 'His own photos put him on the waterfront two streets from Lena\'s flat the night before she vanished — and inside the arts night hall the evening she did.',
   },
   A6: {
+    skin: 'wayback', sourceLabel: 'web.archive.org · twitter.com/stillwater_m',
     brief: [{ fact: 'Maya posted her first question on the PDXmissing forum on 4 November.', from: 'NOTES_DO_NOT_DELETE.txt' }, { fact: 'The Wayback Machine saved his Twitter page on 2 September, and again on 14 November.', from: 'the archive' }],
     clue: 'domain_tweet', card: { kind: 'index', scene: 'phone' },
     hint: 'Read the September column against the November one, line by line. Two posts were deleted. Two lines were quietly edited: one in his bio, one in an old post.',
     summary: 'Between September and November he deleted the post saying he worked the arts night and the post announcing his website, and took his town out of his bio and an old post.',
   },
   A7: {
+    skin: 'whois', sourceLabel: 'whois stillwater-media.net',
     brief: [{ fact: 'stillwater-media.net is the website he announced on Twitter.', from: 'his Twitter, archived' }, { fact: 'Maya posted her first question on the forum on 4 November.', from: 'NOTES_DO_NOT_DELETE.txt' }],
     clue: 'shield', card: { kind: 'index', scene: 'shielded' },
     hint: 'The name is hidden — that\'s what a privacy shield does. Flag the shield itself, the date it went up, and the two details it didn\'t hide.',
@@ -63,7 +68,7 @@ export const LEAD_META = {
     clue: 'nightwatch', card: { kind: 'index', scene: 'phone' },
     hint: 'Pick a detail on one side, then the matching one on the other. Three match exactly: a date, a picture and a follow list. The bio and the hours back it up.',
     summary: 'A silent second account, @nightwatch_rc, made the same day he hid his name. It uses a crop of his own photo and follows Corey Marsh.',
-    brief: [{ fact: 'He hid his website registration on 9 November, five days after Maya\'s first forum post.', from: 'Maya\'s WHOIS lookup, saved on her laptop' }, { fact: 'Maya logged all 104 of his forum posts. 91 went up between 11pm and 2am.', from: 'Maya\'s post log, on her laptop' }],
+    brief: [{ fact: 'He hid his website registration on 9 November, five days after Maya\'s first forum post.', from: 'Maya\'s WHOIS lookup, saved on her laptop' }, { fact: '91 of his 104 forum posts went up between 11pm and 2am.', from: 'Maya\'s post log, on her laptop' }],
   },
   A11: {
     clue: 'postbox', card: { kind: 'index', scene: 'yarn' },
@@ -72,6 +77,7 @@ export const LEAD_META = {
     brief: [{ fact: 'His website is registered to a company, Stillwater Media, at PO Box 441, Millhaven.', from: 'the WHOIS lookup' }, { fact: 'A silent Twitter account, @nightwatch_rc, follows the company\'s page.', from: 'his archived Twitter follows' }],
   },
   A12: {
+    skin: 'whois', sourceLabel: 'whois-history stillwater-media.net',
     brief: [{ fact: 'The registration was hidden on 9 November — five days after Maya\'s first forum post.', from: 'the WHOIS lookup' }],
     clue: 'whois', card: { kind: 'index', scene: 'domain' },
     hint: 'Read the two snapshots row by row. There are eight fields. Five are the same in September and November. Three changed: the privacy setting, the owner\'s name, and the date it was last updated.',
@@ -98,6 +104,7 @@ export const LEAD_META = {
     summary: 'He spent months pushing the forum toward Corey Marsh — and twice he mentioned things that weren\'t public anywhere.',
   },
   B4: {
+    skin: 'statement',
     brief: [{ fact: 'Priya, Lena\'s flatmate, gave Maya a copy of her police statement. It was never released.', from: 'Maya\'s notebook, December' }],
     clue: 'sealed', card: { kind: 'index', scene: 'forum' },
     hint: 'Pick one of his posts, then the line in Priya\'s statement that says the same thing. Start with her name, then the words in quotation marks.',
@@ -170,6 +177,7 @@ export const LEAD_META = {
     summary: 'Stillwater Media LLC and the Alder Hall Trust are both registered to the same man at the same postbox: Raymond T. Callahan. The company behind the account — and the hall where Lena vanished.',
   },
   C6: {
+    skin: 'court',
     brief: [{ fact: 'The Courier printed case number MH-2021-0384 but left out the names.', from: 'the Courier archive' }],
     clue: 'court', card: { kind: 'index', scene: 'court' }, raySuspicion: 10,
     hint: 'It\'s the same case in two documents. Compare them line by line. Four lines are different, and each is something the newspaper chose not to print.',

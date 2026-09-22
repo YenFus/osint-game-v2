@@ -56,14 +56,14 @@ export function ApartmentArt({ className, style, fit = 'slice' }) {
 // Registered against public/art/apartment-room.jpg. Re-measure if the
 // plate is re-rolled with scripts/gen_art.py.
 const ROOM_HOTSPOTS = [
-  // Measured against public/art/apartment-room.jpg with the
-  // viewBox matching the plate, so these land on the objects themselves.
-  { path: 'A', x: 52.5, y: 46, w: 9.5, h: 11, label: 'Her laptop', sub: 'still open, still on' },
-  // B is the chest by the bed, where the burned notebook was found; A and C
-  // are the desk and the pinboard on the far wall. All three measured off the
-  // photograph, and every label is drawn at once on touch, so B hangs above.
-  { path: 'B', x: 5, y: 64, w: 16, h: 12, label: 'The notebook', sub: 'half burned, under a stack of paper', tagAbove: true },
-  { path: 'C', x: 76, y: 19, w: 10.5, h: 34, label: 'Her pinboard', sub: 'photographs, string, notes' },
+  // Measured against public/art/apartment-room.jpg (seed 417, 1344x896) with
+  // the viewBox matching the plate, so these land on the objects themselves.
+  { path: 'A', x: 53, y: 54.5, w: 17, h: 19, label: 'Her laptop', sub: 'locked · someone tried to get in' },
+  // B is the notebook on her bed, half under her papers; A is the desk and C
+  // the corkboard filling the wall above it. Every label is drawn at once on
+  // touch, so B hangs above.
+  { path: 'B', x: 9, y: 71, w: 16, h: 10, label: 'The notebook', sub: 'half burned, on her bed', tagAbove: true },
+  { path: 'C', x: 55, y: 5, w: 43, h: 46, label: 'Her corkboard', sub: 'photographs, string, notes', tagIn: true },
 ]
 
 export function ApartmentRoom({ paths, onPick }) {
@@ -77,7 +77,7 @@ export function ApartmentRoom({ paths, onPick }) {
         return (
           <button
             key={h.path}
-            className={`room-hot ${done ? 'done' : started ? 'started' : ''} ${h.tagAbove ? 'tag-above' : ''}`}
+            className={`room-hot ${done ? 'done' : started ? 'started' : ''} ${h.tagAbove ? 'tag-above' : ''} ${h.tagIn ? 'tag-in' : ''}`}
             style={{ left: `${h.x}%`, top: `${h.y}%`, width: `${h.w}%`, height: `${h.h}%` }}
             onClick={() => onPick(h.path)}
             aria-label={`${h.label} — ${done ? 'thread closed' : started ? 'in progress' : 'not yet examined'}`}

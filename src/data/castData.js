@@ -24,9 +24,9 @@ export const CAST = [
     // The surname arrives from a record, late, and this entry changes with it.
     name: 'Ray',
     namedAs: 'Raymond T. Callahan',
-    namedLine: "Thirty years. Maya's godfather. He has a key to my house and knows my WiFi password. And I've just read his full name on a state filing.",
+    namedLine: "Thirty years. Maya's godfather. He taught her to drive. And I've just read his full name on a record behind that account.",
     relation: 'My oldest friend',
-    line: "Thirty years. Maya's godfather. He has a key to my house and knows my WiFi password.",
+    line: "Thirty years. Maya's godfather. He taught her to drive, and he's never once forgotten her birthday.",
     from: 'prologue',
   },
   {

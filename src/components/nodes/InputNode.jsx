@@ -68,7 +68,8 @@ export function InputNode({ content, onComplete, nodeId = null }) {
   const feedbackRef = useRef(null)
 
   useEffect(() => {
-    if (inputRef.current && !allDone) inputRef.current.focus()
+    // don't scroll to the field: the records it asks about sit above it now
+    if (inputRef.current && !allDone) inputRef.current.focus({ preventScroll: true })
   }, [questionIndex, allDone])
 
   const currentQ = content.questions[questionIndex]

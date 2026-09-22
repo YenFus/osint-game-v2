@@ -10,8 +10,8 @@ const ITEMS = [
     id: 'laptop',
     label: "Maya's Laptop",
     path: 'A',
-    desc: 'Still switched on. She was in the middle of something.',
-    hint: 'On her desk. Still switched on.',
+    desc: 'Locked. The screen says three wrong passwords, Monday at 8:04am. That wasn\'t her.',
+    hint: 'On her desk. Someone tried to get into it.',
     // position in the room
     style: { bottom: '28%', right: '19%' },
     // Path preview info
@@ -25,8 +25,8 @@ const ITEMS = [
     id: 'notebook',
     label: 'Burned Notebook',
     path: 'B',
-    desc: "Under a pile of papers by her bed. Somebody tried to burn it. Not all of it's gone.",
-    hint: 'By the bed, under a pile of papers. Half burned.',
+    desc: "On her bed, half under her papers. Somebody set it alight and left. The smoke alarm's lying on the floor.",
+    hint: 'On her bed, under some papers. Half burned.',
     style: { bottom: '22%', left: '12%' },
     preview: {
       focus: 'Private Notes',

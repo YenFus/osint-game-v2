@@ -112,6 +112,7 @@ export function TagNode({ content, onComplete, nodeId = null }) {
     const isTaggedWrong = tagged.includes(item.id) && !required.has(item.id)
     return (
       <button
+        className="tg-flag"
         onClick={() => handleTag(item)}
         disabled={tagged.includes(item.id) || penaltyActive}
         aria-label={isTaggedCorrect ? 'Item flagged as suspicious' : isTaggedWrong ? 'Item marked as not suspicious' : 'Flag this item as suspicious'}
@@ -133,6 +134,7 @@ export function TagNode({ content, onComplete, nodeId = null }) {
     return (
       <div
         key={item.id}
+        className={`tg-row ${isTaggedCorrect ? 'got' : ''} ${isTaggedWrong ? 'miss' : ''}`}
         style={{
           padding: 'clamp(10px, 2vw, 12px) clamp(14px, 4vw, 24px)',
           borderBottom: '1px solid #0e0e18',
@@ -146,7 +148,7 @@ export function TagNode({ content, onComplete, nodeId = null }) {
           {item.username && (
             <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 12, color: '#7090a8', marginBottom: 4 }}>{item.username}</div>
           )}
-          <p style={{
+          <p className="tg-text" style={{
             fontFamily: 'Crimson Pro, serif', fontStyle: item.handwritten ? 'italic' : 'normal',
             fontSize: 15, color: isTaggedWrong ? '#8a8088' : '#d8d0c0', lineHeight: 1.55, margin: 0,
           }}>
@@ -210,7 +212,7 @@ export function TagNode({ content, onComplete, nodeId = null }) {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
+      <div className="tg-list" style={{ flex: 1, overflowY: 'auto', padding: '12px 0' }}>
         {hotspotMode && (
           <div className="photo-lead">
             <div className="photo-main">

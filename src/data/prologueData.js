@@ -43,6 +43,19 @@ export const PROLOGUE_BEATS = [
     audio: {
       src: 'audio/maya-voicemail.mp4',
       label: "Maya's voicemail, Monday 7:52am",
+      // on-screen captions, timed against the recording with Whisper
+      captions: [
+        [0.0, "Hey Dad, it's me."],
+        [2.4, 'Okay. I need to tell you something,'],
+        [4.2, "and I should've told you weeks ago. I'm sorry."],
+        [7.3, "It's about the thing I've been working on."],
+        [9.7, "I'm okay. I want you to hear me say that first."],
+        [12.4, "I'm okay."],
+        [13.2, "But if I don't call you back tonight,"],
+        [15.3, 'I need you to go to the—'],
+        [16.2, 'Hang on.'],
+        [18.5, "Someone's at the door. One sec."],
+      ],
       // exactly what the recording says (checked with a speech recogniser)
       transcript: "Hey Dad, it's me. Okay. I need to tell you something, and I should've told you weeks ago. I'm sorry. It's about the thing I've been working on. I'm okay. I want you to hear me say that first. I'm okay. But if I don't call you back tonight, I need you to go to the— Hang on. Someone's at the door. One sec.",
     },

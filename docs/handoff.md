@@ -1052,3 +1052,14 @@ Ray's deadline chip and sticky now wait for the name, his text avatar is his
 photo, the laptop open/locked contradiction is gone, the apartment photo shows
 the charred notebook and smoke alarm (seed 502), B11 has its own burned page,
 phone sliders stay on screen, and the phone briefing pins only Start.
+
+**Round 20 (2026-09-26).** Critic round 19 scored **8.3/10** (docs/critic-2026-09-23.md,
+up from 7.8). Its majors and most minors are fixed in 3c3d102 and the following
+commit, published as artifact v41: the name reveal types the name as the
+triggering record prints it; How to Play no longer names Ray; B11 is mostly
+burned and in Maya's voice; Ray's suspect card uses his photo; prologue photos
+are cut from the apartment plate; US English; one-row phone header; B2/C4 row
+headers; knock interrupts the voicemail. **Not done:** a human-recorded
+voicemail (still Kokoro af_heart), the A3 question-first split, the A6/A9
+staged reveals, trimming the 78-80-word briefings to one-line monologues, and
+the cork texture's grey tag (n2). Next step: run the critic again.

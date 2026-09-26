@@ -8,7 +8,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useModalFocus } from '../../hooks/useModalFocus'
 import { RAY_BEATS, RAY_FINAL } from '../../data/caseData'
-import { PolaroidArt } from './PolaroidArt'
 import { useAudio } from '../../hooks/useAudio'
 
 // There used to be a verdict under every reply — "He bought it", "He's
@@ -76,7 +75,9 @@ export function RayPhone({ beatId, mode = 'beat', onAnswer, onDone }) {
     <div ref={dialogRef} className="rp-root" role="dialog" aria-modal="true" aria-label="Text messages from Ray">
       <div className="rp-phone buzz">
         <div className="rp-top">
-          <div className="rp-av"><PolaroidArt scene="ray" /></div>
+          {/* his contact photo, the one on the prologue call screen — not an "RC"
+              monogram that put his surname initial on screen from lead two */}
+          <div className="rp-av"><img src={`${import.meta.env.BASE_URL}art/pro-ray.jpg`} alt="" /></div>
           <div className="rp-name">Ray</div>
           <div className="rp-sub">{typing ? 'typing…' : 'iMessage'}</div>
         </div>

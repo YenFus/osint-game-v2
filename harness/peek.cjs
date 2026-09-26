@@ -5,6 +5,7 @@
 //   SHOT_DIR=/tmp/peek node harness/peek.cjs desktop A2 A6 C6
 //   SHOT_DIR=/tmp/peek node harness/peek.cjs mobile A7
 //   ... board | reveal | call | ending   (non-lead screens)
+//   BRIEF=1 stays on each lead's briefing instead of pressing Start
 const { chromium } = require('playwright')
 const fs = require('fs')
 const path = require('path')
@@ -36,7 +37,7 @@ const seed = (p, st) => p.evaluate(s => localStorage.setItem('maya-game-v3-stora
     else st = S.atLead(id)
     await seed(p, st); await p.reload(); await p.waitForTimeout(1100)
     const start = await p.$('button.lob-start')
-    if (start && id !== 'reveal') { await start.click({ timeout: 4000 }).catch(() => {}); await p.waitForTimeout(700) }
+    if (start && id !== 'reveal' && !process.env.BRIEF) { await start.click({ timeout: 4000 }).catch(() => {}); await p.waitForTimeout(700) }
     if (id === 'reveal') await p.waitForTimeout(9500)
     if (id === 'call') await p.waitForTimeout(9000)
     const file = path.join(OUT, `${vpName}-${id}.png`)

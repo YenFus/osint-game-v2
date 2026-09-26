@@ -25,8 +25,8 @@ const ITEMS = [
     id: 'notebook',
     label: 'Burned Notebook',
     path: 'B',
-    desc: "On her bed, half under her papers. Somebody set it alight and left. The smoke alarm's lying on the floor.",
-    hint: 'On her bed, under some papers. Half burned.',
+    desc: "On her bed. Somebody set it alight, pulled the smoke alarm off the ceiling and left it lying beside it.",
+    hint: 'On her bed, next to the smoke alarm. Half burned.',
     style: { bottom: '22%', left: '12%' },
     preview: {
       focus: 'Private Notes',

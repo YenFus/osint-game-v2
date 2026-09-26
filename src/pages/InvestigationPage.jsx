@@ -154,8 +154,10 @@ function LeadOverlay({ node, pathKey, isReviewing, onClose, onComplete, onJourna
                   {facts}
                 </section>
               )}
+              <div className="lob-task"><span>Your job</span>{task}</div>
+              {/* on a phone only the button is pinned; the task scrolls with the
+                  facts, so the footer no longer sits on top of fact 2 */}
               <div className="lob-go">
-                <div className="lob-task"><span>Your job</span>{task}</div>
                 <button type="button" className="lob-start" onClick={() => { playSFX('pageTurn'); setStage('work') }} ref={startRef}>Start</button>
               </div>
             </div>

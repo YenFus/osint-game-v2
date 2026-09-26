@@ -112,20 +112,24 @@ ASSETS = {
             "ordinary evening. Slightly out of focus, taken without warning. " + CAMERA
         ),
     ),
-    # Re-rolled 2026-09-23: the old plate's corkboard held two sheets of paper
-    # while every line in the game calls it covered in photos and red string.
+    # Re-rolled twice on 2026-09-23/26: the first plate's corkboard held two
+    # sheets of paper, and the second's burned notebook read as a bare spiral.
+    # This one shows the charred notebook and the smoke alarm the text describes.
     # Hotspots in ApartmentArt.jsx are measured against this seed.
     "apartment-room": dict(
-        seed=417, w=1344, h=896,
+        seed=502, w=1344, h=896,
         prompt=(
             "iPhone photo of a young woman's small studio apartment, photographed by her "
-            "father the evening she was reported missing. Unmade bed on the left with a "
-            "scorched spiral notebook on the bedside table. A desk under the window with an "
-            "open laptop, its screen dim. On the wall beside the desk a large corkboard "
-            "covered edge to edge with pinned printouts, photographs, a street map and index "
-            "cards, joined by red string between pins. Clothes over a chair. Nobody in the "
-            "room. Evening, one desk lamp on, grey light at the window. " + CAMERA
+            "father the evening she was reported missing. In the foreground on the unmade "
+            "bed, a spiral notebook that someone set on fire: its pages charred black and "
+            "curled, a scorch mark on the blanket, loose papers around it. A white smoke "
+            "alarm lies on the floor by the bed. A desk under the window with a "
+            "closed-screen laptop. On the wall beside the desk a large corkboard covered "
+            "edge to edge with pinned printouts, photographs, a street map and index cards, "
+            "joined by red string. Clothes over a chair. Nobody in the room. Evening, one "
+            "lamp on, grey light at the window. " + CAMERA
         ),
+    ),
     ),
     ),
     "cork-surface": dict(

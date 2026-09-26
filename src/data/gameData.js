@@ -110,7 +110,7 @@ export const GAME_DATA = {
         },
         content: {
           prompt: 'Mark the words nobody published',
-          hint: 'Click the first word of a phrase, then its last word, then Mark. Look for private details: routines, names, timetables.',
+          hint: 'Pick the first word of a phrase, then its last word, then Mark. Look for private details: routines, names, timetables.',
           // Nothing on this page is marked. Six posts, every word selectable,
           // three phrases that could only have come from watching her.
           posts: [
@@ -181,7 +181,7 @@ export const GAME_DATA = {
               label: 'Username scan — stillwater_m',
               meta: 'six platforms',
               fields: [
-                ['Reddit', '200 · active — 412 posts, last one Feb 28'],
+                ['Reddit', '200 · active — 412 posts, last one Jan 30'],
                 ['Instagram', '200 · active — last post November'],
                 ['Vimeo', '200 · active — four landscape reels'],
                 ['Flickr', '403 · private — album locked Feb 3'],
@@ -293,7 +293,7 @@ export const GAME_DATA = {
         monologue: "An archive saved his Twitter page twice. Maya compared them.",
         osintTip: {
           id: 'wayback-diff',
-          title: 'Reading an Archive Against Itself',
+          title: 'Two Copies of One Page, Side by Side',
           body: 'A single archived page tells you what was there. Two captures of the same page tell you what somebody removed, and roughly when. Deletions are rarely random: people take down the things that connect them to something. The gap between two captures is often the most informative part of an account.',
           steps: [
             'Pull the capture list for the profile, not just the latest snapshot',
@@ -440,7 +440,7 @@ export const GAME_DATA = {
         title: "@nightwatch_rc and stillwater_m",
         tool: 'Twitter Archive',
         timestamp: { text: 'Maya\'s research — January', urgent: false },
-        monologue: "He follows 47 accounts. One has never posted. Maya opened it.",
+        monologue: "He follows 47 accounts. One has never posted. Maya saved its page.",
         osintTip: {
           id: 'sock-puppets',
           title: 'Tying a Quiet Account to a Loud One',
@@ -727,7 +727,7 @@ export const GAME_DATA = {
         monologue: "Maya went through the forum post by post, like a court file.",
         osintTip: {
           id: 'forum-archive',
-          title: 'Reading an Account Against the Public Record',
+          title: 'Checking an Account Next to What Was Public',
           body: 'Forum archives are easy to collect and hard to use. The useful pass is not "which post sounds sinister" — tone proves nothing — but "what does this post contain, and where else does that detail exist?" Build the public record first: press releases, published statements, what the forum itself already said and on what date. Then every claim either has a public source or it does not, and the ones that do not are the whole case.',
           steps: [
             'Pull the account\'s full post history with dates',
@@ -935,6 +935,8 @@ export const GAME_DATA = {
         monologue: "The last pages. The fire got most of them.",
         systemAlertAfter: true,
         content: {
+          // presentation only: the last pages are the ones the fire reached
+          paper: 'last',
           pages: [
             {
               id: 'b-p13',

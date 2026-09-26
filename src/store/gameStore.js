@@ -234,7 +234,7 @@ export const useGameStore = create(
       addSuspicion: (amount) => {
         const { next, crossed } = shiftSuspicion(get().raySuspicion, amount)
         set({ raySuspicion: next })
-        crossed.forEach((s, i) => setTimeout(() => get().addNotification(s.text, 'warning'), 1200 + i * 1500))
+        crossed.forEach((s, i) => setTimeout(() => get().addNotification(s.text, 'info'), 1200 + i * 1500))
       },
 
       // Called after a lead completes — queues the next message if due
@@ -263,7 +263,7 @@ export const useGameStore = create(
           rayLog: [...state.rayLog, { id: beatId, choice: optionIndex }],
           raySuspicion: next,
         })
-        crossed.forEach((s, i) => setTimeout(() => get().addNotification(s.text, 'warning'), 1200 + i * 1500))
+        crossed.forEach((s, i) => setTimeout(() => get().addNotification(s.text, 'info'), 1200 + i * 1500))
       },
 
       // ── Journal ──────────────────────────────────────────────────

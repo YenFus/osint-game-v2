@@ -507,7 +507,7 @@ const TUT = [
   { h: 'Your wall.', p: 'Maya\'s case is on this wall now. I\'ll work it the way I used to.' },
   { h: 'Leads.', p: 'Each card is a lead from her flat. Open one to look into it. Finishing it can open more.', target: '[data-yarn^="lead-"]' },
   { h: 'Theories.', p: 'Each lead gives you a note. Pin notes under a thread\'s questions, then test your theory. It tells you how many are right. Some questions only appear once you\'ve read enough.', target: '.thread-deds' },
-  { h: 'The clock.', p: 'Maya\'s been gone almost 59 hours. Wrong answers, failed theories and hints cost time.', target: '.hud-clock' },
+  { h: 'The clock.', p: 'Maya\'s been gone almost 59 hours. Every lead takes time, and wrong answers, failed theories and hints take more. Whoever has her won\'t wait all night.', target: '.hud-clock' },
 ]
 function useSpot(selector) {
   const [rect, setRect] = useState(null)
@@ -777,7 +777,10 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
           <h1 className="hand" style={{ font: 'inherit', margin: 0 }}>Where is Maya?</h1>
           <div className="type">Case board · {closedCount}/3 threads closed</div>
         </div>
-        <RayChip active={s.rayLog.length > 0} minutesLeft={minutesLeft} gone={gone} named={named} />
+        {/* Before a record names him, a countdown that appeared the moment Ray
+            said "Seattle, Thursday" and jumped when he said "a bit earlier" was
+            the friend and the clock drawn as one man. It waits for the name. */}
+        <RayChip active={named && s.rayLog.length > 0} minutesLeft={minutesLeft} gone={gone} named={named} />
         <ClockHUD clock={s.clock} lastTimeDelta={s.lastTimeDelta} />
         <button className="cb-btn" onClick={onJournal}>Journal</button>
         <button className="cb-btn" onClick={onSave} title="Save (Ctrl/Cmd+S)">Save</button>
@@ -817,7 +820,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
                   <div className="nm">MAYA REYES, 24</div>
                   <div className="hand">last call: Mon 7:52am</div>
                 </div>
-                {s.rayLog.length > 0 && (
+                {named && s.rayLog.length > 0 && (
                   <div className="cb-sticky" style={{ '--tilt': '4deg' }}>
                     <span className="pin gold" />
                     <div className="hand">{named ? 'Ray → Seattle' : 'Before it\'s light'}</div>

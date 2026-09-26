@@ -2079,10 +2079,11 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   .lob-mono { font-size: 17px; margin-top: 14px; }
   .lob-facts .f { font-size: 16.5px; }
   .lob-task { font-size: 18px; }
-  /* the task and Start stay on screen however long the briefing is */
-  .lob-start { max-width: none; margin-top: 12px; }
-  .lob-go { position: sticky; bottom: 0; margin: 0 -16px -24px; padding: 4px 16px 16px; background: #0a0a10; box-shadow: 0 -16px 16px -4px #0a0a10; }
-  .lob-go .lob-task { margin-top: 10px; }
+  /* Start stays on screen however long the briefing is: a slim pinned bar.
+     It used to pin the task with it, a third of a short phone, and sat on
+     fact 2 at rest. */
+  .lob-start { max-width: none; margin-top: 0; min-height: 48px; }
+  .lob-go { position: sticky; bottom: 0; margin: 16px -16px -24px; padding: 10px 16px 14px; background: #0a0a10; border-top: 1px solid #2a2418; }
   .lo-facts { padding: 8px 16px 10px; }
 }
 .cc-take-gap { margin-top: 18px; }
@@ -2190,3 +2191,26 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 }
 .cc-next:hover { background: rgba(141,28,18,0.07); border-color: #8d1c12; }
 .cc-next:focus-visible { outline: 2px solid #8d1c12; outline-offset: 2px; }
+.rp-av img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+/* desktop: the briefing sits in the middle of the panel, not at the top of a half-empty one */
+@media (min-width: 641px) {
+  /* auto margins, not justify-content: a tall briefing still scrolls from its top */
+  .lob { display: flex; flex-direction: column; }
+  .lob-inner { width: 100%; padding-top: 0; margin-block: auto; }
+}
+/* B11's page — the one the fire reached. Its rules are closer together (every
+   3.66% of the height, first at 10.9%), so her writing takes every other line
+   and stays in the top half, clear of the burn. */
+.rec-sheet.paper-last { aspect-ratio: 605 / 737; }
+.rec-sheet.paper-last::after { display: none; }
+.paper-last .rec-date { top: 5.5%; left: 18%; font-size: 4.2cqh; }
+.paper-last .rec-ink { top: 14%; left: 18%; right: 9%; font-size: 4.3cqh; line-height: 7.32cqh; }
+/* phones: the sliders ride along at the bottom, so the ink can be watched while
+   either one moves */
+@media (max-width: 820px) {
+  .rec-controls { position: sticky; bottom: 0; z-index: 2; background: #0c0b0e; border-top: 1px solid #2a2418; padding-top: 4px; }
+  .rec-controls > div:first-child { padding: 6px 0 !important; gap: 2px !important; }
+}
+/* desktop: the photo hangs from the header; the spare height goes below it,
+   where the "Click something of hers" line is, instead of a black band on top */
+@media (min-width: 768px) { .apt-room .room { align-items: flex-start; } }

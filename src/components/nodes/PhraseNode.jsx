@@ -186,7 +186,7 @@ export function PhraseNode({ content, onComplete, nodeId = null }) {
     <div className="ph-root">
       <div className="mp-bar" role="status">
         <span>Marked {found.length} / {phrases.length}</span>
-        <span className="mp-bar-hint">{content.hint ?? 'Click the first word of a phrase, then its last word'}</span>
+        <span className="mp-bar-hint">{content.hint ?? 'Pick the first word of a phrase, then its last word'}</span>
       </div>
 
       <div className="ph-body">

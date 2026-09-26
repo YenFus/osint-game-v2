@@ -96,7 +96,7 @@ export const PROLOGUE_BEATS = [
     art: 'laptop',
     stamp: 'Wednesday · 6:40 pm — her laptop',
     lines: [
-      { text: 'Her laptop was open. Every tab was about one woman.' },
+      { text: 'I got into her laptop. Every tab was about one woman.' },
       { text: "Lena Vasquez. Missing since last April. I'd never heard of her." },
     ],
   },

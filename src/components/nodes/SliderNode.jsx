@@ -97,11 +97,11 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
             while you're near, sharp when you're there. It used to flip to
             white text on black, which read as a UI, not a page. */}
         <div
-          className="rec-sheet"
+          className={`rec-sheet ${content.paper === 'last' ? 'paper-last' : ''}`}
           style={{
             filter: `brightness(${brightness}%) contrast(${contrast}%)`,
             opacity: transitioning ? 0 : 1,
-            '--page': `url(${import.meta.env.BASE_URL}art/burned-page.jpg)`,
+            '--page': `url(${import.meta.env.BASE_URL}art/${content.paper === 'last' ? 'burned-last' : 'burned-page'}.jpg)`,
           }}
         >
           {page.date && (

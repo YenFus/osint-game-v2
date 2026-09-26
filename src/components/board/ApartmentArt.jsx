@@ -56,14 +56,14 @@ export function ApartmentArt({ className, style, fit = 'slice' }) {
 // Registered against public/art/apartment-room.jpg. Re-measure if the
 // plate is re-rolled with scripts/gen_art.py.
 const ROOM_HOTSPOTS = [
-  // Measured against public/art/apartment-room.jpg (seed 417, 1344x896) with
+  // Measured against public/art/apartment-room.jpg (seed 502, 1344x896) with
   // the viewBox matching the plate, so these land on the objects themselves.
-  { path: 'A', x: 53, y: 54.5, w: 17, h: 19, label: 'Her laptop', sub: 'locked · someone tried to get in' },
-  // B is the notebook on her bed, half under her papers; A is the desk and C
-  // the corkboard filling the wall above it. Every label is drawn at once on
-  // touch, so B hangs above.
-  { path: 'B', x: 9, y: 71, w: 16, h: 10, label: 'The notebook', sub: 'half burned, on her bed', tagAbove: true },
-  { path: 'C', x: 55, y: 5, w: 43, h: 46, label: 'Her corkboard', sub: 'photographs, string, notes', tagIn: true },
+  // A is the laptop on the desk under the window, B the burned notebook in the
+  // foreground with the smoke alarm beside it, C the corkboard on the wall.
+  // On a phone every label is drawn at once; B's and C's sit inside their boxes.
+  { path: 'A', x: 30, y: 28, w: 11.5, h: 9.5, label: 'Her laptop', sub: 'locked · someone tried to get in' },
+  { path: 'B', x: 36, y: 63.5, w: 35.5, h: 26, label: 'The notebook', sub: 'half burned, on her bed', tagIn: true },
+  { path: 'C', x: 60, y: 1, w: 39, h: 44, label: 'Her corkboard', sub: 'photographs, string, notes', tagIn: true },
 ]
 
 export function ApartmentRoom({ paths, onPick }) {

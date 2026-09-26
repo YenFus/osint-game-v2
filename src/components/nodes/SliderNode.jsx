@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { BUTTON_PRIMARY, HEADER_BAR } from '../../styles/nodeStyles'
 import { useLeadProgress } from '../../hooks/useLeadProgress'
+import { assetCssUrl } from '../../assetUrl'
 
 // Check if sliders are close enough to target values
 // Increased tolerance to 40 to make it more forgiving
@@ -101,7 +102,8 @@ export function SliderNode({ content, onComplete, nodeId = null }) {
           style={{
             filter: `brightness(${brightness}%) contrast(${contrast}%)`,
             opacity: transitioning ? 0 : 1,
-            '--page': `url(${import.meta.env.BASE_URL}art/${content.paper === 'last' ? 'burned-last' : 'burned-page'}.jpg)`,
+            // absolute, or the artifact build resolves it against /assets/ and 404s (see assetUrl.js)
+            '--page': assetCssUrl(`art/${content.paper === 'last' ? 'burned-last' : 'burned-page'}.jpg`),
           }}
         >
           {page.date && (

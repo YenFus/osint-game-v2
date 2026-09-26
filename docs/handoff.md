@@ -1039,3 +1039,16 @@ into cork, pfranzen) is CC BY 4.0 and is credited on the About screen.
 **Harness:** `harness/peek.cjs` shoots chosen leads or `reveal`/`call`/`board`.
 `shotall.cjs` now shoots the live call before each ending. `cluecard.cjs`
 clicks "Briefing" (it was "What you know").
+
+**Artifact-only 404s.** `harness/built.cjs` serves `dist-artifact` the way the
+artifact host does and walks every lead. Run it before every republish: a
+`url()` inside a CSS custom property resolves against `/assets/` on the
+artifact and 404s there only (the cork did this once; the burned-notebook
+pages did it again in v39 and were fixed in v40). Use `assetCssUrl()`.
+
+**Round 19 (2026-09-26).** The critic ran out of budget partway
+(docs/critic-2026-09-23.md, no score). Its findings were fixed in 625fdef:
+Ray's deadline chip and sticky now wait for the name, his text avatar is his
+photo, the laptop open/locked contradiction is gone, the apartment photo shows
+the charred notebook and smoke alarm (seed 502), B11 has its own burned page,
+phone sliders stay on screen, and the phone briefing pins only Start.

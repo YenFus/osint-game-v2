@@ -766,7 +766,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
   const handleSuspect = (id) => {
     playSFX('pin')
     setFinalSuspect(id)
-    if (id === 'ray') say('Ray. Thirty years. He held my hand at the hospital the night Carmen died.', 'good')
+    if (id === 'ray') say('Ray. Thirty years. He held my hand at the hospital the night my wife died.', 'good')
   }
 
   return (

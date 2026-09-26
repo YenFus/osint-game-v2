@@ -118,7 +118,7 @@ export default function OSINTGuide({ onClose, onStart }) {
               ['Work the leads.', 'Your case board holds leads from Maya\'s laptop, her burned notebook and her corkboard. Open one to dig through files, posts, photos and records. Clues aren\'t highlighted — you have to spot them.'],
               ['Pin the clues.', 'Finishing a lead drops a clue in your drawer. Pin each clue to the question on the board it answers. Right answers stick. Wrong ones fall off.'],
               ['Watch the clock.', 'Maya has been missing almost 59 hours. Wrong flags, wrong pins and hints all cost her time.'],
-              ['Mind what you say.', 'Your oldest friend, Ray, will be texting. What you tell him matters.'],
+              ['Answer your texts.', 'People will write to you while you work. Reply the way Thomas would.'],
               ['Build the case.', 'Close two threads and the board asks the only question left: who took her — and what will you hand the police? Nothing tells you if you\'re right until the call.'],
             ].map(([h, p], i) => (
               <div key={h} className="flex gap-4">

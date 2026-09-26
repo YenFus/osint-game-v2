@@ -2198,13 +2198,15 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
   .lob { display: flex; flex-direction: column; }
   .lob-inner { width: 100%; padding-top: 0; margin-block: auto; }
 }
-/* B11's page — the one the fire reached. Its rules are closer together (every
-   3.66% of the height, first at 10.9%), so her writing takes every other line
-   and stays in the top half, clear of the burn. */
+/* B11's page — the one the fire reached (scripts/burn_page.py). Its rules
+   come every 3.66% of the height, first at 10.9%; her writing sits on them in
+   the top half, above the burn line at ~48–54%. */
 .rec-sheet.paper-last { aspect-ratio: 605 / 737; }
 .rec-sheet.paper-last::after { display: none; }
-.paper-last .rec-date { top: 5.5%; left: 18%; font-size: 4.2cqh; }
-.paper-last .rec-ink { top: 14%; left: 18%; right: 9%; font-size: 4.3cqh; line-height: 7.32cqh; }
+.paper-last .rec-date { top: 7%; left: 18%; font-size: 3.3cqh; }
+/* every rule now, not every other: the fire took the bottom half of this page,
+   so her last lines have to fit in what survived */
+.paper-last .rec-ink { top: 14.6%; left: 18%; right: 7%; font-size: 3.1cqh; line-height: 3.66cqh; }
 /* phones: the sliders ride along at the bottom, so the ink can be watched while
    either one moves */
 @media (max-width: 820px) {

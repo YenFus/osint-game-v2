@@ -351,7 +351,13 @@ export default function InvestigationPage() {
         />
       )}
       {/* the name lands over the record it was read on, not two screens later */}
-      {revealPending && <NameRevealCard onDone={() => actions.markNameRevealSeen()} />}
+      {revealPending && (
+        <NameRevealCard
+          // the record in front of the player, or failing that the one they hold
+          source={{ A12: 'whois', B7: 'html_author', B8: 'html_author', C5: 'registry' }[st.currentNodeId]
+            ?? NAME_CLUES.find(id => st.clues.includes(id))}
+          onDone={() => actions.markNameRevealSeen()} />
+      )}
       <SystemAlertFlash trigger={systemAlertTrigger} />
       {showSaveModal && <SaveLoadModal mode="both" onClose={() => setShowSaveModal(false)} />}
       {showJournal && <CaseNotes onClose={() => setShowJournal(false)} />}

@@ -16,14 +16,23 @@ import { useEffect, useRef, useState } from 'react'
 import { useModalFocus } from '../../hooks/useModalFocus'
 import { useAudio } from '../../hooks/useAudio'
 
-const NAME = 'Raymond T. Callahan'
+// The name is typed exactly as the record in front of the player prints it,
+// and the card says which record that is. It used to type "Raymond T.
+// Callahan" whatever you were reading, so a player who found him in the old
+// WHOIS ("R. Callahan") was handed a first name and an initial from nowhere.
+const SOURCES = {
+  whois: { name: 'R. Callahan', from: 'The September registration, before he hid it' },
+  html_author: { name: 'Ray Callahan', from: 'In the code of his website' },
+  registry: { name: 'Raymond T. Callahan', from: 'Oregon business registry' },
+}
 const LINES = [
-  'Ray held my hand the night Carmen died. He taught Maya to drive.',
-  'And his name is on the paperwork behind the man who took her.',
+  'Ray held my hand the night my wife died. He taught Maya to drive.',
+  'And his name is on the account that was watching Lena.',
   "A name on a form isn't proof. I need to know why it's there.",
 ]
 
-export function NameRevealCard({ onDone }) {
+export function NameRevealCard({ source = 'registry', onDone }) {
+  const { name: NAME, from } = SOURCES[source] ?? SOURCES.registry
   const ref = useRef(null)
   useModalFocus(ref)
   const { playSFX, duckScore } = useAudio()
@@ -51,13 +60,13 @@ export function NameRevealCard({ onDone }) {
       setTyped(n => n + 1)
     }, wait)
     return () => clearTimeout(t)
-  }, [typed, playSFX])
+  }, [typed, playSFX, NAME])
 
   useEffect(() => {
     if (typed < NAME.length || lines >= LINES.length) return undefined
     const t = setTimeout(() => setLines(n => n + 1), lines === 0 ? 1300 : 2100)
     return () => clearTimeout(t)
-  }, [typed, lines])
+  }, [typed, lines, NAME.length])
 
   // a tap or a key shows the rest at once — but never dismisses on the same press
   const hurry = () => { if (!done) { setTyped(NAME.length); setLines(LINES.length) } }
@@ -67,7 +76,7 @@ export function NameRevealCard({ onDone }) {
       tabIndex={-1} onClick={hurry}
       onKeyDown={(e) => { if (!done && ['Enter', ' ', 'Escape'].includes(e.key)) { e.preventDefault(); hurry() } }}>
       <div className="nr-stage">
-        <div className="nr-eyebrow">I've read it three times</div>
+        <div className="nr-eyebrow">{from} · I've read it three times</div>
         <div className="nr-name" aria-hidden="true">
           {NAME.slice(0, typed)}<span className={`nr-caret ${typed >= NAME.length ? 'off' : ''}`} />
         </div>

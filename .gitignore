@@ -51,3 +51,4 @@ art/*.blend
 
 # Python bytecode
 __pycache__/
+.venv-mlxaudio/

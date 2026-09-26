@@ -230,7 +230,7 @@ export const GAME_DATA = {
         title: "Flickr — stillwater_m (Cached Archive)",
         tool: 'Flickr Archive · map',
         timestamp: { text: 'Maya\'s research — January', urgent: false },
-        monologue: 'Phone photos keep a note of where they were taken. He never switched it off.',
+        monologue: 'His phone saved where every photo was taken. He never switched it off.',
         osintTip: {
           id: 'photo-geotag',
           title: 'Photo Geolocation & EXIF Data',

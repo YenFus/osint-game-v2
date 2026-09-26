@@ -115,9 +115,10 @@
 .skin-scanner .inp-rec dd, .skin-scanner .inp-rec dt { font-family: 'Share Tech Mono', monospace; }
 .skin-scanner .inp-rec-label::before { content: '> '; color: #6a9ad8; }
 
-/* Records first, then the question about them. The question used to sit on
-   top and the records below the fold, so you were asked before you'd read. */
-.inp-stack .inp-records { order: -1; margin-top: 0; margin-bottom: 22px; border-top: none; padding-top: 0; }
+/* The question, then straight under it the records it's about. Records-first
+   put the answer box below the fold on a laptop; question-first with the
+   records close under it lets you read with a purpose and still see both. */
+.inp-stack .inp-records { margin-top: 14px; border-top: none; padding-top: 0; }
 
 /* ── The sealed police statement: typed, carbon, stamped ── */
 .skin-statement .cp-paper {
@@ -159,3 +160,5 @@
    rather than a full 100% of the column — TagNode and InputNode size their
    roots to 100%, which pushed their last 35px out of reach on a phone. */
 .src-skin[data-source] > * { flex: 1 1 auto; min-height: 0; height: auto !important; }
+/* with records under it, the question box only needs its own height */
+.inp-stack:has(.inp-records) .inp-sheet { min-height: 0; flex: none; padding: 22px 28px 18px; }

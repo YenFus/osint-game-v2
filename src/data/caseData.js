@@ -92,7 +92,7 @@ export const CLUES = {
   },
   insider: {
     title: 'Things he shouldn\'t have known',
-    detail: 'In his forum posts he mentions Lena\'s Tuesday route, her class schedule and her flatmate\'s first name. None of that was ever public.',
+    detail: 'In his forum posts he mentions Lena\'s Tuesday route, her class schedule and her roommate\'s first name. None of that was ever public.',
     source: 'stillwater_m\'s forum posts',
     spoken: 'forum posts giving away things only her friends knew',
     scene: 'forum',
@@ -113,7 +113,7 @@ export const CLUES = {
   },
   flickr_gps: {
     title: 'Where his photos were taken',
-    detail: 'The location data in his own photos: the waterfront two streets from Lena\'s flat on Friday 12 April, then Alder Hall at 6:38pm and 8:11pm on the Saturday.',
+    detail: 'The location data in his own photos: the waterfront two streets from Lena\'s apartment on Friday 12 April, then Alder Hall at 6:38pm and 8:11pm on the Saturday.',
     source: 'stillwater_m\'s Flickr — Maya\'s saved copy',
     spoken: 'the GPS in his own photographs',
     scene: 'building',
@@ -183,8 +183,8 @@ export const CLUES = {
   },
   same_room: {
     title: '7:47pm, an empty side room',
-    detail: 'The clock in the photo says 7:47pm. The programme puts Lena on stage in the main hall at 7:45. His kit was alone in the empty side gallery.',
-    source: 'The arts night photo, against the printed programme',
+    detail: 'The clock in the photo says 7:47pm. The program puts Lena on stage in the main hall at 7:45. His kit was alone in the empty side gallery.',
+    source: 'The arts night photo, against the printed program',
     spoken: 'the clock on the wall in that photograph — seven forty-seven',
     scene: 'clock',
   },
@@ -291,7 +291,7 @@ export const DEDUCTIONS = {
       opensAfter: ['A1'],
       question: 'Where was stillwater_m the night Lena disappeared?',
       answer: ['flickr_gps'],
-      reveal: 'His own photos put him near her flat on the 12th, and inside the hall on the 13th.',
+      reveal: 'His own photos put him near her apartment on the 12th, and inside the hall on the 13th.',
     },
     {
       id: 'dA3',
@@ -376,7 +376,7 @@ export const SUSPECTS = [
   { id: 'pryce', name: 'Owen Pryce', tag: 'Ran the arts night', scene: 'building' },
   { id: 'unknown', name: 'stillwater_m', tag: 'Identity unconfirmed', scene: 'forum' },
   // Thomas's oldest friend is not a suspect until a record makes him one.
-  { id: 'ray', name: 'Ray Callahan', tag: 'Your oldest friend', scene: 'ray', needsName: true },
+  { id: 'ray', name: 'Ray Callahan', tag: 'My oldest friend', scene: 'ray', needsName: true },
 ]
 
 // Who the player can circle: Ray only once something carries his name.
@@ -442,17 +442,17 @@ export const FINAL_SLOTS = [
   {
     id: 'before',
     label: 'PATTERN',
-    question: 'Show this is who he is',
+    question: 'Show he has done this before',
     weights: { court: 1, sealed: 0.75, insider: 0.75, no_source: 0.75, priya_words: 0.75, key_wifi: 0.5, draft: 0.5, burned_page: 0.25, deleted: 0.25 },
     reactions: {
       court: 'MH-2021-0384. Fake accounts, reading her email, turning up where only her messages said she\'d be. Same playbook. That gets a warrant signed tonight.',
       sealed: 'He quoted a sealed police statement. He should never have had that.',
-      insider: 'Her flatmate\'s name and her routes, before anyone printed them. He shouldn\'t have known that.',
+      insider: 'Her roommate\'s name and her routes, before anyone printed them. He shouldn\'t have known that.',
       key_wifi: 'He has a key to your house. That\'s access. It\'s not conduct.',
       draft: 'A frightened letter. It\'s not a pattern.',
       deleted: 'People delete accounts every day.',
       no_source: 'You sourced every claim he made. Two come from nowhere the public could reach, and in between he hands the forum a suspect. He wasn\'t following that case. He was steering it.',
-      priya_words: 'He used the flatmate\'s own words before anyone outside the station had them. That\'s not luck. That\'s access.',
+      priya_words: 'He used the roommate\'s own words before anyone outside the station had them. That\'s not luck. That\'s access.',
       burned_page: 'Your daughter flagged that account in November, before anyone looked twice. I take her seriously. It\'s still not proof.',
       postbox: 'Renting a mailbox isn\'t a pattern.',
       chain_sheet: 'The diagram shows me how it fits. I need his history.',

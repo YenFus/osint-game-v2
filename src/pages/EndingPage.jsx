@@ -18,13 +18,13 @@ import { assetCssUrl } from '../assetUrl'
 import { LiveCall } from '../components/LiveCall'
 import { recordEnding, endingsFound, ENDING_IDS } from '../store/endingsFound'
 
-const LENA = 'In a storage unit Ray rented off Route 9, investigators found Lena Vasquez\'s camera and phone. Eleven months after she vanished, her family finally had an answer. Not the one they had prayed for.'
+const LENA = 'In a storage unit Ray rented off Route 9, investigators found Lena Vasquez\'s camera and phone. Eleven months after she vanished, her family finally knew what had happened to her.'
 
 const ENDINGS = {
   perfect: {
     stamp: 'CHARGED', label: 'The Right Call', color: '#5aa070', afterCall: 4,
     status: 'FOUND ALIVE', ray: 'ARRESTED',
-    sub: 'Three sources. One name. You did it the way she would have.',
+    sub: 'You had three separate sources before you named him. That\'s how Maya worked.',
     outcome: 'Patrol cars reach Maya\'s street while Ray is still leaning on the buzzer. By morning the warrant covers a storage unit off Route 9. Maya is inside — dehydrated, frightened, alive.',
     coda: '"Your daughter built a case I could take to a judge in the middle of the night. You finished it the same way. That\'s why she\'s alive."',
     attrib: '— Detective Dana Okafor, Millhaven PD',
@@ -182,7 +182,7 @@ function buildCall(type, evaluation, choice, gone) {
   }
   if (evaluation.suspect === 'pryce') {
     you('"Owen Pryce. He ran that arts night. He wouldn\'t give anyone the guest list."')
-    ok('"Mr. Pryce was on stage in front of four hundred people at a quarter to eight, introducing her. It\'s in the programme in your hand. Who keeps pointing you at these men?"')
+    ok('"Mr. Pryce was on stage in front of four hundred people at a quarter to eight, introducing her. It\'s in the program in your hand. Who keeps pointing you at these men?"')
     pause('You don\'t have an answer.')
     return lines
   }
@@ -236,7 +236,7 @@ function buildCall(type, evaluation, choice, gone) {
 function lessons(type, evaluation, suspicion, clues) {
   const out = []
   if (evaluation.suspect === 'corey') out.push('Corey Marsh has an alibi on his own Flickr. The forum account that accused him is the one to follow.')
-  if (evaluation.suspect === 'pryce') out.push('Owen Pryce was on stage at 7:45, in the programme. The account that nudged you towards him is the one to follow.')
+  if (evaluation.suspect === 'pryce') out.push('Owen Pryce was on stage at 7:45, in the program. The account that nudged you towards him is the one to follow.')
   if (evaluation.suspect === 'unknown') {
     out.push(evaluation.namesSomeone
       ? 'You handed over a record with his name printed on it — and still circled an account instead of a man. Name him.'

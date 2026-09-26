@@ -2,7 +2,7 @@
 // PROLOGUE — seven screens, one fact each, two short lines at most.
 //
 // Each beat shows the thing Thomas was looking at — his texts, the call,
-// the voicemail, the police receipt, Ray's call, his photos of her flat,
+// the voicemail, the police receipt, Ray's call, his photos of her apartment,
 // her laptop — and his line says, in plain words, what it told him.
 //
 // Rewritten after a full playthrough. The player said the old lines read
@@ -53,8 +53,9 @@ export const PROLOGUE_BEATS = [
         [12.4, "I'm okay."],
         [13.2, "But if I don't call you back tonight,"],
         [15.3, 'I need you to go to the—'],
-        [16.2, 'Hang on.'],
-        [18.5, "Someone's at the door. One sec."],
+        [16.6, '(a knock at her door)'],
+        [17.3, 'Hang on.'],
+        [18.7, "Someone's at the door. One sec."],
       ],
       // exactly what the recording says (checked with a speech recogniser)
       transcript: "Hey Dad, it's me. Okay. I need to tell you something, and I should've told you weeks ago. I'm sorry. It's about the thing I've been working on. I'm okay. I want you to hear me say that first. I'm okay. But if I don't call you back tonight, I need you to go to the— Hang on. Someone's at the door. One sec.",
@@ -87,7 +88,7 @@ export const PROLOGUE_BEATS = [
     art: 'apartment',
     stamp: 'Wednesday · 6:30 pm — my photos',
     lines: [
-      { text: 'Her keys and wallet were still in her flat.' },
+      { text: 'Her keys and wallet were still in her apartment.' },
       { text: 'And someone had tried to burn her notebook.' },
     ],
   },

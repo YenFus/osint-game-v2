@@ -40,13 +40,13 @@ SCRIPT = [
     ("I need to tell you something, and I should've told you weeks ago. I'm sorry.", 0.40),
     ("It's about the thing I've been working on.", 0.50),
     ("I'm okay. I want you to hear me say that first. I'm okay.", 0.45),
-    ("But if I don't call you back tonight, I need you to go to the—", 0.10),
-    ("Hang on.", 1.35),          # a knock lands in this gap
+    ("But if I don't call you back tonight, I need you to go to the—", 0.95),   # the knock cuts her off here
+    ("Hang on.", 0.70),
     ("Someone's at the door.", 0.25),
     ("One sec.", 1.10),
 ]
 SPEED = 0.96                    # a touch slower than default; she's choosing words
-KNOCK_AFTER = "Hang on."        # three knocks start 0.35s into the gap after this
+KNOCK_AFTER = "But if I don't call you back tonight, I need you to go to the—"   # knocks start 0.12s into the gap: they interrupt her
 
 
 def synth_lines():
@@ -118,7 +118,7 @@ def envelope(x, buckets=BUCKETS):
 def main():
     speech, marks = synth_lines()
     k = knock()
-    at = marks[KNOCK_AFTER] + int(0.35 * SR)
+    at = marks[KNOCK_AFTER] + int(0.12 * SR)
     speech[at:at + len(k)] += k[: max(0, len(speech) - at)]
     lead_in = np.zeros(int(0.35 * SR), dtype=np.float32)       # a beat before she speaks
     tail = np.zeros(int(0.6 * SR), dtype=np.float32)

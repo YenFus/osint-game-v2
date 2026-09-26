@@ -28,7 +28,9 @@ PICKS = {
     "pro-street-23.png": "pro-street.jpg",
     "pro-keys-132.png": "pro-keys.jpg",
     "pro-wallet-138.png": "pro-wallet.jpg",
-    "pro-bed-43.png": "pro-bed.jpg",
+    # pro-bed.jpg and pro-notebook.jpg are now cut from the apartment plate
+    # (art/variants/apartment3-502.png) so the prologue shows the same room
+    # the player walks into; don't regenerate them from here.
 }
 
 # source photo -> backdrop

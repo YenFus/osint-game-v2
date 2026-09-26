@@ -192,7 +192,7 @@ function DedSlot({ ded, confirmed, pencilled, armed, onPin, hintShown, onHint })
           <div className="ded-empty">
             {full ? 'Pencilled in'
               : armed ? (isPair && pins.length === 1 ? '▸ Pin the second clue' : '▸ Pin the selected clue here')
-                : (isPair ? 'Two clues that only mean something together' : 'Needs a clue')}
+                : (isPair ? 'Needs two clues. Pin both.' : 'Needs a clue')}
           </div>
           {isPair && ded.hintLine && (hintShown
             ? <div className="ded-empty hint">{ded.hintLine}</div>
@@ -462,7 +462,7 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues, unread = []
       </button>
       <div className="drawer-head">
         <div className="hand">Clues</div>
-        <div className="sub">{clues.length} collected · select one, then click a question — or drag it</div>
+        <div className="sub">{clues.length} collected · pick one, then a question — or drag it</div>
       </div>
       <div className="drawer-list">
         {clues.length === 0 && (
@@ -505,7 +505,7 @@ function ClueDrawer({ clues, selected, onSelect, freshId, usedClues, unread = []
 // dimmed board, so "each card is a lead" pointed at nothing in particular.
 const TUT = [
   { h: 'Your wall.', p: 'Maya\'s case is on this wall now. I\'ll work it the way I used to.' },
-  { h: 'Leads.', p: 'Each card is a lead from her flat. Open one to look into it. Finishing it can open more.', target: '[data-yarn^="lead-"]' },
+  { h: 'Leads.', p: 'Each card is a lead from her apartment. Open one to look into it. Finishing it can open more.', target: '[data-yarn^="lead-"]' },
   { h: 'Theories.', p: 'Each lead gives you a note. Pin notes under a thread\'s questions, then test your theory. It tells you how many are right. Some questions only appear once you\'ve read enough.', target: '.thread-deds' },
   { h: 'The clock.', p: 'Maya\'s been gone almost 59 hours. Every lead takes time, and wrong answers, failed theories and hints take more. Whoever has her won\'t wait all night.', target: '.hud-clock' },
 ]
@@ -554,15 +554,17 @@ function BoardTutorial({ onDone }) {
   )
 }
 
-function RayGoneCard({ onDone }) {
+// If he left before a record named him, this card arrives late (after the
+// reveal), so it says when he sent it rather than implying it's just come in.
+function RayGoneCard({ onDone, at }) {
   const ref = useRef(null)
   useModalFocus(ref)
   return (
     <div ref={ref} className="cb-tut" role="alertdialog" aria-modal="true" aria-label="Ray has left">
       <div className="card" style={{ background: '#1a0c0a', color: '#f0d8c8' }}>
-        <div className="type" style={{ fontSize: 12, letterSpacing: '0.3em', color: '#e04a3a' }}>NEW MESSAGE · RAY</div>
+        <div className="type" style={{ fontSize: 12, letterSpacing: '0.3em', color: '#e04a3a' }}>MESSAGE · RAY · {at}</div>
         <p style={{ color: '#f4e6d8', fontFamily: '-apple-system, sans-serif', fontSize: 17 }}>"Heading out now. Talk when I'm back, Tom. Hang in there."</p>
-        <p style={{ color: '#c8a898' }}>His phone goes straight to voicemail after that. You can still make the call. But he has a head start now.</p>
+        <p style={{ color: '#c8a898' }}>He sent that at {at}. His phone has gone straight to voicemail since. You can still make the call, but he has a head start now.</p>
         <div className="row"><span /><span /><button onClick={onDone}>Keep going</button></div>
       </div>
     </div>
@@ -898,7 +900,7 @@ export function CaseBoard({ onOpenLead, onSave, onJournal, onApartment, onPresen
           card in front of the board now (ClueCard.jsx), shown by the page. */}
 
       {!s.seenBoardTutorial && <BoardTutorial onDone={markBoardTutorialSeen} />}
-      {s.seenBoardTutorial && gone && !s.rayGoneSeen && s.nameRevealSeen && <RayGoneCard onDone={markRayGoneSeen} />}
+      {s.seenBoardTutorial && gone && !s.rayGoneSeen && s.nameRevealSeen && <RayGoneCard onDone={markRayGoneSeen} at={clockLabel(deadline)} />}
     </div>
   )
 }

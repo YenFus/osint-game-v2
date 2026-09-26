@@ -29,7 +29,7 @@ export const LEAD_META = {
     brief: [{ fact: 'Maya wrote that the forum account stillwater_m knew things that were never public. He posts under the same name on Reddit, in r/PDXmissing.', from: 'NOTES_DO_NOT_DELETE.txt, and Maya\'s bookmarks' }, { fact: 'Already public: Lena\'s name, the arts night, the coffee-shop sightings, and Corey\'s name.', from: 'the news, and the forum itself' }],
     clue: 'insider', card: { kind: 'index', scene: 'forum' },
     hint: 'Ignore the tone. Look for things only someone close to Lena could know: a weekly routine, a timetable, a first name. There are three.',
-    summary: 'In under three months of posts he mentioned her Tuesday route, her class schedule and her flatmate\'s first name. None of that was ever public.',
+    summary: 'In under three months of posts he mentioned her Tuesday route, her class schedule and her roommate\'s first name. None of that was ever public.',
   },
   A3: {
     skin: 'scanner', sourceLabel: 'username scan · 6 platforms',
@@ -42,7 +42,7 @@ export const LEAD_META = {
     brief: [{ fact: 'Lena lived near the Portland waterfront. She was last seen at the Millhaven Arts Night, 40 miles south, on 13 April.', from: 'her friends\' forum page' }, { fact: 'Maya saved his Flickr before it went private in February.', from: 'Maya\'s notes' }],
     clue: 'flickr_gps', card: { kind: 'polaroid', scene: 'building' },
     hint: 'Only the April photos matter. Pick a photo and its coordinates show in the bar. Latitude lines run across the map, longitude lines run down. Put the photo where they cross.',
-    summary: 'His own photos put him on the waterfront two streets from Lena\'s flat the night before she vanished — and inside the arts night hall the evening she did.',
+    summary: 'His own photos put him on the waterfront two streets from Lena\'s apartment the night before she vanished — and inside the arts night hall the evening she did.',
   },
   A6: {
     skin: 'wayback', sourceLabel: 'web.archive.org · twitter.com/stillwater_m',
@@ -68,7 +68,7 @@ export const LEAD_META = {
     clue: 'nightwatch', card: { kind: 'index', scene: 'phone' },
     hint: 'Pick a detail on one side, then the matching one on the other. Three match exactly: a date, a picture and a follow list. The bio and the hours back it up.',
     summary: 'A silent second account, @nightwatch_rc, made the same day he hid his name. It uses a crop of his own photo and follows Corey Marsh.',
-    brief: [{ fact: 'He hid his website registration on 9 November, five days after Maya\'s first forum post.', from: 'Maya\'s WHOIS lookup, saved on her laptop' }, { fact: '91 of his 104 forum posts went up between 11pm and 2am.', from: 'Maya\'s post log, on her laptop' }],
+    brief: [{ fact: 'He hid his website registration on 9 November, five days after Maya\'s first forum post.', from: 'Maya\'s WHOIS lookup, saved on her laptop' }, { fact: '91 of his 104 forum posts went up between 11pm and 2am.', from: 'NOTES_DO_NOT_DELETE.txt' }],
   },
   A11: {
     clue: 'postbox', card: { kind: 'index', scene: 'yarn' },
@@ -92,7 +92,7 @@ export const LEAD_META = {
 
   // ── THREAD B — the burned notebook ──
   B1: {
-    brief: [{ fact: 'Her notebook was half burned, pushed under a pile of papers in her flat.', from: 'your photos of her flat' }],
+    brief: [{ fact: 'Her notebook was half burned, left on her bed next to the smoke alarm.', from: 'your photos of her apartment' }],
     clue: 'burned_page', card: { kind: 'polaroid', scene: 'notebook' },
     hint: 'Burned paper and ink are both dark, so brightness alone won\'t do it. Push brightness past halfway, then raise contrast until the writing stands out. Watch the recovery bar.',
     summary: 'Her notebook, November: she found Lena\'s case and noticed one account knew too much. She was on to him four months before she disappeared.',
@@ -105,7 +105,7 @@ export const LEAD_META = {
   },
   B4: {
     skin: 'statement',
-    brief: [{ fact: 'Priya, Lena\'s flatmate, gave Maya a copy of her police statement. It was never released.', from: 'Maya\'s notebook, December' }],
+    brief: [{ fact: 'Priya, Lena\'s roommate, gave Maya a copy of her police statement. It was never released.', from: 'Maya\'s notebook, December' }],
     clue: 'sealed', card: { kind: 'index', scene: 'forum' },
     hint: 'Pick one of his posts, then the line in Priya\'s statement that says the same thing. Start with her name, then the words in quotation marks.',
     summary: 'He knew Priya\'s name and quoted her exact words to the police months before anyone published either. He also knew the hall\'s exits.',
@@ -141,7 +141,7 @@ export const LEAD_META = {
 
   // ── THREAD C — the corkboard ──
   C1: {
-    brief: [{ fact: 'Maya\'s corkboard hangs on the wall by her desk.', from: 'your photos of her flat' }],
+    brief: [{ fact: 'Maya\'s corkboard hangs on the wall by her desk.', from: 'your photos of her apartment' }],
     clue: 'map_three', card: { kind: 'polaroid', scene: 'corkboard' },
     hint: 'Look at the colour of each mark under the glass. Red ink is what Maya decided. Pencil and yellow highlighter are just things she read.',
     summary: 'Her corkboard. In red: a table ringed in the arts night photo, a map with three places joined by string, and Lena\'s last post pinned next to a photo of the same brick wall.',
@@ -165,10 +165,10 @@ export const LEAD_META = {
     brief: [{ fact: 'Maya pinned his website\'s registration printout to her board: Stillwater Media, PO Box 441.', from: 'Maya\'s corkboard' }],
   },
   C9: {
-    brief: [{ fact: 'Maya pinned the printed programme from the arts night next to this photo.', from: 'Maya\'s corkboard' }],
+    brief: [{ fact: 'Maya pinned the printed program from the arts night next to this photo.', from: 'Maya\'s corkboard' }],
     clue: 'same_room', card: { kind: 'photo', scene: 'clock' },
-    hint: 'Pick a line on one side, then the line on the other that matches. The clock matches a time in the programme; the sign on the table matches a credit.',
-    summary: 'Against the programme, the photo shows the time: 7:47pm, two minutes into Lena\'s talk. Everyone was in the main hall. His kit was in an empty side room.',
+    hint: 'Pick a line on one side, then the line on the other that matches. The clock matches a time in the program; the sign on the table matches a credit.',
+    summary: 'Against the program, the photo shows the time: 7:47pm, two minutes into Lena\'s talk. Everyone was in the main hall. His kit was in an empty side room.',
   },
   C5: {
     brief: [{ fact: 'His website is registered to Stillwater Media, PO Box 441, Millhaven.', from: 'the WHOIS lookup (thread A)' }],

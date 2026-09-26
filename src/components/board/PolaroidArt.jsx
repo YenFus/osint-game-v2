@@ -54,16 +54,6 @@ const SCENES = {
       <text x="24" y="106" fontFamily="monospace" fontSize="7" fill="#8b95a3">velvet.echo · last post</text>
     </>
   ),
-  ray: (id) => (
-    <>
-      <Sky id={id} top="#2a2118" bottom="#110d09" />
-      {/* a contact with no picture set — the same monogram as his call screen */}
-      <circle cx="80" cy="52" r="30" fill="#241d16" stroke="#3a3026" strokeWidth="2" />
-      <text x="80" y="62" textAnchor="middle" fontFamily="'Barlow Condensed', sans-serif"
-        fontSize="30" fill="#8a7c68">RC</text>
-      <text x="80" y="100" textAnchor="middle" fontFamily="monospace" fontSize="8" fill="#7d715f">no photo</text>
-    </>
-  ),
   laptop: (id) => (
     <>
       <Sky id={id} top="#1c2230" bottom="#07080c" />
@@ -367,6 +357,9 @@ const PHOTO_SCENES = {
   // the first three things a player sees — was a near-black rectangle. It is
   // its own plate now.
   notebook: { file: 'ph-notebook.jpg' },
+  // His prologue contact photo. It was an "RC / no photo" monogram: his
+  // surname initial on screen before any record gave it, next to @nightwatch_rc.
+  ray: { file: 'pro-ray.jpg', cy: 38 },
 }
 
 function PhotoScene({ id, shot }) {

@@ -2,7 +2,7 @@
 // PROLOGUE ART — what Thomas was looking at.
 //
 // Each beat is a screen: his texts, the call, the voicemail, a receipt
-// from the police, Ray's call, his photos of her flat, her laptop. Behind
+// from the police, Ray's call, his photos of her apartment, her laptop. Behind
 // each phone is the place he was standing, blurred, so the screen is never
 // floating in a black void.
 //
@@ -26,12 +26,7 @@ const RED = '#d8443a'
 
 // Measured from the recording, 56 RMS buckets normalised to its peak —
 // printed by scripts/gen_voicemail.py every time the voicemail is rebuilt.
-const VM_WAVE = [
-  0.04, 0.86, 0.66, 0.41, 0.03, 0.96, 0.42, 0.40, 0.74, 0.67, 0.63, 0.62, 0.66, 0.79,
-  0.50, 0.08, 0.69, 0.54, 0.32, 0.84, 0.77, 0.76, 0.72, 0.26, 0.10, 0.82, 0.50, 0.84,
-  0.68, 0.63, 0.35, 0.73, 0.39, 0.15, 0.97, 0.67, 0.58, 0.50, 0.71, 0.86, 0.62, 0.60,
-  0.75, 0.20, 0.30, 0.21, 0.51, 0.88, 0.69, 0.28, 1.00, 0.29, 0.03, 0.03, 0.03, 0.03,
-]
+const VM_WAVE = [0.04, 0.87, 0.65, 0.39, 0.03, 0.98, 0.36, 0.48, 0.71, 0.75, 0.53, 0.62, 0.74, 0.72, 0.50, 0.03, 0.79, 0.38, 0.57, 0.76, 0.81, 0.79, 0.62, 0.12, 0.44, 0.81, 0.53, 0.84, 0.61, 0.64, 0.14, 0.81, 0.16, 0.61, 0.83, 0.77, 0.54, 0.28, 0.91, 0.80, 0.42, 0.32, 0.27, 0.78, 0.55, 0.03, 0.21, 0.97, 0.72, 0.21, 1.00, 0.36, 0.03, 0.03, 0.03, 0.03]
 
 // The waveform's geometry, shared with the playhead so the two cannot drift:
 // bars of width VM_BAR on a VM_PITCH grid, spanning VM_X0..VM_X1.
@@ -222,13 +217,13 @@ const SCENES = {
     </>
   ),
 
-  // ── his own photographs of her flat ─────────────────────────────
+  // ── his own photographs of her apartment ─────────────────────────────
   apartment: (u) => {
     const shots = [
       { n: 'IMG_4471', f: 'pro-keys.jpg', t: '18:31' },
       { n: 'IMG_4472', f: 'pro-wallet.jpg', t: '18:33' },
-      { n: 'IMG_4476', f: 'ph-notebook.jpg', t: '18:38' },
-      { n: 'IMG_4479', f: 'pro-bed.jpg', t: '18:41' },
+      { n: 'IMG_4476', f: 'pro-notebook.jpg', t: '18:35' },
+      { n: 'IMG_4479', f: 'pro-bed.jpg', t: '18:38' },
     ]
     return (
       <>

@@ -24,7 +24,7 @@ export const GAME_DATA = {
         title: "Maya's Laptop — File System",
         tool: 'File Browser',
         timestamp: { text: 'Maya\'s files — November to March', urgent: false },
-        monologue: "I got in first try. Her password's still her mum's birthday.",
+        monologue: "I got in first try. Her password's still her mom's birthday.",
         osintTip: {
           id: 'file-metadata',
           title: 'File Metadata Analysis',
@@ -50,7 +50,7 @@ export const GAME_DATA = {
                 { name: 'shakshuka.txt', type: 'file', content: 'Two cans crushed tomatoes. Olive oil, cumin, paprika...\n\nDad makes his with way too much chili. He thinks I can\'t handle spice. I can.' },
               ]},
               { name: 'INVESTIGATION', type: 'folder', children: [
-                { name: 'lena_timeline.txt', type: 'file', content: "LENA VASQUEZ \u2014 what I know, and where it's from\n\npainter. flat in portland near the waterfront.\nteaches at millhaven uni, tues + thurs.            (her friends' forum page)\n\nFRI 12 APR\n  5:40pm   leaves her studio                         (police appeal)\n  11:10pm  phone stops moving, at the flat            (priya)\n\nSAT 13 APR \u2014 millhaven arts night\n  6:41pm   last post, from the hall doorway           (her insta, @velvet.echo)\n  7:45pm   she's on stage, giving a talk              (the programme)\n  10pm     hall closes. nobody saw her leave          (police appeal)\n\nSUN 14    phone switched off\nMON 15    priya reports her missing\nTUE 16    police: \"no evidence of foul play\"\n\npriya told the police lena was \"waiting for something to end\".\nshe told me herself. it was never printed anywhere." },
+                { name: 'lena_timeline.txt', type: 'file', content: "LENA VASQUEZ \u2014 what I know, and where it's from\n\npainter. lives in portland near the waterfront.\nteaches at millhaven uni, tues + thurs.            (her friends' forum page)\n\nFRI 12 APR\n  5:40pm   leaves her studio                         (police appeal)\n  11:10pm  phone stops moving, at her place          (priya)\n\nSAT 13 APR \u2014 millhaven arts night\n  6:41pm   last post, from the hall doorway           (her insta, @velvet.echo)\n  7:45pm   she's on stage, giving a talk              (the program)\n  10pm     hall closes. nobody saw her leave          (police appeal)\n\nSUN 14    phone switched off\nMON 15    priya reports her missing\nTUE 16    police: \"no evidence of foul play\"\n\npriya told the police lena was \"waiting for something to end\".\nshe told me herself. it was never printed anywhere." },
                 { name: 'university_docs', type: 'folder', children: [
                   { name: 'SOC340_syllabus_spring.pdf', type: 'file', content: '[PDF Viewer] Sociology 340: Media & Society. Professor H. Vance. Mondays and Wednesdays, 10:00 AM. Final paper constitutes 40% of grade.' },
                   { name: 'tuition_receipt_winter.pdf', type: 'file', content: '[PDF Viewer] Millhaven University. Receipt of Payment. Amount: $4,200.\nStatus: PAID.' },
@@ -67,10 +67,10 @@ export const GAME_DATA = {
                   { name: 'thread_nov_missing.png', type: 'file', content: '[Screenshot — forum thread: "Still looking for Lena" — 23 replies, mostly concerned community members]' },
                 ]},
                 { name: 'suspect_research', type: 'folder', children: [
-                  { name: 'c_marsh_crossref.txt', type: 'file', handwritten: false, content: "COREY MARSH \u2014 lena's ex\nchecking him: dec 10 \u2013 jan 3\n\nstillwater_m keeps telling the forum corey was obsessed with her.\nhe says someone was watching her street the night before the\narts night \u2014 friday 12 april \u2014 and that corey's flickr photos\n\"look like her street\".\n\nok. pull the EXIF (the hidden time + place data) off corey's photos.\nif he was outside her flat that friday, I go straight to the police." },
+                  { name: 'c_marsh_crossref.txt', type: 'file', handwritten: false, content: "COREY MARSH \u2014 lena's ex\nchecking him: dec 10 \u2013 jan 3\n\nstillwater_m keeps telling the forum corey was obsessed with her.\nhe says someone was watching her street the night before the\narts night \u2014 friday 12 april \u2014 and that corey's flickr photos\n\"look like her street\".\n\nok. pull the EXIF (the hidden time + place data) off corey's photos.\nif he was outside her apartment that friday, I go straight to the police." },
                   { name: 'username_scan_results_OLD.txt', type: 'file', content: "USERNAME SCAN \u2014 c_marsh_pdx\nrun dec 10\n\nreddit: active \u00b7 twitter: active \u00b7 flickr: active\npdxmissing forum: NOT registered  (so corey isn't even on the forum)\n\n\u2014\nnext: run the same scan on stillwater_m.\nif his flickr is locked by then, the Wayback Machine will have a saved copy." },
                 ]},
-                { name: 'NOTES_DO_NOT_DELETE.txt', type: 'file', handwritten: true, content: "do NOT delete this.\n\nthe account pushing corey = stillwater_m\n\nhe knew her tuesday route. her class schedule. her ROOMMATE'S NAME.\nnone of that was public. I checked. twice.\n\njoined the forum last may \u2014 a month after she went missing.\nhe sounds worried, fine. but he knows way too much.\n\nwho IS he??\n\n\u2014 log \u2014\nnov 4    posted my first question on the forum\njan 31   asked the forum straight out: does anyone know who stillwater_m is?\nfeb 1    ran the username scan on him\nfeb 2    one of his accounts is GONE. not locked. gone.\nfeb 3    flickr's locked now too. (saved the photos first. see my old scan notes)" },
+                { name: 'NOTES_DO_NOT_DELETE.txt', type: 'file', handwritten: true, content: "do NOT delete this.\n\nthe account pushing corey = stillwater_m\n\nhe knew her tuesday route. her class schedule. her ROOMMATE'S NAME.\nnone of that was public. I checked. twice.\n\njoined the forum last may \u2014 a month after she went missing.\nhe sounds worried, fine. but he knows way too much.\n\nwho IS he??\n\n\u2014 log \u2014\nnov 4    posted my first question on the forum\njan 31   asked the forum straight out: does anyone know who stillwater_m is?\nfeb 1    ran the username scan on him\nfeb 2    one of his accounts is GONE. not locked. gone.\nfeb 3    flickr's locked now too. (saved the photos first. see my old scan notes)\n\nhis forum posts: 104. 91 of them between 11pm and 2am. who's up at that hour every night??" },
               ]},
               { name: 'photos', type: 'folder', children: [
                 { name: 'us_christmas_2023.jpg', type: 'file', content: '[Photo — Christmas morning. Ray out of focus behind us, his hand on the back of Maya\'s chair.]\n\n"Ray\'s been at every Christmas I can remember. — M"' },
@@ -123,16 +123,16 @@ export const GAME_DATA = {
             { id: 'sm-005', who: 'u/stillwater_m', when: 'r/PDXmissing · Feb 9',
               text: "Has anyone looked harder at the ex? Corey Marsh. That's where I'd look." },
             { id: 'sm-012', who: 'u/stillwater_m', when: 'r/PDXmissing · Dec 6',
-              text: 'The roommate — Priya — has she been interviewed properly? She was the last one in that flat.' },
+              text: 'The roommate — Priya — has she been interviewed properly? She was the last one in that apartment.' },
             { id: 'sm-002', who: 'u/stillwater_m', when: 'r/Portland · Feb 26',
               text: 'Cold but clear for cycling the waterfront today.' },
           ],
           phrases: [
             // "Tuesday" alone is the private fact — a weekly routine. "route"
             // alone is not, so it is not a core.
-            { id: 'p-route', text: 'her Tuesday route', cores: ['Tuesday route', 'Tuesday'], correctFeedback: "Her Tuesday route. She walked it every week and never posted about it. Her flatmate knew. Her mother knew. Nobody else should have." },
+            { id: 'p-route', text: 'her Tuesday route', cores: ['Tuesday route', 'Tuesday'], correctFeedback: "Her Tuesday route. She walked it every week and never posted about it. Her roommate knew. Her mother knew. Nobody else should have." },
             { id: 'p-class', text: 'Her class schedule', correctFeedback: "Her class schedule. It wasn't in the paper or on her profile — and he's the one telling people not to post it." },
-            { id: 'p-priya', text: 'Priya', correctFeedback: "He uses her flatmate's first name like everybody knows it. It was in one police statement and no newspaper." },
+            { id: 'p-priya', text: 'Priya', correctFeedback: "He uses her roommate's first name like everybody knows it. It was in one police statement and no newspaper." },
           ],
           // The readings that are worth answering rather than just refusing.
           decoys: [
@@ -141,13 +141,13 @@ export const GAME_DATA = {
             { text: 'cycling the waterfront', feedback: 'A man went for a bike ride. Half the city posts this.' },
             { text: 'Coava', feedback: 'A busy coffee shop. The sightings there were in the very first news report.' },
             { text: 'Those Coava sightings', feedback: 'The sightings were public within a week. It\'s what he says next that isn\'t.' },
-            { text: 'the roommate', feedback: 'Everyone knew she had a flatmate. Read on — it\'s the next word he shouldn\'t have known.' },
-            { text: 'the last one in that flat', feedback: 'The police said that much at the first press conference.' },
+            { text: 'the roommate', feedback: 'Everyone knew she had a roommate. Read on — it\'s the next word he shouldn\'t have known.' },
+            { text: 'the last one in that apartment', feedback: 'The police said that much at the first press conference.' },
             { text: 'the ex', feedback: 'Half the forum was saying "the ex" by February. That was no secret.' },
             { text: 'Good crowd, bad light', feedback: "A photographer moaning about the lighting. It tells you he was working there, not that he was watching her." },
           ],
           missFeedback: 'That was in the news the first week. Anyone could have known it.',
-          completionNote: "Three details in under three months: her route, her timetable, her flatmate's name. You'd only know those by watching her. He posted them like small talk.",
+          completionNote: "Three details in under three months: her route, her timetable, her roommate's name. You'd only know those by watching her. He posted them like small talk.",
         },
         unlocks: ['A3'],
       },
@@ -188,7 +188,7 @@ export const GAME_DATA = {
                 ['Tumblr', '403 · suspended by the platform, 2019'],
                 ['Twitter / X', '404 · no such account'],
               ],
-              note: '200 means the account is there and public. 403 means it exists but you\'re not allowed to see it. 404 means there\'s no account there at all.',
+              note: '200 = there and public · 403 = there, but hidden · 404 = no account at all',
             },
             {
               label: 'NOTES_DO_NOT_DELETE.txt',
@@ -203,7 +203,7 @@ export const GAME_DATA = {
           ],
           questions: [
             {
-              prompt: "Maya searched six websites for the username stillwater_m. On one of them the account doesn't exist at all — not hidden, not suspended, just gone. Which website?",
+              prompt: "Maya searched six websites for the username stillwater_m. On one of them, the account has been deleted. Which one?",
               contextNote: "Read the scan results. The number next to each site says what happened to the account.",
               acceptedAnswers: ['twitter', 'twitter.com', 'x.com', 'x'],
               wrongFeedback: "Look at the scan again. Which result means there's no account there at all?",
@@ -247,7 +247,7 @@ export const GAME_DATA = {
           prompt: 'Put his April photographs where they were taken',
           photos: [
             { id: 'f-001', filename: 'trail_morning_01.jpg', lat: 45.5530, lon: -122.7470, taken: 'Mar 3 · 7:14am', answer: 'forestpark', pinLabel: 'Mar 3', correctFeedback: 'Forest Park, a Sunday in March. A man who likes a walk. Nothing more.', wrongFeedback: 'Not there. Latitude runs across the sheet; longitude runs down it.' },
-            { id: 'f-002', filename: 'river_dusk_07.jpg', lat: 45.5238, lon: -122.6713, taken: 'Apr 12 · 7:52pm', answer: 'waterfront', required: true, pinLabel: 'Apr 12', correctFeedback: 'The waterfront, the night before she vanished — two streets from Lena\'s flat.', wrongFeedback: 'Not there. Follow the latitude line across first, then the longitude down.' },
+            { id: 'f-002', filename: 'river_dusk_07.jpg', lat: 45.5238, lon: -122.6713, taken: 'Apr 12 · 7:52pm', answer: 'waterfront', required: true, pinLabel: 'Apr 12', correctFeedback: 'The waterfront, the night before she vanished — two streets from Lena\'s apartment.', wrongFeedback: 'Not there. Follow the latitude line across first, then the longitude down.' },
             { id: 'f-003', filename: 'fog_hills_02.jpg', lat: 45.4912, lon: -122.8801, taken: 'Jan 18 · 9:02am', answer: 'beaverton', pinLabel: 'Jan 18', correctFeedback: 'The hills west of the city, in January. No bearing on April.', wrongFeedback: 'Not there. Check which side of the river that longitude falls.' },
             { id: 'f-004', filename: 'arts_night_exterior.jpg', lat: 44.9147, lon: -122.9931, taken: 'Apr 13 · 6:38pm', answer: 'venue', required: true, pinLabel: '6:38pm', correctFeedback: 'Alder Hall, 6:38pm on the 13th — outside, just before the doors opened.', wrongFeedback: 'Not that door. On a street this small, every decimal place counts.' },
             { id: 'f-005', filename: 'main_st_dusk.jpg', lat: 44.9140, lon: -122.9928, taken: 'Dec 3 · 5:17pm', answer: 'mainst', pinLabel: 'Dec 3', correctFeedback: 'Main Street in December. He lives there. That alone proves nothing.', wrongFeedback: 'Not that door. Every decimal place counts here.' },
@@ -271,9 +271,9 @@ export const GAME_DATA = {
             { id: 'mh-x2', sheet: 'mh', lat: 44.9136, lon: -122.9934, label: 'Car park' },
           ],
           landmarks: [
-            { id: 'lenaflat', sheet: 'pdx', lat: 45.5335, lon: -122.6790, label: "Lena's flat" },
+            { id: 'lenaflat', sheet: 'pdx', lat: 45.5335, lon: -122.6790, label: "Lena's apartment" },
           ],
-          completionNote: "The night before, he was on the waterfront two streets from her flat. The next evening he was inside the hall she never came out of.",
+          completionNote: "The night before, he was on the waterfront two streets from her apartment. The next evening he was inside the hall she never came out of.",
         },
         unlocks: [],
       },
@@ -363,7 +363,7 @@ export const GAME_DATA = {
           tools: ['whois (command line)', 'ICANN Lookup', 'DomainTools', 'ViewDNS.info'],
         },
         content: {
-          prompt: 'Flag the details that actually tell you something',
+          prompt: 'Flag the details that tell you who owns the site',
           items: [
             { id: 'wh-registrar', text: 'Registrar: NameCheap, Inc.', wrongFeedback: 'Where the domain was bought. Not who bought it.' },
             { id: 'wh-created', text: 'Created: 11 May, four years ago · Expires: 11 May (auto-renew)', wrongFeedback: 'Dates of purchase. They tell me when, not who.' },
@@ -477,7 +477,7 @@ export const GAME_DATA = {
               { id: 's-corey', label: 'Forum posts, Dec 8 and Dec 22', text: 'The first person to name Corey Marsh, and the first to point anyone at his photographs' },
               { id: 's-gallery', label: 'His Flickr, April (Maya\'s saved copy)', text: 'His own photograph of the side gallery at the arts night: his kit on a folding table by the door' },
               { id: 's-handle', label: 'The handle', text: 'stillwater_m — the domain, the company and the forum account, all the same two words' },
-              { id: 's-posts', label: 'Maya\'s log of his posts', text: '91 of his 104 forum posts went up between 11pm and 2am' },
+              { id: 's-posts', label: 'Maya\'s notes', text: '91 of his 104 forum posts went up between 11pm and 2am' },
             ],
           },
           pairs: [
@@ -516,7 +516,7 @@ export const GAME_DATA = {
             { from: 'business', to: 'twitter_rc', label: 'A business, and a second account keeping watch on it' },
           ],
           wrongFeedback: 'Look for shared names, initials, or ownership records.',
-          completionNote: "A username, a website, a company and a postbox — all one person, and none of them a name. The record's hidden now. Maybe an older copy isn't.",
+          completionNote: "A username, a website, a company and a postbox. They all lead to one person, but none of them gives his name. The record's hidden now. Maybe an older copy isn't.",
         },
         unlocks: ['A12'],
       },
@@ -610,7 +610,7 @@ export const GAME_DATA = {
                 { day: 'd13', hour: 2, feedback: 'That\'s the camera\'s clock, still in UTC. Portland is seven hours behind — which puts it on the Friday.' },
               ] },
             { id: 'cm-002', filename: 'late_shift_apr12.jpg', where: 'Auto body shop, Tigard', uploaded: 'Apr 13 · 9:14am', exif: '2024:04:13 06:38 UTC', day: 'd12', hour: 23.6, required: true,
-              correctFeedback: '11:38pm on Friday, still at the shop. Whoever was near her flat that night, it wasn\'t Corey.',
+              correctFeedback: '11:38pm on Friday, still at the shop. Whoever was near her apartment that night, it wasn\'t Corey.',
               wrongFeedback: 'Not that block. Seven hours back from the camera\'s clock.',
               traps: [
                 { day: 'd13', hour: 9, feedback: 'That\'s the upload, the next morning. Use the camera\'s time.' },
@@ -635,7 +635,7 @@ export const GAME_DATA = {
             { id: 'd12', label: 'Friday, April 12', facts: [
               { at: '5:40pm', text: 'Lena leaves her studio.', from: 'lena_timeline.txt' },
               { at: 'evening', text: 'The forum says someone was watching her street tonight — and blames Corey.', from: 'c_marsh_crossref.txt' },
-              { at: '11:10pm', text: 'Her phone stops moving, at her flat.', from: 'lena_timeline.txt' },
+              { at: '11:10pm', text: 'Her phone stops moving, at her apartment.', from: 'lena_timeline.txt' },
             ] },
             { id: 'd13', label: 'Saturday, April 13', facts: [
               { at: '6:41pm', text: 'Her last post, from the doorway of the hall.', from: 'lena_timeline.txt' },
@@ -672,7 +672,7 @@ export const GAME_DATA = {
         title: "Burned Notebook — Pages 1–3",
         tool: 'Document Recovery',
         timestamp: { text: 'November — the beginning', urgent: false },
-        monologue: "Somebody set fire to her notebook and pulled the smoke alarm down. They didn't stay to watch it burn.",
+        monologue: "Somebody set fire to her notebook and pulled the smoke alarm down. Then they left.",
         osintTip: {
           id: 'document-recovery',
           title: 'Physical Document Recovery',
@@ -706,7 +706,7 @@ export const GAME_DATA = {
             {
               id: 'b-p3',
               date: 'December',
-              text: "six months of his posts. read every one.\n\nhe acts worried, fine. but he's weirdly exact about private stuff nobody posted, and vague about stuff everyone knows. that's backwards.\n\npriya (lena's flatmate) says she'll meet me. she's giving me her own copy of what she told the police.\n\nneed to find out who he is. starting with the forum.",
+              text: "six months of his posts. read every one.\n\nhe acts worried, fine. but he's weirdly exact about private stuff nobody posted, and vague about stuff everyone knows. that's backwards.\n\npriya (lena's roommate) says she'll meet me. she's giving me her own copy of what she told the police.\n\nneed to find out who he is. starting with the forum.",
               targetBrightness: 150,
               targetContrast: 165,
               tolerance: 32,
@@ -744,6 +744,10 @@ export const GAME_DATA = {
         content: {
           prompt: 'Where could he have learned that?',
           boardHint: 'Four of his posts. For each one, pin the post, then the place he could have learned it.',
+          rows: [
+            { label: 'His posts', ids: ['q-route', 'q-corey', 'q-room', 'q-flickr'] },
+            { label: 'Where he could have learned it', ids: ['src-press', 'src-thread', 'src-flickr', 'src-nowhere'] },
+          ],
           cards: [
             { id: 'q-route', label: 'Jan 4 — stillwater_m', details: '"Someone told me she had a Tuesday routine — coffee on Burnside before class. Worth checking?"' },
             { id: 'q-corey', label: 'Dec 8 — stillwater_m', details: '"The ex deserves more attention. Corey Marsh. I\'ve seen things online."' },
@@ -752,7 +756,7 @@ export const GAME_DATA = {
             { id: 'src-press', label: 'Police press release, Apr 18', details: 'Name, age, the evening she was last seen, what she was wearing. No venue, no address, nothing about her week.' },
             { id: 'src-thread', label: 'The forum thread, before Dec 8', details: 'Two hundred posts, and nobody had named a suspect.' },
             { id: 'src-flickr', label: 'c_marsh_pdx on Flickr', details: 'A public photo album with location data left on. Open a photo and it shows where it was taken.' },
-            { id: 'src-nowhere', label: 'Nowhere public', details: 'Not in a paper, not on her profile, not in the thread. Known to her flatmate, her mother, and whoever was watching her.' },
+            { id: 'src-nowhere', label: 'Nowhere public', details: 'This was never published. Only her roommate and her mother knew it.' },
           ],
           requiredConnections: [
             { from: 'q-route', to: 'src-nowhere', label: "Her Tuesday route has no public source — and \"someone told me\" has no name on it" },
@@ -794,20 +798,20 @@ export const GAME_DATA = {
             title: 'Millhaven PD · witness statement, sealed',
             kicker: 'Priya Raman\'s own copy, taken 16 April. Never released to the press.',
             items: [
-              { id: 'st-name', label: 'Deponent', text: 'Priya Raman, flatmate. Name withheld from all public releases.' },
+              { id: 'st-name', label: 'Deponent', text: 'Priya Raman, roommate. Name withheld from all public releases.' },
               { id: 'st-words', label: 'In her words', text: '"She\'d been waiting for something to end. That\'s how she put it."' },
               { id: 'st-exits', label: 'Officer\'s note', text: 'Venue walk-through: two fire exits and a private stair off the east gallery.' },
               { id: 'st-press', label: 'Released publicly', text: 'The university, the date, and the appeal for witnesses. Nothing else.' },
             ],
           },
           pairs: [
-            { left: 'dp-03', right: 'st-name', required: true, feedback: "He used her flatmate's name in December. It was in this statement and nowhere else. Not in a paper, not on the forum." },
+            { left: 'dp-03', right: 'st-name', required: true, feedback: "He used her roommate's name in December. It was in this statement and nowhere else. Not in a paper, not on the forum." },
             { left: 'dp-06', right: 'st-words', required: true, feedback: 'Word for word from her police interview. You can\'t learn a sentence nobody ever printed.' },
             { left: 'dp-04', right: 'st-exits', feedback: 'He knows the exits the officer had to be shown. You only learn that by working in the building.' },
             { left: 'dp-01', right: 'st-press', feedback: 'Everyone complained about the police. That much was public.' },
           ],
           wrongFeedback: 'Those two do not say the same thing.',
-          completionNote: "He had her flatmate's name and her exact words months before anyone printed either. He knew things only someone close to Lena could know.",
+          completionNote: "He had her roommate's name and her exact words months before anyone printed either. He knew things only someone close to Lena could know.",
         },
         unlocks: ['B5'],
         systemAlertAfter: true,
@@ -1171,6 +1175,10 @@ export const GAME_DATA = {
         content: {
           prompt: 'Match each newspaper cutting to a record Maya kept',
           boardHint: 'Pin a cutting, then the thing it confirms.',
+          rows: [
+            { label: 'Cuttings from the Courier', ids: ['cut-credit', 'cut-lena', 'cut-hall', 'cut-court'] },
+            { label: 'What Maya kept', ids: ['brd-domain', 'brd-lastseen', 'brd-clerk'] },
+          ],
           cards: [
             { id: 'cut-credit', label: 'Apr 15 — the arts night (Spring Exhibition)', details: '"Event photography provided by Stillwater Media." 400 attended. Director Owen Pryce declined to release the guest list' },
             { id: 'cut-lena', label: 'Apr 15 — same piece', details: '"Lena Vasquez, who has not been seen since the event, is noted as having attended"' },
@@ -1191,17 +1199,17 @@ export const GAME_DATA = {
         unlocks: ['C5', 'C9'],
       },
 
-      // C9 — Compare: the gallery photo against the printed programme
+      // C9 — Compare: the gallery photo against the printed program
       {
         id: 'C9',
         type: 'compare',
         path: 'C',
-        title: "Arts Night — Photo and Programme",
+        title: "Arts Night — Photo and Program",
         tool: 'Cross-reference',
         timestamp: { text: 'the photo again, with a name', urgent: false },
-        monologue: "Maya kept the printed programme from that night pinned next to the photo.",
+        monologue: "Maya kept the printed program from that night pinned next to the photo.",
         content: {
-          prompt: 'Link what the photographs show to what the programme says',
+          prompt: 'Link what the photographs show to what the program says',
           left: {
             title: 'His room · the side gallery',
             plate: 'gallery',
@@ -1213,7 +1221,7 @@ export const GAME_DATA = {
             ],
           },
           right: {
-            title: 'The printed programme',
+            title: 'The printed program',
             kicker: 'Saturday 13 April · Alder Hall',
             items: [
               { id: 'r-doors', label: '7:00 pm', text: 'Doors open. Bar in the foyer.' },
@@ -1225,9 +1233,9 @@ export const GAME_DATA = {
           },
           pairs: [
             { left: 'p-clock', right: 'r-talk', required: true, feedback: 'Two minutes into her talk. Everyone in the building was in the main hall — and this photograph was taken somewhere else.' },
-            { left: 'p-sign', right: 'r-photo', required: true, feedback: 'His table, his sign, and the credit printed in the programme. He was hired to be in that building with a camera.' },
+            { left: 'p-sign', right: 'r-photo', required: true, feedback: 'His table, his sign, and the credit printed in the program. He was hired to be in that building with a camera.' },
             { left: 'p-hall', right: 'r-talk', feedback: 'Four hundred people in the hall, listening to her. Nobody had any reason to look anywhere else.' },
-            { left: 'p-hall', right: 'r-title', feedback: 'The banner and the programme agree on the evening. True, and never in doubt.' },
+            { left: 'p-hall', right: 'r-title', feedback: 'The banner and the program agree on the evening. True, and never in doubt.' },
             { left: 'p-chairs', right: 'r-close', feedback: 'The side gallery stayed open all evening, and stayed empty. His kit was in here. Where was he?' },
           ],
           wrongFeedback: 'Those two don\'t confirm each other.',
@@ -1304,8 +1312,8 @@ export const GAME_DATA = {
         // is that sentence made playable. Same case, two documents, and what
         // the paper left out is the entire point.
         content: {
-          prompt: 'The printed summary against the clerk\'s copy — mark what the paper withheld',
-          hint: 'Same case, same day, seven lines each. Read the paper against the filing.',
+          prompt: 'Compare the newspaper with the court\'s copy. Mark what the newspaper left out',
+          hint: 'Same case, same day, seven lines each. Compare them line by line.',
           before: {
             id: 'before', label: 'Millhaven Courier — court summary', when: 'As printed',
             lines: [

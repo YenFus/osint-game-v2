@@ -153,7 +153,15 @@ export function ConnectNode({ content, onComplete, nodeId = null }) {
           <svg className="cb-yarn" aria-hidden="true" style={{ zIndex: 4 }}>
             {yarn.map(y => <path key={y.key} className="yarn yarn-closed" d={y.d} />)}
           </svg>
-          {content.cards.map(card => {
+          {/* Optional row headers ("His posts" / "Where he could have learned
+              it"): eight same-looking cards read as one pile; two labelled
+              rows say what's being matched to what. Card order and pairs are
+              the lead's own; only the layout changes. */}
+          {(content.rows
+            ? content.rows.flatMap(r => [{ header: r.label, key: `h-${r.label}` }, ...r.ids.map(id => content.cards.find(c => c.id === id))])
+            : content.cards
+          ).map(card => {
+            if (card.header) return <div key={card.key} className="cx-row-h">{card.header}</div>
             const isSelected = selected === card.id
             const isLinked = isInAnyConnection(card.id)
 

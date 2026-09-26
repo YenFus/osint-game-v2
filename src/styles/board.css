@@ -159,7 +159,7 @@
 .lead-note { background: #e9d06a; padding: 16px 10px 10px; min-height: 96px; box-shadow: 0 8px 12px rgba(0,0,0,0.5); }
 .lead-title { font-family: 'Crimson Pro', Georgia, serif; font-size: 12.5px; line-height: 1.25; margin-top: 7px; }
 .lead-note .lead-title { font-family: 'Caveat', cursive; font-size: 19px; line-height: 1.05; margin-top: 0; }
-.lead-tool { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #7a6a58; margin-top: 4px; }
+.lead-tool { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #5e5040; margin-top: 4px; }
 .lead-new {
   position: absolute; top: 6px; right: -6px; background: #c0201e; color: #fff; font-family: 'Share Tech Mono', monospace;
   font-size: 12px; letter-spacing: 0.15em; padding: 2px 6px; transform: rotate(8deg); box-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -299,7 +299,7 @@
 @keyframes clueIn { from { transform: translateX(40px); opacity: 0; } }
 .clue-card .th { width: 58px; height: 44px; flex-shrink: 0; background: #111; overflow: hidden; }
 .clue-card .tt { font-family: 'Crimson Pro', Georgia, serif; font-size: 12.5px; line-height: 1.2; }
-.clue-card .src { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #7a6a58; margin-top: 3px; text-transform: uppercase; }
+.clue-card .src { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #5e5040; margin-top: 3px; text-transform: uppercase; }
 .clue-card .dt { font-family: 'Crimson Pro', serif; font-size: 13px; line-height: 1.35; color: #3a3028; margin-top: 6px; }
 .clue-card .used { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #2a6a3a; letter-spacing: 0.1em; margin-top: 4px; }
 .drawer-empty { font-family: 'Caveat', cursive; font-size: 20px; color: #8a7458; text-align: center; padding: 24px 10px; line-height: 1.1; }
@@ -2216,3 +2216,19 @@ html[data-motion="reduced"] .nv-caret { animation: none; }
 /* desktop: the photo hangs from the header; the spare height goes below it,
    where the "Click something of hers" line is, instead of a black band on top */
 @media (min-width: 768px) { .apt-room .room { align-items: flex-start; } }
+/* a labelled row on the connect board */
+.cx-row-h {
+  grid-column: 1 / -1; margin: 6px 0 -8px; font-family: 'Share Tech Mono', monospace; font-size: 12px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #fbeed4; text-shadow: 0 1px 3px #000;
+}
+.cx-board > .cx-row-h ~ .cx-card { margin-top: 0; }
+/* phones: the header was three rows (29% of a 664px screen). The title stays
+   for screen readers; the controls share one row, and Ray's chip wraps to a
+   second only once he's named. */
+@media (max-width: 480px) {
+  .cb-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cb-head { gap: 4px; padding: 5px 6px; justify-content: space-between; }
+  .cb-head .cb-btn { padding: 4px 7px; letter-spacing: 0.06em; }
+  .cb-head .hud-clock .t { font-size: 15px; }
+  .cb-head .hud-clock .m { font-size: 10.5px; letter-spacing: 0.08em; }
+}
